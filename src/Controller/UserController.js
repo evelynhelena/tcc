@@ -18,7 +18,7 @@ module.exports = {
       function (error, results, fields) {
         if (error) {
           return res.status(404).send({
-            error: { msg: "Erro ao tentar recuperar os usuários" },
+            error: { msg: "Erro ao tentar recuperar os usuários" ,error},
           });
         }
         return res.send(results);
@@ -193,7 +193,10 @@ module.exports = {
         if (error) {
           return res
             .status(404)
-            .send({ error: { msg: "Erro ao tentar excluir", error } });
+            .send({ error: { msg: "Erro ao tentar excluir"}});
+        }else if(results.changedRows === 0){
+          return res
+          .send({ error: { msg: "Usuário não cadastardo", status: 500} });
         }
         return res.send({
           msg: "Registro excluído com sucesso",

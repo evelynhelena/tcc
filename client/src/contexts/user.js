@@ -8,7 +8,7 @@ export const UserProvider = ({ children }) => {
 
   const getUsers = async () => {
     try {
-      const { data } = await api.get("/users");
+      const { data } = await api.get("http://localhost:3000/users");
       if (data) setUsers(data);
     } catch (err) {
       console.log(err);

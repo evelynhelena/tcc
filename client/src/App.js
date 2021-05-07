@@ -1,23 +1,24 @@
 import { UserProvider } from "./contexts/user";
-import TabelaUsersComponent from "./components/TabelaUsers";
-import UserProfileComponent from "./components/UserProfile";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { createBrowserHistory } from "history";
-
-const hist = createBrowserHistory();
+import Navbar from './components/NavBar/Navbar';
+import Dashboard from './views/Dashboard';
+import NewUser from './views/NewUser';
+import Product from './views/Product';
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <Router history={hist}>
-      <Switch>
-        <UserProvider>
-          <Route exact path="/users" component={TabelaUsersComponent} />
-          <Route exact path="/user/:id" component={UserProfileComponent}>
-            <div>Teste</div>
-          </Route>
-        </UserProvider>
-      </Switch>
-    </Router>
+    <Router>
+        <Navbar />
+        <Switch>
+          <Route path='/' exact component={Dashboard} />
+          <UserProvider>
+            <Route path='/user' component={NewUser} />
+          </UserProvider>
+          <Route path='/product' component={Product} />
+        </Switch>
+      </Router>
   );
 }
 
