@@ -1,6 +1,7 @@
 const express = require("express");
 const routes = express.Router();
-const UserController = require("./Controller/UserController");
+const UserController = require("./Controller/User/UserController");
+const ProdController = require("./Controller/Products/ProdController");
 
 routes.get("/", (req, res) => {
   res.send("Teste");
