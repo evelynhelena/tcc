@@ -1,13 +1,14 @@
 const express = require("express");
 const routes = express.Router();
 const UserController = require("./Controller/User/UserController");
-const ProdController = require("./Controller/Products/ProdController");
+import ProdController from './Controller/Products/ProdController'
 
 routes.get("/", (req, res) => {
   res.send("Teste");
 });
 
-routes.post('/products/insert', ProdController.default.insert)
+// ROTAS PRODUCTS
+routes.post('/products/insert', ProdController.insert)
 
 routes.get("/users", UserController.findAll);
 routes.post("/insert", UserController.insert);

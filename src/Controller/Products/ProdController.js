@@ -1,12 +1,12 @@
-const moment = require("moment");
+import moment from 'moment';
 import conexao from '../../Configs/bd'
 
 import * as Yup from 'yup'
 
 const date = moment().utc().format("yyyy-MM-DD hh:mm:ss");
 
-export default {
-    async insert (req, res) {
+class Products {
+    async insert (req, res)  {
         try {
             const connection = await conexao()
 
@@ -47,4 +47,22 @@ export default {
             console.log("erro" + error)
         }
     }
+
+    async update (req, res) {
+
+    }
+
+    async delete (req, res) {
+
+    }
+
+    async findAll (req, res) {
+
+    }
+
+    async findOne (req, res) {
+
+    }
 }
+
+export default new Products
