@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
-import UserContext from "../contexts/user";
+import UserContext from "../../contexts/user";
 import * as bootstrap from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
-import "../css/User.css";
+import "../../css/User.css";
 import swal from "@sweetalert/with-react";
-import api from "../services/Api";
+import api from "../../services/Api";
+import ModalInsertUser from '../modais/UserInsert';
 function User() {
   const { users } = useContext(UserContext);
   const deleteUser = function (id) {
@@ -50,6 +51,7 @@ function User() {
               <bootstrap.Col xs={12} md={12}>
                 <div className="card">
                   <div className="card-header">
+                  
                     <div className="card-title">
                       <h4>Usuários</h4>
                       <p className="card-category">
@@ -94,6 +96,7 @@ function User() {
               </bootstrap.Col>
             </bootstrap.Row>
           </bootstrap.Container>
+          <ModalInsertUser></ModalInsertUser>
         </div>
       )}
     </>

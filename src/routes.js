@@ -7,6 +7,7 @@ routes.get("/", (req, res) => {
 });
 
 routes.get("/users", UserController.findAll);
+routes.get("/findUserType",UserController.findUserType);
 routes.post("/insert", UserController.insert);
 routes.get("/users/:id", UserController.findById);
 routes.put("/users/:id", UserController.update);

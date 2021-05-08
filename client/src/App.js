@@ -1,9 +1,9 @@
 import { UserProvider } from "./contexts/user";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Navbar from './components/NavBar/Navbar';
-import Dashboard from './views/Dashboard';
-import NewUser from './views/NewUser';
-import Product from './views/Product';
+import Dashboard from './views/dashboard/Dashboard';
+import NewUser from './views/user/NewUser';
+import Product from './views/product/Product';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 

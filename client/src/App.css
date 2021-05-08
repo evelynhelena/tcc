@@ -91,3 +91,32 @@
   color: #fff !important;
 }
 
+
+.btn-plus{
+  right: 12px;
+  bottom: 41px;
+  position: fixed;
+  width: 70px;
+  height: 70px;
+  border-radius: 50% !important;
+  background-color: #9229ad !important;
+  border-color: #932aad !important;
+}
+
+.btn-plus:hover{
+  background-color: #622173 !important;
+  border-color: #622173 !important;
+}
+
+.modal-header{
+  background-color: #9229ad;
+  color: #fff;
+}
+
+.modal-header .close{
+  color:#fff;
+}
+
+.modal-header .close:hover{
+  color:#fff;
+}
