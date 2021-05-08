@@ -57,11 +57,47 @@ class Products {
     }
 
     async findAll (req, res) {
+        try {
+            const connection = await conexao()
 
+            connection.query('SELECT * FROM tbl_products',
+             (error, result) => {
+                if(error) res.status(400).json({
+                    erro: 'Error ao buscar os dados'
+                })
+
+                if(!error) console.log('Busca ok')
+
+                res.json({ result })
+            })
+
+
+        } catch (error) {
+            console.log("erro" + error)
+        }
     }
 
     async findOne (req, res) {
+        const { id } = req.params
 
+        try {
+            const connection = await conexao()
+
+            connection.query(`SELECT * FROM tbl_products where id = ${id}`,
+             (error, result) => {
+                if(error) res.status(400).json({
+                    erro: 'Error ao buscar os dados'
+                })
+
+                if(!error) console.log('Busca ok')
+
+                res.json({ result })
+            })
+
+
+        } catch (error) {
+            console.log("erro" + error)
+        }
     }
 }
 

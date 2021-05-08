@@ -8,8 +8,11 @@ routes.get("/", (req, res) => {
 });
 
 // ROTAS PRODUCTS
+routes.get('/products', ProdController.findAll)
+routes.get('/products/:id', ProdController.findOne)
 routes.post('/products/insert', ProdController.insert)
 
+// ROTAS USERS
 routes.get("/users", UserController.findAll);
 routes.post("/insert", UserController.insert);
 routes.get("/users/:id", UserController.findById);
