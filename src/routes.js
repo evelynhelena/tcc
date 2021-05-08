@@ -11,6 +11,7 @@ routes.get("/", (req, res) => {
 routes.get('/products', ProdController.findAll)
 routes.get('/products/:id', ProdController.findOne)
 routes.post('/products/insert', ProdController.insert)
+routes.put('/products/update/:id', ProdController.update)
 
 // ROTAS USERS
 routes.get("/users", UserController.findAll);

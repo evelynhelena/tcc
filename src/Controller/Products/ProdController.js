@@ -66,7 +66,58 @@ class Products {
     }
 
     async update (req, res) {
-        
+        try {
+            const { id } = req.params
+
+            const connection = await conexao()
+            
+            const { name, value, quantidade } = req.body
+
+            const validation = Yup.object().shape({
+                name: Yup.string().required(),
+                value: Yup.number().required(),
+                quantidade: Yup.number().required()
+            })
+
+            if(!validation.isValid(req.body)) return res.status(400).json({
+                erro: 'Dados incorretos'
+            })
+
+            const values = [
+                name,
+                value,
+                quantidade,
+            ]
+
+            connection.query(`SELECT * FROM tbl_products where name = "${name}" and 
+            id = "${id}" `, (error, result) => {
+
+                if(error) return res.status(400).json({
+                    erro: 'Dados não encontrados'
+                })
+
+                if(result.length == 0){
+                    
+                    connection.query(`update tbl_products set name = ?, value = ? ,
+                        quantity = ? where id = "${id}" `, values,
+                            (error, result) => {
+
+                                if(error) return res.status(400).json({
+                                    erro: 'Dados não atualizados'
+                                })
+
+                                res.json({
+                                    result, id
+                                })
+                            })
+                }
+            })
+
+        } catch (error) {
+            res.status(400).json({
+                erro: 'Erro ao atualizar'
+            })
+        }
     }
 
     async delete (req, res) {
