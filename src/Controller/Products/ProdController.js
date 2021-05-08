@@ -2,12 +2,12 @@ import moment from 'moment';
 import conexao from '../../Configs/bd'
 
 import * as Yup from 'yup'
-
 const date = moment().utc().format("yyyy-MM-DD hh:mm:ss");
 
 class Products {
     async insert (req, res)  {
         try {
+            let response
             const connection = await conexao()
 
             const { name, value, quantidade } = req.body
@@ -31,25 +31,42 @@ class Products {
                 0
             ]
 
-            connection.query('insert into tbl_products values(?,?,?,?,?,?)',values,
+            // VERIFICANDO SE O PRODUTO JA EXISTE NO BANCO DE DADOS
+            connection.query(`select name from tbl_products where name= "${name}" `,
              (error, result) => {
-                if(error) res.status(400).json({
-                    erro: 'Error ao inserir dados'
+                if(error) return res.status(400).json({
+                    erro: 'Erro ao buscar dados do produto'
                 })
 
-                if(!error) console.log('Insert ok')
+                // PERCORRENDO QUERY DO BANCO
+                result.forEach(element => {
+                    if(element.name == name) return response = true
+                });
 
-                res.json({ result })
+                if(response) return res.status(400).json({
+                    erro: 'Dados duplicados'
+                })
+
+                if(!response) return connection.query('insert into tbl_products values(?,?,?,?,?,?)',values,
+                 (error, result) => {
+                    if(error) res.status(400).json({
+                        erro: 'Error ao inserir dados'
+                    })
+    
+                    if(!error) console.log('Insert ok')
+    
+                    res.json({ result })
+                })
             })
-
 
         } catch (error) {
             console.log("erro" + error)
         }
+        
     }
 
     async update (req, res) {
-
+        
     }
 
     async delete (req, res) {
