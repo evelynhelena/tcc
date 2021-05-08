@@ -32,8 +32,9 @@ class Products {
             ]
 
             // VERIFICANDO SE O PRODUTO JA EXISTE NO BANCO DE DADOS
-            connection.query(`select name from tbl_products where name= "${name}" `,
-             (error, result) => {
+            connection.query(`select name from tbl_products where name= ? `, name,
+                (error, result) => {
+
                 if(error) return res.status(400).json({
                     erro: 'Erro ao buscar dados do produto'
                 })
@@ -48,7 +49,7 @@ class Products {
                 })
 
                 if(!response) return connection.query('insert into tbl_products values(?,?,?,?,?,?)',values,
-                 (error, result) => {
+                    (error, result) => {
                     if(error) res.status(400).json({
                         erro: 'Error ao inserir dados'
                     })
@@ -87,10 +88,21 @@ class Products {
                 name,
                 value,
                 quantidade,
+                id
             ]
 
-            connection.query(`SELECT * FROM tbl_products where name = "${name}" and 
-            id = "${id}" `, (error, result) => {
+            const fields = [
+                name,
+                id
+            ]
+
+            if(id <= 0 ) return res.status(400).json({
+                erro: 'Parametros invalidos'
+            })
+
+
+            connection.query(`SELECT * FROM tbl_products where name = ? and id = ? `, fields,
+                (error, result) => {
 
                 if(error) return res.status(400).json({
                     erro: 'Dados não encontrados'
@@ -99,7 +111,7 @@ class Products {
                 if(result.length == 0){
                     
                     connection.query(`update tbl_products set name = ?, value = ? ,
-                        quantity = ? where id = "${id}" `, values,
+                        quantity = ? where id = ? `, values,
                             (error, result) => {
 
                                 if(error) return res.status(400).json({
@@ -121,7 +133,36 @@ class Products {
     }
 
     async delete (req, res) {
+        const { id } = req.params
+        try {
+            const connection = await conexao()
 
+            if(id <= 0) return res.status(500).json({
+                erro: 'Parametros invalidos'
+            })
+
+            connection.query(`update tbl_products set ind_cance = '1' where id = ? and ind_cance = '0' `,id,
+                (error, result) => {
+
+                    if (error) return res.status(400).json({
+                        erro: 'Não foi possivel deletar esse produto'
+                    })
+
+                    if(result.changedRows === 0) return res.status(500).json({
+                        erro: 'Produto não encontrado ou já exluido'
+                    })
+
+                    res.status(200).json({
+                        sucess: 'Produto excluido com sucesso'
+                    })
+                })
+
+            
+        } catch (error) {
+            res.status(400).json({
+                erro: 'Erro ao excluir produto'
+            })
+        }
     }
 
     async findAll (req, res) {
