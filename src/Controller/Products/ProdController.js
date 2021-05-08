@@ -83,6 +83,10 @@ class Products {
         try {
             const connection = await conexao()
 
+            if(id <= 0) return res.status(400).json({
+                erro: 'Erro na busca'
+            })
+
             connection.query(`SELECT * FROM tbl_products where id = ${id}`,
              (error, result) => {
                 if(error) res.status(400).json({
