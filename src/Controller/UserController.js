@@ -16,7 +16,6 @@ module.exports = {
     connection.query(
       "select * from tbl_users where ind_cance=0",
       function (error, results, fields) {
-        console.log(results);
         if (error) {
           return res.status(404).send({
             error: { msg: "Erro ao tentar recuperar os usuários"},
@@ -130,8 +129,11 @@ module.exports = {
             );
           }
         } else {
-          return res.status(400).send({
-            error: { msg: "Nome de usuário ja cadastrado no sistéma" },
+          return res.send({
+            error: { 
+              erro: 400,
+              msg: "Nome de usuário ja cadastrado no sistéma"
+            },
           });
         }
       }
@@ -165,7 +167,6 @@ module.exports = {
           });
         }
         userName = results;
-        console.log(userName);
         if (userName.length == 0) {
           connection.query(
             "update tbl_users set name = ?, user_name = ? , last_name = ?, phone = ?, last_update = ?, ind_cance = ? where id ='" +

@@ -66,6 +66,7 @@ function User() {
                         <tr>
                           <th>Id</th>
                           <th>Nome</th>
+                          <th>Nome de Usuário</th>
                           <th>Telefone</th>
                           <th>Ações</th>
                         </tr>
@@ -74,6 +75,7 @@ function User() {
                         {users.map((user) => (
                           <tr key={user.id}>
                             <td>{user.id}</td>
+                            <td>{user.name}</td>
                             <td>{user.name}</td>
                             <td>{user.phone}</td>
                             <td>
