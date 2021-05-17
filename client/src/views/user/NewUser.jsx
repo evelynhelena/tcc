@@ -1,108 +1,161 @@
-import React, { useContext } from "react";
-import UserContext from "../../contexts/user";
-import * as bootstrap from "react-bootstrap";
+import React, {useState} from 'react';
+import {Container, Row, Col, Form} from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
-import "../../css/User.css";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
-import ModalInsertUser from '../modais/UserInsert';
-function User() {
-  const { users } = useContext(UserContext);
-  const deleteUser = function (id) {
-    swal({
-      title: "Confermar Alteração !",
-      text: "Deseja desativar este usuário",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then((willDelete) => {
-      if (willDelete) {
-        api
-          .delete("http://localhost:3000/users/" + id)
-          .then(function (response) {
-            let data = response.data;
-            if (data.msg) {
-              swal("Usuário deletado com sucesso", {
-                icon: "success",
-              }).then(() => window.location.reload());
-            } else if (data.error.status === 500) {
-              swal("Usuário não cadastrado", {
-                icon: "error",
-              }).then(() => window.location.reload());
-            } else {
-              swal("Erro ao deletar o usuário", {
-                icon: "error",
-              });
-            }
-          });
+function NewUser() {
+
+
+    const [usersType, setUsersType] = useState([]);
+
+    //values input
+    const [name, setName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [userName, setUserName] = useState('');
+    const [celPhone, setCelPhone] = useState('');
+    const [typeUser, setTypeUser] = useState('');
+    //</variable>
+  
+    //<functions>
+    const getUsersType = async () => {
+      try {
+        const { data } =  api.get("http://localhost:3000/findUserType");
+        if (data) setUsersType(data);
+      } catch (err) {
+        console.log(err);
       }
-    });
-  };
+    };
+  
+    function handleSubmit(event){
+      event.preventDefault();
+      if(!name || !lastName || !userName || !celPhone || !typeUser){
+        swal("Erro", "Campus vazios não são permitidos", "error");
+      }else{
+        let userTypeSelected = usersType.filter(el => el.type_user === typeUser);
+       const newUser = {
+          "name": name,
+          "user_name": userName,
+          "last_name": lastName,
+          "phone": celPhone,
+          "user_type": userTypeSelected[0].id
+        }
+        const insertUser = async () =>{
+          try {
+            const { data } = await api.post("http://localhost:3000/insert",newUser);
+            if (data){
+              if(undefined !== data.error && data.error.erro === 400){
+                swal("Erro", "Usuário já cadastrado no sistema", "error");
+              }else{
+                swal("Sucesso", "Usuário inserido com sucesso", "success");
+                window.location.reload();
+              }           
+            }
+          } catch (err) {
+            swal("Erro", "Erro ao enviar ao servidor", "error");
+          }
+        }
+        insertUser();
+        
+      }
+    }
+
   return (
-    <>
-      {!users ? (
-        <>
-          <p>Carregando...</p>
-        </>
-      ) : (
-        <div className="content">
-          <bootstrap.Container>
-            <bootstrap.Row>
-              <bootstrap.Col xs={12} md={12}>
+    <div className="content">
+          <Container>
+            <Row>
+              <Col xs={8} md={8}>
                 <div className="card">
                   <div className="card-header">
                   
                     <div className="card-title">
-                      <h4>Usuários</h4>
-                      <p className="card-category">
-                        {" "}
-                        Lista de Usuários cadastrados
-                      </p>
+                      <h4>Novo Usuários</h4>
                     </div>
                   </div>
                   <div className="card-body">
-                    <bootstrap.Table responsive="md" className="text-center">
-                      <thead>
-                        <tr>
-                          <th>Id</th>
-                          <th>Nome</th>
-                          <th>Nome de Usuário</th>
-                          <th>Telefone</th>
-                          <th>Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((user) => (
-                          <tr key={user.id}>
-                            <td>{user.id}</td>
-                            <td>{user.name}</td>
-                            <td>{user.name}</td>
-                            <td>{user.phone}</td>
-                            <td>
-                              <button className="btn btn-table edit">
-                                <FaIcons.FaPencilAlt />
-                              </button>
-                              <button
-                                onClick={() => deleteUser(user.id)}
-                                className="btn btn-table delete btn-danger"
-                              >
-                                <FaIcons.FaBan />
-                              </button>
-                            </td>
-                          </tr>
+                  <Form>
+                    <Row>
+                    <Col xs={6} md={6}>
+                        <Form.Group controlId="name">
+                        <Form.Label>Nome</Form.Label>
+                        <Form.Control 
+                        type="text"
+                        placeholder="Nome" 
+                        value={name}
+                        onChange={({target}) => setName(target.value)}
+                        />
+                        </Form.Group>
+                    </Col>
+
+                    <Col xs={6} md={6}>
+                        <Form.Group controlId="lastName">
+                        <Form.Label>Sobrenome</Form.Label>
+                        <Form.Control 
+                        type="text" 
+                        placeholder="Sobrenome" 
+                        value={lastName}
+                        onChange={({target}) => setLastName(target.value)}
+                        />
+                        </Form.Group>
+                    </Col>
+                    </Row>
+
+                    <Row>
+                    <Col xs={6} md={6}>
+                        <Form.Group controlId="userName">
+                        <Form.Label>Nome de Usuário</Form.Label>
+                        <Form.Control 
+                        type="text" 
+                        placeholder="Nome" 
+                        value={userName}
+                        onChange={({target}) => setUserName(target.value)}
+                        />
+                        </Form.Group>
+                    </Col>
+
+                    <Col xs={6} md={6}>
+                        <Form.Group controlId="phone">
+                        <Form.Label>Celular</Form.Label>
+                        <Form.Control 
+                        type="text" 
+                        placeholder="Celular" 
+                        value={celPhone}
+                        onChange={({target}) => setCelPhone(target.value)}
+                        />
+                        </Form.Group>
+                    </Col>
+                    </Row>
+                    <Form.Group controlId="example.Form.ControlSelect1">
+                    <Form.Label>Tipo de Usuário</Form.Label>
+                    <Form.Control 
+                    as="select" 
+                    value={typeUser} 
+                    onChange={({target}) => setTypeUser(target.value)}>
+                        <option>Selecionar</option>
+                        {usersType.map((userType) => (
+                        <option 
+                        key={userType.id}>
+                        {userType.type_user}
+                        </option>
                         ))}
-                      </tbody>
-                    </bootstrap.Table>
+                    </Form.Control>
+                    </Form.Group>
+                   </Form>
                   </div>
                 </div>
-              </bootstrap.Col>
-            </bootstrap.Row>
-          </bootstrap.Container>
-          <ModalInsertUser></ModalInsertUser>
+              </Col>
+
+
+              <Col xs={4} md={4}>
+                <div className="card">
+                  <div className="card-body">
+                     
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Container>
         </div>
-      )}
-    </>
   );
 }
 
-export default User;
+export default NewUser;
