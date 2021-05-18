@@ -18,12 +18,25 @@ module.exports = {
       function (error, results, fields) {
         if (error) {
           return res.status(404).send({
-            error: { msg: "Erro ao tentar recuperar os usuários" ,error},
+            error: { msg: "Erro ao tentar recuperar os usuários"},
           });
         }
         return res.send(results);
       }
     );
+  },
+
+  findUserType(req,res){
+    const connection = bdConnect();
+    connection.query(
+      "select * from tbl_type_users",
+      function(error,results,fields){
+        if(error){
+          return res.status(404).send({error: {msg: "Erro ao tentar recuperar tipos de usuários"}});
+        }
+        return res.send(results);
+      }
+    )
   },
 
   findById(req, res) {
@@ -116,8 +129,11 @@ module.exports = {
             );
           }
         } else {
-          return res.status(400).send({
-            error: { msg: "Nome de usuário ja cadastrado no sistéma" },
+          return res.send({
+            error: { 
+              erro: 400,
+              msg: "Nome de usuário ja cadastrado no sistéma"
+            },
           });
         }
       }
@@ -151,7 +167,6 @@ module.exports = {
           });
         }
         userName = results;
-        console.log(userName);
         if (userName.length == 0) {
           connection.query(
             "update tbl_users set name = ?, user_name = ? , last_name = ?, phone = ?, last_update = ?, ind_cance = ? where id ='" +

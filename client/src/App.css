@@ -91,3 +91,81 @@
   color: #fff !important;
 }
 
+
+.btn-plus{
+  right: 12px;
+  bottom: 41px;
+  position: fixed;
+  width: 70px;
+  height: 70px;
+  border-radius: 50% !important;
+  background-color: #9229ad !important;
+  border-color: #932aad !important;
+}
+
+.btn-plus:hover{
+  background-color: #622173 !important;
+  border-color: #622173 !important;
+}
+
+.modal-header{
+  background-color: #9229ad;
+  color: #fff;
+}
+
+.modal-header .close{
+  color:#fff;
+}
+
+.modal-header .close:hover{
+  color:#fff;
+}
+
+.dropdown-toggle::after{
+  display: none !important;
+}
+
+.button-header{
+  background-color: #eee !important;
+  border-color: #eee !important;
+  color: #000 !important;
+}
+
+.button-header:hover{
+  box-shadow: 2px 1px 7px 0px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 2px 1px 7px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 2px 1px 7px 0px rgba(0,0,0,0.75);
+}
+
+.dropdown-toggle:focus{
+  border: none !important;
+  outline:  0 !important;
+  box-shadow: none !important;
+}
+
+.dropdown-item:hover{
+  background-color: #9229ad !important;
+  box-shadow: 2px 1px 7px 0px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 2px 1px 7px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 2px 1px 7px 0px rgba(0,0,0,0.75);
+  color: #fff !important;
+  border-radius: 2px;
+}
+
+.circle-alert{
+  width: 18px;
+  height: 18px;
+  background: red;
+  border-radius: 50%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  position: absolute;
+  top: 2px;
+  left: 18px;
+}
+
+.circle-alert span{
+  font-size: 13px;
+}

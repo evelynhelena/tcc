@@ -16,6 +16,7 @@ routes.delete('/products/delete/:id', ProdController.delete)
 
 // ROTAS USERS
 routes.get("/users", UserController.findAll);
+routes.get("/findUserType",UserController.findUserType);
 routes.post("/insert", UserController.insert);
 routes.get("/users/:id", UserController.findById);
 routes.put("/users/:id", UserController.update);

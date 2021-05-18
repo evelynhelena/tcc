@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
-import UserContext from "../contexts/user";
+import UserContext from "../../contexts/user";
 import * as bootstrap from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
-import "../css/User.css";
+import "../../css/User.css";
 import swal from "@sweetalert/with-react";
-import api from "../services/Api";
+import api from "../../services/Api";
+import ModalInsertUser from "../modais/UserInsert";
+import { Router, Route, Link } from "react-router-dom";
 function User() {
   const { users } = useContext(UserContext);
   const deleteUser = function (id) {
@@ -64,6 +66,7 @@ function User() {
                         <tr>
                           <th>Id</th>
                           <th>Nome</th>
+                          <th>Nome de Usuário</th>
                           <th>Telefone</th>
                           <th>Ações</th>
                         </tr>
@@ -72,6 +75,7 @@ function User() {
                         {users.map((user) => (
                           <tr key={user.id}>
                             <td>{user.id}</td>
+                            <td>{user.name}</td>
                             <td>{user.name}</td>
                             <td>{user.phone}</td>
                             <td>
@@ -94,6 +98,11 @@ function User() {
               </bootstrap.Col>
             </bootstrap.Row>
           </bootstrap.Container>
+          <Link to={"/NewUser"}>
+            <bootstrap.Button variant="primary" className="btn-plus edit">
+              <FaIcons.FaPlus />
+            </bootstrap.Button>
+          </Link>
         </div>
       )}
     </>
