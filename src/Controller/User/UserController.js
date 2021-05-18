@@ -196,7 +196,7 @@ module.exports = {
             .send({ error: { msg: "Erro ao tentar excluir"}});
         }else if(results.changedRows === 0){
           return res
-          .send({ error: { msg: "Usuário não cadastardo", status: 500} });
+          .send({ error: { msg: "Usuário não cadastrado", status: 500} });
         }
         return res.send({
           msg: "Registro excluído com sucesso",
