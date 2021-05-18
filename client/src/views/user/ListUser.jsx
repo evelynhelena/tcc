@@ -5,7 +5,7 @@ import * as FaIcons from "react-icons/fa";
 import "../../css/User.css";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
-import ModalInsertUser from '../modais/UserInsert';
+import ModalInsertUser from "../modais/UserInsert";
 import { Router, Route, Link } from "react-router-dom";
 function User() {
   const { users } = useContext(UserContext);
@@ -52,7 +52,6 @@ function User() {
               <bootstrap.Col xs={12} md={12}>
                 <div className="card">
                   <div className="card-header">
-                  
                     <div className="card-title">
                       <h4>Usuários</h4>
                       <p className="card-category">
@@ -99,11 +98,8 @@ function User() {
               </bootstrap.Col>
             </bootstrap.Row>
           </bootstrap.Container>
-          <Link to={'/NewUser'}>
-            <bootstrap.Button 
-            variant="primary" 
-            className="btn-plus edit"
-            >
+          <Link to={"/NewUser"}>
+            <bootstrap.Button variant="primary" className="btn-plus edit">
               <FaIcons.FaPlus />
             </bootstrap.Button>
           </Link>
