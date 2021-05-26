@@ -62,7 +62,7 @@ module.exports = {
   insert(req, res) {
     const connection = bdConnect();
     let userName;
-    fields = [
+    let fields = [
       null,
       req.body.name,
       req.body.user_name,
