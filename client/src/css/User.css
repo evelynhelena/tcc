@@ -11,3 +11,7 @@
   .wrapper-user a.delete{
     background-color: #f44336 !important;
   }
+
+  .MuiFormLabel-root.Mui-focused{
+    color:#9229ad;
+  }

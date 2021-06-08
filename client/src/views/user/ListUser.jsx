@@ -1,12 +1,15 @@
 import React, { useContext } from "react";
 import DataTable from "react-data-table-component";
 import UserContext from "../../contexts/user";
-import { Button, Dropdown, Container, Row, Col } from "react-bootstrap";
+import { Button, Container, Row, Col } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import "../../css/User.css";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
 import { Link } from "react-router-dom";
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 function User() {
   const columns = [
     {
@@ -27,24 +30,16 @@ function User() {
     {
       name: "Ações",
       cell: (data) => (
-        <div>
-          <Dropdown>
-            <Dropdown.Toggle className="edit" id="dropdown-basic">
-              <FaIcons.FaEllipsisH />
-            </Dropdown.Toggle>
-            <Dropdown.Menu className="p-1">
-              <Dropdown.Item as={Link} to="/NewUser" className="edit">
-                <FaIcons.FaPencilAlt /> <span className="pl-2">Editar</span>
-              </Dropdown.Item>
-              <Dropdown.Item
-                className="delete mt-1"
-                onClick={() => deleteUser(data.id)}
-              >
-                <FaIcons.FaBan /> <span className="pl-2">Deletar</span>
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
+        <div className="pl-0">
+        <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
+          <Link as={Link} to={"/NewUser/" + data.id}>
+            <EditIcon />
+          </Link>
+        </IconButton>
+        <IconButton className="p-1" onClick={() => deleteUser(data.id)} color="secondary" aria-label="delete">
+          <DeleteIcon />
+        </IconButton>
+      </div>
       ),
     },
   ];
@@ -115,7 +110,7 @@ function User() {
               </Col>
             </Row>
           </Container>
-          <Link to={"/NewUser"}>
+          <Link to={"/NewUser/-1"}>
             <Button variant="primary" className="btn-plus edit">
               <FaIcons.FaPlus />
             </Button>

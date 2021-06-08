@@ -16,7 +16,7 @@ function App() {
           <Route path='/' exact component={Dashboard} />
           <UserProvider>
             <Route path='/Listuser' component={ListUser} />
-            <Route path='/NewUser' component={NewUser} />
+            <Route path='/NewUser/:id' component={NewUser} />
           </UserProvider>
           <Route path='/product' component={Product} />
         </Switch>
