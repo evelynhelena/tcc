@@ -5,6 +5,7 @@ import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from '@material-ui/core/MenuItem';
+
 function NewUser() {
   const [usersType, setUsersType] = useState([]);
   const [user, setUser] = useState([]);
@@ -32,21 +33,21 @@ function NewUser() {
     getUsersType();
   }, []);
 
-  const getUser = async (id) => {
-    try {
-      const { data } = await api.get("http://localhost:3000/users/" + id);
-      if (data) setUser(data);
-      if (user.length > 0) {
-        console.log(user);
-      }
-    } catch {
-      swal("Erro", "Erro ao selecionar o usuário", "error");
-    }
+  const getUser = async () => {
+      await api.get("http://localhost:3000/users/" + id).then(function ({data}) {
+        if (data.length > 0) {
+          setName(data[0].name);
+          setLastName(data[0].last_name);
+          setUserName(data[0].user_name);
+          //setTypeUser(data[0].fk_user_name);
+          setCelPhone(data[0].phone);
+        };
+      },function(){
+        swal("Erro", "Erro ao selecionar o usuário", "error");
+      });
   };
   useEffect(() => {
-    if (id !== undefined) {
-      getUser(id);
-    }
+      getUser();
   }, []);
 
   function handleSubmit(event) {
@@ -84,6 +85,10 @@ function NewUser() {
       insertUser();
     }
   }
+
+  const handleChange = (event) => {
+    setTypeUser(event.target.value);
+  };
 
   return (
     <div className="content">
@@ -147,11 +152,10 @@ function NewUser() {
                         label="Tipo de usuário"
                         value={typeUser}
                         className="col-md-12"
-                        onChange={({ target }) => setTypeUser(target.value)}
-  
+                        onChange={handleChange}
                       >
                         {usersType.map((userType) => (
-                          <MenuItem key={userType.id} value={userType.type_user}>
+                          <MenuItem key={userType.id} value={userType.type_user} >
                             {userType.type_user}
                           </MenuItem>
                         ))}
