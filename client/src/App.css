@@ -1,5 +1,12 @@
   
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+.position-relative{
+  position: relative !important;
+}
+
+.position-absolute{
+  position:absolute !important;
+}
 
 * {
   box-sizing: border-box;
@@ -8,11 +15,8 @@
   font-family: 'Lato', sans-serif;
 }
 
-.home,
-.reports,
+.dashboard,
 .products {
-  display: flex;
-  height: 90vh;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
