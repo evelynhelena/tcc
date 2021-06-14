@@ -8,6 +8,7 @@ import { IconContext } from "react-icons";
 import { Dropdown } from "react-bootstrap";
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
+import { ptBR } from "date-fns/locale";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -23,6 +24,10 @@ function Navbar() {
     setSelectedDate(date);
   };
 
+  let localize = {
+    ptBR
+  }
+
   return (
     <>
       <div className="Warrper-nav">
@@ -31,7 +36,7 @@ function Navbar() {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
           <div className="d-flex">
-          <MuiPickersUtilsProvider utils={DateFnsUtils} className="mt-0">
+          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ptBR} className="mt-0">
             <Grid container justify="space-around">
               <KeyboardDatePicker
               margin="normal"
