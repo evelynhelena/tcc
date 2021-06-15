@@ -17,7 +17,7 @@ export const SidebarData = [
   },
   {
     title: 'Produto',
-    path: '/product',
+    path: '/Produto',
     icon: <FaIcons.FaCartPlus />,
     cName: 'nav-text'
   },

@@ -4,7 +4,7 @@ import Navbar from './components/NavBar/Navbar';
 import Dashboard from './views/dashboard/Dashboard';
 import ListUser from './views/user/ListUser';
 import NewUser from './views/user/NewUser';
-import Product from './views/product/Product';
+import Produto from "./views/Produto/Produto";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -14,11 +14,11 @@ function App() {
         <Navbar />
         <Switch>
           <Route path='/' exact component={Dashboard} />
+          <Route path='/Produto' exact component={Produto} />
           <UserProvider>
             <Route path='/Listuser' component={ListUser} />
             <Route path='/NewUser/:id' component={NewUser} />
           </UserProvider>
-          <Route path='/product' component={Product} />
         </Switch>
       </Router>
   );
