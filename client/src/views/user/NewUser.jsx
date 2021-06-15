@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Form, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Card, Button,Image } from "react-bootstrap";
+import ButtonMaterial from '@material-ui/core/Button';
 import { useParams } from "react-router-dom";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from '@material-ui/core/MenuItem';
+import imgUser from "../../img/ada.jpg";
+import "./User.css";
 
 function NewUser() {
   const [usersType, setUsersType] = useState([]);
@@ -94,7 +97,7 @@ function NewUser() {
     <div className="content">
       <Container>
         <Row>
-          <Col xs={12} md={12}>
+          <Col  md={8}>
             <Card>
               <Card.Header>
                 <Card.Title>
@@ -176,13 +179,29 @@ function NewUser() {
             </Card>
           </Col>
 
-          {/*<Col xs={4} md={4}>
+          <Col md={4}>
             <Card>
-              <Card.Body>
-
+              <Card.Body className="text-center">
+                <Image className="img_avatar" src={imgUser} roundedCircle ></Image>
+                <Card.Title className="mt-3 title-card-avatar">{userName === "" ? "Usuário" : userName}</Card.Title>
+                <Card.Text>
+                {name === "" ? "Nome Completo" : name}
+              </Card.Text>
               </Card.Body>
+              <Card.Footer className="text-center p-2">
+              <input
+                accept="image/*"
+                className="input-file mb-0"
+                id="contained-button-file"
+                multiple
+                type="file"
+              />
+              <label className="label-upload" htmlFor="contained-button-file">
+                <ButtonMaterial className="btn-upload" variant="outlined" component="span" color="primary">Upload Foto</ButtonMaterial>
+              </label>
+            </Card.Footer>
             </Card>
-          </Col>*/}
+          </Col>
         </Row>
       </Container>
     </div>
