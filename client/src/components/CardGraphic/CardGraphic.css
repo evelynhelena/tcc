@@ -1,0 +1,42 @@
+.card-graphic-orange{
+    background: linear-gradient(60deg, #ffa726, #fb8c00);
+}
+
+.card-graphic-green{
+    background: linear-gradient(60deg, #66bb6a, #43a047);
+}
+
+.card-graphic-red{
+    background: linear-gradient(60deg, #ef5350, #e53935);
+}
+.card-graphic-blue{
+    background: linear-gradient(60deg, #26c6da, #00acc1);
+}
+
+.card-grafic{
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: -35px;
+}
+
+.card-graphic-text{
+    font-size:17px
+}
+
+.card-graphic-text-small{
+    font-size:15px;
+    color: #555;
+}
+
+.card-graphic-text-small-positivo span{
+    color: #4caf50;
+}
+
+.card-graphic-text-small-negativo span{
+    color: #ac2a31;
+}
+
+.card-graphic-text-realy-small{
+    font-size:13px;
+    color: #666;
+}

@@ -1,0 +1,17 @@
+
+.wrapper-user .dropdown-item{
+    background-color: #9229ad !important;
+    color: #fff !important;
+    border-radius: 2px;
+  }
+
+  .wrapper-user a.edit{
+    background-color: #00838f  !important;
+  }
+  .wrapper-user a.delete{
+    background-color: #f44336 !important;
+  }
+
+  .MuiFormLabel-root.Mui-focused{
+    color:#9229ad;
+  }

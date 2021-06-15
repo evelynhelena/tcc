@@ -1,10 +1,17 @@
-import React, { useState,useEffect } from "react";
-import { Container, Row, Col, Form,Card,Button } from "react-bootstrap";
-import * as FaIcons from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Form, Card, Button,Image } from "react-bootstrap";
+import ButtonMaterial from '@material-ui/core/Button';
+import { useParams } from "react-router-dom";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
+import TextField from "@material-ui/core/TextField";
+import MenuItem from '@material-ui/core/MenuItem';
+import imgUser from "../../img/ada.jpg";
+import "./User.css";
+
 function NewUser() {
   const [usersType, setUsersType] = useState([]);
+  const [user, setUser] = useState([]);
 
   //values input
   const [name, setName] = useState("");
@@ -12,6 +19,8 @@ function NewUser() {
   const [userName, setUserName] = useState("");
   const [celPhone, setCelPhone] = useState("");
   const [typeUser, setTypeUser] = useState("");
+
+  const { id } = useParams();
   //</variable>
 
   //<functions>
@@ -25,6 +34,23 @@ function NewUser() {
   };
   useEffect(() => {
     getUsersType();
+  }, []);
+
+  const getUser = async () => {
+      await api.get("http://localhost:3000/users/" + id).then(function ({data}) {
+        if (data.length > 0) {
+          setName(data[0].name);
+          setLastName(data[0].last_name);
+          setUserName(data[0].user_name);
+          //setTypeUser(data[0].fk_user_name);
+          setCelPhone(data[0].phone);
+        };
+      },function(){
+        swal("Erro", "Erro ao selecionar o usuário", "error");
+      });
+  };
+  useEffect(() => {
+      getUser();
   }, []);
 
   function handleSubmit(event) {
@@ -56,18 +82,22 @@ function NewUser() {
             }
           }
         } catch (err) {
-          swal("Erro", "Erro ao enviar ao servidor", "error");
+          swal("Erro", "Erro ao enviar inserir o usuário", "error");
         }
       };
       insertUser();
     }
   }
 
+  const handleChange = (event) => {
+    setTypeUser(event.target.value);
+  };
+
   return (
     <div className="content">
       <Container>
         <Row>
-          <Col xs={12} md={12}>
+          <Col  md={8}>
             <Card>
               <Card.Header>
                 <Card.Title>
@@ -75,88 +105,103 @@ function NewUser() {
                 </Card.Title>
               </Card.Header>
               <Card.Body>
-                <Form>
+                <form noValidate autoComplete="off">
                   <Row>
                     <Col xs={6} md={6}>
-                      <Form.Group controlId="name">
-                        <Form.Label>Nome</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Nome"
-                          value={name}
-                          onChange={({ target }) => setName(target.value)}
-                        />
-                      </Form.Group>
+                      <TextField
+                        id="name"
+                        label="Nome"
+                        value={name}
+                        className="col-md-12"
+                        onChange={({ target }) => setName(target.value)}
+                      />
                     </Col>
-
                     <Col xs={6} md={6}>
-                      <Form.Group controlId="lastName">
-                        <Form.Label>Sobrenome</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Sobrenome"
-                          value={lastName}
-                          onChange={({ target }) => setLastName(target.value)}
-                        />
-                      </Form.Group>
+                      <TextField
+                        id="lastName"
+                        label="Sobrenome"
+                        value={lastName}
+                        className="col-md-12"
+                        onChange={({ target }) => setLastName(target.value)}
+                      />
                     </Col>
                   </Row>
 
-                  <Row>
+                  <Row className="mt-4">
                     <Col xs={6} md={6}>
-                      <Form.Group controlId="userName">
-                        <Form.Label>Nome de Usuário</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Nome"
-                          value={userName}
-                          onChange={({ target }) => setUserName(target.value)}
-                        />
-                      </Form.Group>
+                      <TextField
+                        id="userName"
+                        label="Nome de Usuário"
+                        value={userName}
+                        className="col-md-12"
+                        onChange={({ target }) => setUserName(target.value)}
+                      />
                     </Col>
-
                     <Col xs={6} md={6}>
-                      <Form.Group controlId="phone">
-                        <Form.Label>Celular</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Celular"
-                          value={celPhone}
-                          onChange={({ target }) => setCelPhone(target.value)}
-                        />
-                      </Form.Group>
+                      <TextField
+                        id="phone"
+                        label="Celular"
+                        value={celPhone}
+                        className="col-md-12"
+                        onChange={({ target }) => setCelPhone(target.value)}
+                      />
                     </Col>
                   </Row>
-                  <Form.Group controlId="example.Form.ControlSelect1">
-                    <Form.Label>Tipo de Usuário</Form.Label>
-                    <Form.Control
-                      as="select"
-                      value={typeUser}
-                      onChange={({ target }) => setTypeUser(target.value)}
-                    >
-                      <option>Selecionar</option>
-                      {usersType.map((userType) => (
-                        <option key={userType.id}>{userType.type_user}</option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                </Form>
+                  <Row className="mt-4">
+                  <Col xs={12} md={12}>
+                    <TextField
+                        id="userType"
+                        select
+                        label="Tipo de usuário"
+                        value={typeUser}
+                        className="col-md-12"
+                        onChange={handleChange}
+                      >
+                        {usersType.map((userType) => (
+                          <MenuItem key={userType.id} value={userType.type_user} >
+                            {userType.type_user}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                  </Col>
+                  </Row>
+                </form>
               </Card.Body>
               <Card.Footer>
-                <Button variant="info" className="float-right" onClick={handleSubmit}>
+                <Button
+                  variant="info"
+                  className="float-right"
+                  onClick={handleSubmit}
+                >
                   Salvar
                 </Button>
               </Card.Footer>
             </Card>
           </Col>
 
-          {/*<Col xs={4} md={4}>
+          <Col md={4}>
             <Card>
-              <Card.Body>
-
+              <Card.Body className="text-center">
+                <Image className="img_avatar" src={imgUser} roundedCircle ></Image>
+                <Card.Title className="mt-3 title-card-avatar">{userName === "" ? "Usuário" : userName}</Card.Title>
+                <Card.Text>
+                {name === "" ? "Nome Completo" : name}
+              </Card.Text>
               </Card.Body>
+              <Card.Footer className="text-center p-2">
+              <input
+                accept="image/*"
+                className="input-file mb-0"
+                id="contained-button-file"
+                multiple
+                type="file"
+              />
+              <label className="label-upload" htmlFor="contained-button-file">
+                <ButtonMaterial className="btn-upload" variant="outlined" component="span" color="primary">Upload Foto</ButtonMaterial>
+              </label>
+            </Card.Footer>
             </Card>
-          </Col>*/}
+          </Col>
         </Row>
       </Container>
     </div>

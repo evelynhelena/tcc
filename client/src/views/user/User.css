@@ -1,0 +1,18 @@
+.btn-upload{
+    border: none !important;
+    width: 100% !important;
+}
+.label-upload{
+    width: 100% !important;
+}
+.input-file{
+    display: none;
+}
+
+.img_avatar{
+    width: 40%;
+}
+
+.title-card-avatar{
+    color: #888 !important;
+}

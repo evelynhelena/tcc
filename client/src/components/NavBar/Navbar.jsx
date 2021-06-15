@@ -6,11 +6,27 @@ import { SidebarData } from "./SidebarData";
 import "./Navbar.css";
 import { IconContext } from "react-icons";
 import { Dropdown } from "react-bootstrap";
+import Grid from '@material-ui/core/Grid';
+import DateFnsUtils from '@date-io/date-fns';
+import { ptBR } from "date-fns/locale";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
 
   const showSidebar = () => setSidebar(!sidebar);
+  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+  let localize = {
+    ptBR
+  }
 
   return (
     <>
@@ -20,6 +36,22 @@ function Navbar() {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
           <div className="d-flex">
+          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ptBR} className="mt-0">
+            <Grid container justify="space-around">
+              <KeyboardDatePicker
+              margin="normal"
+              id="date-picker-dialog"
+              format="MM/dd/yyyy"
+              value={selectedDate}
+              onChange={handleDateChange}
+              className="mt-0 pr-3"
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+          </Grid>
+           
+          </MuiPickersUtilsProvider>
             <Dropdown className="pr-3">
               <Dropdown.Toggle className="button-header" id="dropdown-basic">
                 <div className='circle-alert'><span>3</span></div>

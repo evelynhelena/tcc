@@ -1,13 +1,49 @@
 import React, { useContext } from "react";
+import DataTable from "react-data-table-component";
 import UserContext from "../../contexts/user";
-import * as bootstrap from "react-bootstrap";
+import { Button, Container, Row, Col } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import "../../css/User.css";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
-import ModalInsertUser from "../modais/UserInsert";
-import { Router, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 function User() {
+  const columns = [
+    {
+      name: "ID",
+      selector: "id",
+      sortable: true,
+    },
+    {
+      name: "Nome",
+      selector: "name",
+      sortable: true,
+    },
+    {
+      name: "Telefone",
+      selector: "phone",
+      sortable: true,
+    },
+    {
+      name: "Ações",
+      cell: (data) => (
+        <div className="pl-0">
+        <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
+          <Link as={Link} to={"/NewUser/" + data.id}>
+            <EditIcon />
+          </Link>
+        </IconButton>
+        <IconButton className="p-1" onClick={() => deleteUser(data.id)} color="secondary" aria-label="delete">
+          <DeleteIcon />
+        </IconButton>
+      </div>
+      ),
+    },
+  ];
+
   const { users } = useContext(UserContext);
   const deleteUser = function (id) {
     swal({
@@ -46,10 +82,10 @@ function User() {
           <p>Carregando...</p>
         </>
       ) : (
-        <div className="content">
-          <bootstrap.Container>
-            <bootstrap.Row>
-              <bootstrap.Col xs={12} md={12}>
+        <div className="content wrapper-user">
+          <Container>
+            <Row>
+              <Col xs={12} md={12}>
                 <div className="card">
                   <div className="card-header">
                     <div className="card-title">
@@ -61,47 +97,23 @@ function User() {
                     </div>
                   </div>
                   <div className="card-body">
-                    <bootstrap.Table responsive="md" className="text-center">
-                      <thead>
-                        <tr>
-                          <th>Id</th>
-                          <th>Nome</th>
-                          <th>Nome de Usuário</th>
-                          <th>Telefone</th>
-                          <th>Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((user) => (
-                          <tr key={user.id}>
-                            <td>{user.id}</td>
-                            <td>{user.name}</td>
-                            <td>{user.name}</td>
-                            <td>{user.phone}</td>
-                            <td>
-                              <button className="btn btn-table edit">
-                                <FaIcons.FaPencilAlt />
-                              </button>
-                              <button
-                                onClick={() => deleteUser(user.id)}
-                                className="btn btn-table delete btn-danger"
-                              >
-                                <FaIcons.FaBan />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </bootstrap.Table>
+                    <DataTable
+                      title="Usuários"
+                      columns={columns}
+                      data={users}
+                      defaultSortFieldId={1}
+                      sortIcon={<FaIcons.FaAngleUp />}
+                      pagination
+                    />
                   </div>
                 </div>
-              </bootstrap.Col>
-            </bootstrap.Row>
-          </bootstrap.Container>
-          <Link to={"/NewUser"}>
-            <bootstrap.Button variant="primary" className="btn-plus edit">
+              </Col>
+            </Row>
+          </Container>
+          <Link to={"/NewUser/-1"}>
+            <Button variant="primary" className="btn-plus edit">
               <FaIcons.FaPlus />
-            </bootstrap.Button>
+            </Button>
           </Link>
         </div>
       )}
