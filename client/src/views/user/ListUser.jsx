@@ -28,11 +28,16 @@ function User() {
       sortable: true,
     },
     {
+      name: "Tipo de Usuário",
+      selector: "type_user",
+      sortable: true,
+    },
+    {
       name: "Ações",
       cell: (data) => (
         <div className="pl-0">
         <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
-          <Link as={Link} to={"/NewUser/" + data.id}>
+          <Link as={Link} to={"/EditUser/" + data.id}>
             <EditIcon />
           </Link>
         </IconButton>
@@ -110,7 +115,7 @@ function User() {
               </Col>
             </Row>
           </Container>
-          <Link to={"/NewUser/-1"}>
+          <Link to={"/NewUser"}>
             <Button variant="primary" className="btn-plus edit">
               <FaIcons.FaPlus />
             </Button>
