@@ -14,7 +14,9 @@ module.exports = {
   findAll(req, res) {
     const connection = bdConnect();
     connection.query(
-      "select * from tbl_users tu join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.ind_cance=0",
+      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name ," +
+      "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.ind_cance=0 order by tu.id asc",
+
       function (error, results, fields) {
         if (error) {
           return res.status(404).send({
@@ -44,7 +46,10 @@ module.exports = {
     const id = req.params.id;
 
     connection.query(
-      "select * from tbl_users tu join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.id='" + id + "' and tu.ind_cance=0",
+      
+      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name ," +
+      "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.id='" + id + "' and tu.ind_cance=0",
+
       function (error, results) {
         if (error) {
           return res.status(404).send({

@@ -59,7 +59,15 @@ function NewUser() {
   };
   useEffect(() => {
     getUser();
-  }, );
+  }, []);
+
+  const resetaCampos = () => {
+    setName("");
+    setLastName("");
+    setUserName("");
+    setTypeUser("");
+    setCelPhone("");
+  }
 
   const insertUser = async (newUser) => {
     try {
@@ -69,6 +77,7 @@ function NewUser() {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
         } else {
           swal("Sucesso", "Usuário inserido com sucesso", "success");
+          resetaCampos();
         }
       }
     } catch (err) {
@@ -140,7 +149,7 @@ function NewUser() {
             <Card>
               <Card.Header>
                 <Card.Title>
-                  <h4>Novo Usuários</h4>
+                  <h4>{id ? "Editando o " : "Novo"} Usuário {id ? " - " + id : ""}</h4>
                 </Card.Title>
               </Card.Header>
               <Card.Body>
