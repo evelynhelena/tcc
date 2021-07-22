@@ -62,7 +62,6 @@ function User() {
     getUsers();
   }, []);
 
-  //const { users } = useContext(UserContext);
   const deleteUser = function (id) {
     swal({
       title: "Confermar Alteração !",
