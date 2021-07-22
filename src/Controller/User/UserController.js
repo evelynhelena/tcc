@@ -14,7 +14,9 @@ module.exports = {
   findAll(req, res) {
     const connection = bdConnect();
     connection.query(
-      "select * from tbl_users where ind_cance=0",
+      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name ," +
+      "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.ind_cance=0 order by tu.id asc",
+
       function (error, results, fields) {
         if (error) {
           return res.status(404).send({
@@ -44,7 +46,10 @@ module.exports = {
     const id = req.params.id;
 
     connection.query(
-      "select * from tbl_users where id='" + id + "' and ind_cance=0",
+      
+      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name ," +
+      "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.id='" + id + "' and tu.ind_cance=0",
+
       function (error, results) {
         if (error) {
           return res.status(404).send({
@@ -144,11 +149,12 @@ module.exports = {
     const connection = bdConnect();
     const id = req.params.id;
     let userName;
-    fields = [
+    let fields = [
       req.body.name,
       req.body.user_name,
       req.body.last_name,
       req.body.phone,
+      req.body.user_type,
       date,
       "0",
     ];
@@ -169,7 +175,7 @@ module.exports = {
         userName = results;
         if (userName.length == 0) {
           connection.query(
-            "update tbl_users set name = ?, user_name = ? , last_name = ?, phone = ?, last_update = ?, ind_cance = ? where id ='" +
+            "update tbl_users set name = ?, user_name = ? , last_name = ?, phone = ?, fk_user_name = ? , last_update = ?, ind_cance = ? where id ='" +
               id +
               "'",
             fields,

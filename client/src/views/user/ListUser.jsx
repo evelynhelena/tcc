@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import UserContext from "../../contexts/user";
 import { Button, Container, Row, Col } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import "../../css/User.css";
@@ -11,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 function User() {
+  const [users, setUsers] = useState([]);
   const columns = [
     {
       name: "ID",
@@ -28,11 +28,16 @@ function User() {
       sortable: true,
     },
     {
+      name: "Tipo de Usuário",
+      selector: "type_user",
+      sortable: true,
+    },
+    {
       name: "Ações",
       cell: (data) => (
         <div className="pl-0">
         <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
-          <Link as={Link} to={"/NewUser/" + data.id}>
+          <Link as={Link} to={"/EditUser/" + data.id}>
             <EditIcon />
           </Link>
         </IconButton>
@@ -44,7 +49,20 @@ function User() {
     },
   ];
 
-  const { users } = useContext(UserContext);
+  const getUsers = async () => {
+    try {
+      const { data } = await api.get("http://localhost:3000/users");
+      if (data) setUsers(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  //const { users } = useContext(UserContext);
   const deleteUser = function (id) {
     swal({
       title: "Confermar Alteração !",
@@ -61,11 +79,11 @@ function User() {
             if (data.msg) {
               swal("Usuário deletado com sucesso", {
                 icon: "success",
-              }).then(() => window.location.reload());
+              }).then(() => getUsers());
             } else if (data.error.status === 500) {
               swal("Usuário não cadastrado", {
                 icon: "error",
-              }).then(() => window.location.reload());
+              }).then(() => getUsers());
             } else {
               swal("Erro ao deletar o usuário", {
                 icon: "error",
@@ -110,7 +128,7 @@ function User() {
               </Col>
             </Row>
           </Container>
-          <Link to={"/NewUser/-1"}>
+          <Link to={"/NewUser"}>
             <Button variant="primary" className="btn-plus edit">
               <FaIcons.FaPlus />
             </Button>
