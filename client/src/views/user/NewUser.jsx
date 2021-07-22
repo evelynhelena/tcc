@@ -14,6 +14,7 @@ import api from "../../services/Api";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import imgUser from "../../img/ada.jpg";
+import InputMask from 'react-input-mask';
 import "./User.css";
 
 function NewUser() {
@@ -186,13 +187,20 @@ function NewUser() {
                       />
                     </Col>
                     <Col xs={6} md={6}>
-                      <TextField
-                        id="phone"
-                        label="Celular"
-                        value={celPhone}
-                        className="col-md-12"
-                        onChange={({ target }) => setCelPhone(target.value)}
-                      />
+                        <InputMask
+                          mask="(99)99999-9999"
+                          value={celPhone}
+                          onChange={({ target }) => setCelPhone(target.value)}
+                        >
+                          {() => 
+                          <TextField
+                              id="phone"
+                              label="Celular"
+                              value={celPhone}
+                              className="col-md-12"
+                            />}
+                      </InputMask>
+                
                     </Col>
                   </Row>
                   <Row className="mt-4">
