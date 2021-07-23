@@ -2,6 +2,7 @@ const express = require("express");
 const routes = express.Router();
 const UserController = require("./Controller/User/UserController");
 import ProdController from './Controller/Products/ProdController'
+import Dashboard from './Controller/Dashboard/Dashboard';
 
 routes.get("/", (req, res) => {
   res.send("Teste");
@@ -21,5 +22,8 @@ routes.post("/insert", UserController.insert);
 routes.get("/users/:id", UserController.findById);
 routes.put("/users/:id", UserController.update);
 routes.delete("/users/:id", UserController.delete);
+
+// Rotas Dashboard
+routes.get("/countAllUsers", Dashboard.countAllUsers);
 
 module.exports = routes;

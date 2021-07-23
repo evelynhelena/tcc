@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState,useEffect} from "react";
 import CardDashboard from "../../components/CardDashboard/CardDashboard";
 import { Container, Row, Col } from "react-bootstrap";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
@@ -9,17 +9,34 @@ import CardGraphic from "../../components/CardGraphic/CardGraphic";
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import api from "../../services/Api";
+import swal from "@sweetalert/with-react";
 import "./Dashboard.css";
 function Home() {
+
+  const [countUser,setCountUser] = useState([]);
+  const getCountUsers = async () => {
+    try {
+      const { data } = await api.get("http://localhost:3000/countAllUsers");
+      if (data) setCountUser(data);
+    } catch (err) {
+      swal("Erro", "Erro ao carregar os usuários cadastrados", "error");
+    }
+  };
+  useEffect(() => {
+    getCountUsers();
+  }, []);
+
   return (
     <div className="dashboard mt-4">
       <Container>
+      {console.log(countUser)}
         <Row>
           <Col md={3} className="mb-5">
             <div className="position-relative">
               <CardDashboard
                 title="Usuários Cadastrados"
-                info="50"
+                info={countUser.totalUser}
                 color="card-orange"
                 icon={<SupervisorAccountIcon className="icon-card" />}
               ></CardDashboard>
