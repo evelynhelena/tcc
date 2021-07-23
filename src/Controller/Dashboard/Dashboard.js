@@ -13,7 +13,7 @@ module.exports = {
     countAllUsers(req, res){
         const connection = bdConnect();
         connection.query(
-            'select count(id) as TotalUser FROM tbl_users',
+            'select count(id) as TotalUser FROM tbl_users where ind_cance=0',
             function (error, results, fields) {
                 if (error) {
                   return res.status(404).send({

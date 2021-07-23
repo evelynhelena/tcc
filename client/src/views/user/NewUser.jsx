@@ -35,7 +35,7 @@ function NewUser() {
       const { data } = await api.get("http://localhost:3000/findUserType");
       if (data) setUsersType(data);
     } catch (err) {
-      console.log(err);
+      swal("Erro", "Erro ao selecionar os tipos de usuários", "error");
     }
   };
   useEffect(() => {
@@ -156,7 +156,7 @@ function NewUser() {
               <Card.Body>
                 <form noValidate autoComplete="off">
                   <Row>
-                    <Col xs={6} md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         id="name"
                         label="Nome"
@@ -165,7 +165,7 @@ function NewUser() {
                         onChange={({ target }) => setName(target.value)}
                       />
                     </Col>
-                    <Col xs={6} md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         id="lastName"
                         label="Sobrenome"
@@ -177,7 +177,7 @@ function NewUser() {
                   </Row>
 
                   <Row className="mt-4">
-                    <Col xs={6} md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         id="userName"
                         label="Nome de Usuário"
@@ -186,7 +186,7 @@ function NewUser() {
                         onChange={({ target }) => setUserName(target.value)}
                       />
                     </Col>
-                    <Col xs={6} md={6}>
+                    <Col xs={12} md={6}>
                         <InputMask
                           mask="(99)99999-9999"
                           value={celPhone}
