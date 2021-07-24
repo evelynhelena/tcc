@@ -78,11 +78,13 @@ function User() {
             if (data.msg) {
               swal("Usuário deletado com sucesso", {
                 icon: "success",
-              }).then(() => getUsers());
+              });
+              getUsers();
             } else if (data.error.status === 500) {
               swal("Usuário não cadastrado", {
                 icon: "error",
-              }).then(() => getUsers());
+              })
+              getUsers();
             } else {
               swal("Erro ao deletar o usuário", {
                 icon: "error",
