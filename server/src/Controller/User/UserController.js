@@ -24,7 +24,7 @@ module.exports = {
     connection.query(
 
       "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name , tu.email,"+
-      "tu.cpf, tu.endereco, tu.cidade, tu.cep, tu.numero, tu.uf,tu.bairro, tu.url_foto_perfil,"+
+      "tu.cpf, tu.endereco, tu.cidade, tu.cep, tu.numero, tu.uf,tu.bairro, tu.url_foto_perfil,tu.senha,"+
       "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.ind_cance=0 order by tu.id asc",
 
       function (error, results, fields) {
@@ -57,7 +57,7 @@ module.exports = {
 
     connection.query(
       "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name , tu.email,"+
-      "tu.cpf, tu.endereco, tu.cidade, tu.cep, tu.numero, tu.uf,tu.bairro, tu.url_foto_perfil,"+
+      "tu.cpf, tu.endereco, tu.cidade, tu.cep, tu.numero, tu.uf,tu.bairro, tu.url_foto_perfil, tu.senha,"+
       "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.id='" + id + "' and tu.ind_cance=0",
 
       function (error, results) {
@@ -94,7 +94,8 @@ module.exports = {
       req.body.numero,
       req.body.uf,
       req.body.bairro,
-      req.body.imagem
+      req.body.imagem,
+      req.body.senha
     ];
   
 
@@ -117,7 +118,7 @@ module.exports = {
             });
           }else {
                 connection.query(
-                  "insert into tbl_users values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
+                  "insert into tbl_users values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                   fields,
                   function (error, results) {
                     if (error) {
@@ -166,6 +167,7 @@ module.exports = {
       req.body.uf,
       req.body.bairro,
       req.body.imagem,
+      req.body.senha,
       date,
       "0",
     ];
@@ -195,7 +197,7 @@ module.exports = {
             connection.query(
               "update tbl_users set name = ?, user_name = ? , last_name = ?, phone = ?, fk_user_name = ?," +
               "email = ?, cpf = ?, endereco = ?, cidade = ?, cep = ?, numero = ?, uf = ?, bairro = ?," +
-              "url_foto_perfil = ? , last_update = ?, ind_cance = ? where id ='" +
+              "url_foto_perfil = ? , senha = ?, last_update = ?, ind_cance = ? where id ='" +
                 id +
                 "'",
               fields,

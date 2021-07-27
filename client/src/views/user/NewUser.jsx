@@ -16,15 +16,30 @@ import MenuItem from "@material-ui/core/MenuItem";
 import imgUser from "../../img/ada.jpg";
 import InputMask from 'react-input-mask';
 import "./User.css";
+import Subtitle from "../../components/Subtitle/Subtitle";
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Input from '@material-ui/core/Input';
 
 function NewUser() {
   const [usersType, setUsersType] = useState([]);
   //values input
+  //Dados Pessoais
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [cpf, setCpf] = useState("");
   const [celPhone, setCelPhone] = useState("");
   const [typeUser, setTypeUser] = useState("");
+
+  //Enderoço
+  const [endereco, setEndereco] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [cep, setCep] = useState("");
+  const [numero, setNumero] = useState("");
+  const [uf, setUf] = useState("");
+  const [bairro, setBairro] = useState("");
+
 
   const { id } = useParams();
   //</variable>
@@ -154,9 +169,10 @@ function NewUser() {
                 </Card.Title>
               </Card.Header>
               <Card.Body>
+              <Subtitle title="Dados de Login"></Subtitle>
                 <form noValidate autoComplete="off">
                   <Row>
-                    <Col xs={12} md={6}>
+                    <Col xs={12} md={4}>
                       <TextField
                         id="name"
                         label="Nome"
@@ -165,7 +181,7 @@ function NewUser() {
                         onChange={({ target }) => setName(target.value)}
                       />
                     </Col>
-                    <Col xs={12} md={6}>
+                    <Col xs={12} md={4}>
                       <TextField
                         id="lastName"
                         label="Sobrenome"
@@ -174,16 +190,26 @@ function NewUser() {
                         onChange={({ target }) => setLastName(target.value)}
                       />
                     </Col>
-                  </Row>
-
-                  <Row className="mt-4">
-                    <Col xs={12} md={6}>
+                    <Col xs={12} md={4}>
                       <TextField
                         id="userName"
                         label="Nome de Usuário"
                         value={userName}
                         className="col-md-12"
                         onChange={({ target }) => setUserName(target.value)}
+                      />
+                    </Col>
+                  </Row>
+
+                  <Row className="mt-4">
+                  <Col xs={12} md={6}>
+                      <TextField
+                        id="email"
+                        label="E-mail"
+                        type="email"
+                        value={email}
+                        className="col-md-12"
+                        onChange={({ target }) => setEmail(target.value)}
                       />
                     </Col>
                     <Col xs={12} md={6}>
@@ -200,11 +226,10 @@ function NewUser() {
                               className="col-md-12"
                             />}
                       </InputMask>
-                
                     </Col>
                   </Row>
-                  <Row className="mt-4">
-                    <Col xs={12} md={12}>
+                  <Row className="mt-4 mb-4">
+                    <Col xs={12} md={6}>
                       <TextField
                         id="userType"
                         select
@@ -223,6 +248,43 @@ function NewUser() {
                         ))}
                       </TextField>
                     </Col>
+                    <Col xs={12} md={6}>
+                        <InputMask
+                          mask="999.999.999-99"
+                          value={cpf}
+                          onChange={({ target }) => setCpf(target.value)}
+                        >
+                          {() => 
+                          <TextField
+                              id="cpf"
+                              label="CPF"
+                              value={cpf}
+                              className="col-md-12"
+                            />}
+                      </InputMask>
+                
+                    </Col>
+
+                    {/*const [endereco, setEndereco] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [cep, setCep] = useState("");
+  const [numero, setNumero] = useState("");
+  const [uf, setUf] = useState("");
+  const [bairro, setBairro] = useState("");*/}
+
+                  </Row>
+                    <Subtitle title="Dados de Endereço"></Subtitle>
+                    <Col xs={12} md={4}>
+                      <Input
+                        id="cep"
+                        label="CEP"
+                        value={cep}
+                        className="col-md-12"
+                        endAdornment={<InputAdornment position="end">Kg</InputAdornment>}
+                        onChange={({ target }) => setCep(target.value)}
+                      />
+                    </Col>
+                  <Row>
                   </Row>
                 </form>
               </Card.Body>

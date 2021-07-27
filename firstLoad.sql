@@ -97,6 +97,13 @@ bairro varchar(255) NOT NULL;
 ALTER TABLE tbl_users ADD 
 url_foto_perfil text;
 
+ALTER TABLE tbl_users ADD 
+senha varchar(255);
+
+ALTER TABLE tbl_users
+add ssenha varchar(255) not null;
+
+
 
 
 
