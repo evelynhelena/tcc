@@ -10,11 +10,21 @@ const bdConnect = () => {
   });
 };
 
+const verifyRequest = (obj) => {
+  for (var [key, value] of Object.entries(obj)) {
+    if(!value || null === value || undefined === value)
+    return false;
+  }
+  return true;
+}
+
 module.exports = {
   findAll(req, res) {
     const connection = bdConnect();
     connection.query(
-      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name ," +
+
+      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name , tu.email,"+
+      "tu.cpf, tu.endereco, tu.cidade, tu.cep, tu.numero, tu.uf,tu.bairro, tu.url_foto_perfil,"+
       "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.ind_cance=0 order by tu.id asc",
 
       function (error, results, fields) {
@@ -46,8 +56,8 @@ module.exports = {
     const id = req.params.id;
 
     connection.query(
-      
-      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name ," +
+      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name , tu.email,"+
+      "tu.cpf, tu.endereco, tu.cidade, tu.cep, tu.numero, tu.uf,tu.bairro, tu.url_foto_perfil,"+
       "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.id='" + id + "' and tu.ind_cance=0",
 
       function (error, results) {
@@ -76,7 +86,17 @@ module.exports = {
       "0",
       date,
       req.body.user_type,
+      req.body.email,
+      req.body.cpf,
+      req.body.endereco,
+      req.body.cidade,
+      req.body.cep,
+      req.body.numero,
+      req.body.uf,
+      req.body.bairro,
+      req.body.imagem
     ];
+  
 
     connection.query(
       "select * from tbl_users where user_name='" + req.body.user_name + "'",
@@ -89,59 +109,41 @@ module.exports = {
         }
         userName = results;
         if (userName.length == 0) {
-          if (
-            !req.body.name ||
-            req.body.name === null ||
-            req.body.name === undefined
-          )
-            return res
-              .status(404)
-              .send({ error: { msg: "O campo nome é inválido" } });
-          else if (
-            !req.body.last_name ||
-            req.body.last_name === null ||
-            req.body.last_name === undefined
-          )
-            return res
-              .status(404)
-              .send({ error: { msg: "O campo de sobrenome é inválido" } });
-          else if (
-            !req.body.phone ||
-            req.body.phone === null ||
-            req.body.phone === undefined
-          )
-            return res
-              .status(404)
-              .send({ error: { msg: "O campo de telefone é inválido" } });
-          else {
-            connection.query(
-              "insert into tbl_users values (?, ?, ?, ?, ?, ?, ?, ?)",
-              fields,
-              function (error, results) {
-                if (error) {
-                  return res.status(404).send({
-                    error: {
-                      msg: "Erro ao tentar inserir os dados no banco de dados",
-                      error,
-                    },
-                  });
-                }
-                return res.send({
-                  ...req.body,
-                  id: results.insertId,
-                });
+          if(!verifyRequest(req.body)){
+            return res.status(400).send({
+              error: {
+                msg: "Dados Vazios não são permitidos",
+              },
+            });
+          }else {
+                connection.query(
+                  "insert into tbl_users values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)",
+                  fields,
+                  function (error, results) {
+                    if (error) {
+                      return res.status(404).send({
+                        error: {
+                          msg: "Erro ao tentar inserir os dados no banco de dados",
+                          error,
+                        },
+                      });
+                    }
+                    return res.send({
+                      ...req.body,
+                      id: results.insertId,
+                    });
+                  }
+                );
               }
-            );
+            } else {
+              return res.send({
+                error: { 
+                  erro: 400,
+                  msg: "Nome de usuário ja cadastrado no sistéma"
+                },
+              });
+            }
           }
-        } else {
-          return res.send({
-            error: { 
-              erro: 400,
-              msg: "Nome de usuário ja cadastrado no sistéma"
-            },
-          });
-        }
-      }
     );
   },
 
@@ -155,6 +157,15 @@ module.exports = {
       req.body.last_name,
       req.body.phone,
       req.body.user_type,
+      req.body.email,
+      req.body.cpf,
+      req.body.endereco,
+      req.body.cidade,
+      req.body.cep,
+      req.body.numero,
+      req.body.uf,
+      req.body.bairro,
+      req.body.imagem,
       date,
       "0",
     ];
@@ -174,26 +185,36 @@ module.exports = {
         }
         userName = results;
         if (userName.length == 0) {
-          connection.query(
-            "update tbl_users set name = ?, user_name = ? , last_name = ?, phone = ?, fk_user_name = ? , last_update = ?, ind_cance = ? where id ='" +
-              id +
-              "'",
-            fields,
-            function (error, results) {
-              if (error) {
-                return res.status(404).send({
-                  error: {
-                    msg: "Erro ao tentar alterar o usuario",
-                    error,
-                  },
+          if(!verifyRequest(req.body)){
+            return res.status(400).send({
+              error: {
+                msg: "Dados Vazios não são permitidos",
+              },
+            });
+          }else{
+            connection.query(
+              "update tbl_users set name = ?, user_name = ? , last_name = ?, phone = ?, fk_user_name = ?," +
+              "email = ?, cpf = ?, endereco = ?, cidade = ?, cep = ?, numero = ?, uf = ?, bairro = ?," +
+              "url_foto_perfil = ? , last_update = ?, ind_cance = ? where id ='" +
+                id +
+                "'",
+              fields,
+              function (error, results) {
+                if (error) {
+                  return res.status(404).send({
+                    error: {
+                      msg: "Erro ao tentar alterar o usuario",
+                      error,
+                    },
+                  });
+                }
+                return res.send({
+                  ...req.body,
+                  id,
                 });
               }
-              return res.send({
-                ...req.body,
-                id,
-              });
-            }
-          );
+            );
+          }
         } else {
           return res.status(400).send({
             error: { msg: "Nome de usuário ja cadastrado no sistéma" },
