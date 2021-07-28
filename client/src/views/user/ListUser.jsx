@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import { Button, Container, Row, Col,Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import "../../css/User.css";
 import swal from "@sweetalert/with-react";
@@ -105,27 +105,25 @@ function User() {
           <Container>
             <Row>
               <Col xs={12} md={12}>
-                <div className="card">
-                  <div className="card-header">
-                    <div className="card-title">
-                      <h4>Usuários</h4>
-                      <p className="card-category">
-                        {" "}
-                        Lista de Usuários cadastrados
-                      </p>
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <DataTable
-                      title="Usuários"
-                      columns={columns}
-                      data={users}
-                      defaultSortFieldId={1}
-                      sortIcon={<FaIcons.FaAngleUp />}
-                      pagination
-                    />
-                  </div>
-                </div>
+              <Card>
+                <Card.Header>
+                  <Card.Title className="mb-0">
+                    <h4>Usuários</h4>
+                    <Card.Subtitle className="mt-1">
+                        Lista de usuários cadastrados
+                    </Card.Subtitle>
+                  </Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <DataTable
+                    columns={columns}
+                    data={users}
+                    defaultSortFieldId={1}
+                    sortIcon={<FaIcons.FaAngleUp />}
+                    pagination
+                  />
+                </Card.Body>
+              </Card>
               </Col>
             </Row>
           </Container>

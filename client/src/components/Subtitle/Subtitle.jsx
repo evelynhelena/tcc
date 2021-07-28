@@ -4,8 +4,7 @@ import "./Subtitle.css";
 function Subtitle(props) {
     return (
         <>
-            <h3 className="component-subtitle">{props.title}</h3>
-            <hr/>
+            <h3 className="component-subtitle mb-0">{props.title}</h3>
         </>
     )
 }
