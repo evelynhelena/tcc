@@ -124,7 +124,9 @@ function NewUser() {
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
-        } else {
+        } else if(undefined !== data.error && data.error.erro === 401){
+          swal("Erro", "Campo de senha vazio", "error");
+        }else {
           swal("Sucesso", "Usuário inserido com sucesso", "success");
           resetaCampos();
         }
@@ -143,7 +145,9 @@ function NewUser() {
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
-        } else {
+        } else if(undefined !== data.error && data.error.erro === 401){
+          swal("Erro", "Campo de senha vazio", "error");
+        }else {
           swal("Sucesso", "Usuário editado com sucesso", "success");
         }
       }

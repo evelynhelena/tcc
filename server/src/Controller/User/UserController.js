@@ -121,7 +121,14 @@ module.exports = {
                 msg: "Dados Vazios não são permitidos",
               },
             });
-          } else {
+          } else if(req.body.senha.length === 0){
+            return res.send({
+              error: {
+                erro: 401,
+                msg: "Campo de senha vazio",
+              },
+            });
+          }else {
             connection.query(
               "insert into tbl_users values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
               fields,
@@ -197,6 +204,13 @@ module.exports = {
             return res.status(400).send({
               error: {
                 msg: "Dados Vazios não são permitidos",
+              },
+            });
+          } else if(req.body.senha.length === 0){
+            return res.send({
+              error: {
+                erro: 401,
+                msg: "Campo de senha vazio",
               },
             });
           } else {
