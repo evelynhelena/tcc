@@ -12,12 +12,12 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import api from "../../services/Api";
 import swal from "@sweetalert/with-react";
 import "./Dashboard.css";
+import server from "../../Config/BaseURL";
 function Home() {
-
   const [countUser,setCountUser] = useState([]);
   const getCountUsers = async () => {
     try {
-      const { data } = await api.get("http://localhost:3000/countAllUsers");
+      const { data } = await api.get(`${server.url}countAllUsers`);
       if (data) setCountUser(data);
     } catch (err) {
       swal("Erro", "Erro ao carregar os usuários cadastrados", "error");
@@ -30,7 +30,7 @@ function Home() {
   return (
     <div className="dashboard mt-4">
       <Container>
-      {console.log(countUser)}
+
         <Row>
           <Col md={3} className="mb-5">
             <div className="position-relative">

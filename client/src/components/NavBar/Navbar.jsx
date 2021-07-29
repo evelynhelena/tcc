@@ -7,12 +7,34 @@ import "./Navbar.css";
 import { IconContext } from "react-icons";
 import { Dropdown } from "react-bootstrap";
 import DatePicker from "../DatePicker/DatePicker";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@material-ui/core/Button";
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
 
   const showSidebar = () => setSidebar(!sidebar);
   const [date, setDate] = useState(new Date());
+
+  const [menuAlert, setMenuAlert] = React.useState(null);
+  const [menuPerfil, setMenuPerfil] = React.useState(null);
+
+
+  const handleClickAlert = (event) => {
+    setMenuAlert(event.currentTarget);
+  };
+  const handleClickPerfil = (event) => {
+    setMenuPerfil(event.currentTarget);
+  };
+
+  const handleCloseAlert = () => {
+    setMenuAlert(null);
+  };
+
+  const handleClosePerfil = () => {
+    setMenuPerfil(null);
+  };
 
   return (
     <>
@@ -22,32 +44,49 @@ function Navbar() {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
           <div className="d-flex">
-          <DatePicker date={date}/>
-            <Dropdown className="pr-3">
-              <Dropdown.Toggle className="button-header" id="dropdown-basic">
-                <div className='circle-alert'><span>3</span></div>
-                <FaIcons.FaBell />
-              </Dropdown.Toggle>
+            <DatePicker date={date} />
+            <Button
+              className="min-width-button-header"
+              aria-controls="menuAlert"
+              aria-haspopup="true"
+              onClick={handleClickAlert}
+            >
+              <div className="circle-alert">
+                <span>3</span>
+              </div>
+              <FaIcons.FaBell className="icon-header" />
+            </Button>
+            <Menu
+              id="menuAlert"
+              anchorEl={menuAlert}
+              keepMounted
+              open={Boolean(menuAlert)}
+              onClose={handleCloseAlert}
+            >
+              <MenuItem onClick={handleCloseAlert}><span>Produto Proximos do vencimento</span></MenuItem>
+              <MenuItem onClick={handleCloseAlert}>Produto Proximos do vencimento</MenuItem>
+              <MenuItem onClick={handleCloseAlert}>Produto Proximos do vencimento</MenuItem>
+            </Menu>
 
-              <Dropdown.Menu className="pl-2 pr-2">
-                <Dropdown.Item href="#/action-1">Boleto Atrasado</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Alguns Produtos estão acabando</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Evelyn Pagou a conta de R$500,00</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-
-            <Dropdown>
-              <Dropdown.Toggle className="button-header" id="dropdown-basic">
-                <FaIcons.FaUser />
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu className="pl-2 pr-2">
-                <Dropdown.Item href="#/action-1">Perfil</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Configurações</Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item href="#/action-3">Sair</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+            <Button
+              className="min-width-button-header"
+              aria-controls="menuPerfil"
+              aria-haspopup="true"
+              onClick={handleClickPerfil}
+            >
+              <FaIcons.FaUser className="icon-header" />
+            </Button>
+            <Menu
+              id="menuPerfil"
+              anchorEl={menuPerfil}
+              keepMounted
+              open={Boolean(menuPerfil)}
+              onClose={handleClosePerfil}
+            >
+              <MenuItem onClick={handleClosePerfil}>Perfil</MenuItem>
+              <MenuItem onClick={handleClosePerfil}>Configurações</MenuItem>
+              <MenuItem onClick={handleClosePerfil}>Sair</MenuItem>
+            </Menu>
           </div>
         </div>
         <nav className={sidebar ? "nav-menu active" : "nav-menu"}>

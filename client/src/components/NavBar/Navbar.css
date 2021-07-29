@@ -6,11 +6,19 @@
     align-items: center;
   }
   
+  .min-width-button-header{
+    min-width:44px !important;
+    border-radius: 50% !important;
+  }
   .menu-bars {
     margin-left: 2rem;
     font-size: 2rem;
     background: none;
     color: #000;
+  }
+
+  .icon-header{
+    font-size: 20px;
   }
 
   .menu-bars:hover{
