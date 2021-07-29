@@ -30,7 +30,7 @@ function Home() {
   return (
     <div className="dashboard mt-4">
       <Container>
-      {console.log(countUser)}
+
         <Row>
           <Col md={3} className="mb-5">
             <div className="position-relative">

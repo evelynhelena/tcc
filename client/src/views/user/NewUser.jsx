@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Image,Form } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Image,
+  Form,
+} from "react-bootstrap";
 import clsx from "clsx";
 import ButtonMaterial from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
@@ -18,6 +26,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import FormControl from "@material-ui/core/FormControl";
+import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,7 +61,9 @@ function NewUser() {
   const [bairro, setBairro] = useState("");
   const [complemento, setComplemento] = useState("");
 
+  const [enviado, setEnviado] = useState(false);
   const { id } = useParams();
+
   //</variable>
 
   //<functions>
@@ -80,7 +91,6 @@ function NewUser() {
           setSenha(data[0].senha);
           setEmail(data[0].email);
           setCpf(data[0].cpf);
-
           setEndereco(data[0].endereco);
           setCidade(data[0].cidade);
           setCep(data[0].cep);
@@ -108,7 +118,6 @@ function NewUser() {
     setSenha("");
     setEmail("");
     setCpf("");
-
     setEndereco("");
     setCidade("");
     setCep("");
@@ -116,6 +125,7 @@ function NewUser() {
     setUf("");
     setBairro("");
     setComplemento("");
+    setEnviado(false);
   };
 
   const insertUser = async (newUser) => {
@@ -124,9 +134,9 @@ function NewUser() {
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
-        } else if(undefined !== data.error && data.error.erro === 401){
+        } else if (undefined !== data.error && data.error.erro === 401) {
           swal("Erro", "Campo de senha vazio", "error");
-        }else {
+        } else {
           swal("Sucesso", "Usuário inserido com sucesso", "success");
           resetaCampos();
         }
@@ -145,10 +155,11 @@ function NewUser() {
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
-        } else if(undefined !== data.error && data.error.erro === 401){
+        } else if (undefined !== data.error && data.error.erro === 401) {
           swal("Erro", "Campo de senha vazio", "error");
-        }else {
+        } else {
           swal("Sucesso", "Usuário editado com sucesso", "success");
+          setEnviado(false);
         }
       }
     } catch (err) {
@@ -157,50 +168,59 @@ function NewUser() {
   };
 
   const validaCampos = () => {
-    if (!name || !lastName || !userName || !celPhone || !typeUser) {
-      return false;
-    } else {
+    let allInsert = true;
+    const user = {
+      name: name,
+      user_name: userName,
+      last_name: lastName,
+      phone: celPhone,
+      user_type: typeUser,
+      email: email,
+      cpf: cpf,
+      endereco: endereco,
+      cidade: cidade,
+      cep: cep,
+      numero: numero,
+      uf: uf,
+      bairro: bairro,
+      imagem: "",
+      senha: senha,
+      complemento: complemento ? complemento : "",
+    };
+
+    for (var [key, value] of Object.entries(user)) {
+      if (
+        (null === value || value.length === 0 || undefined === value) &&
+        key !== "imagem" &&
+        key !== "complemento"
+      ) {
+        allInsert = false;
+      }
+    }
+    if (allInsert) {
       let userTypeSelected = usersType.filter(
         (el) => el.type_user === typeUser
       );
-
-      const user = {
-        name: name,
-        user_name: userName,
-        last_name: lastName,
-        phone: celPhone,
-        user_type: userTypeSelected[0].id,
-        email: email,
-        cpf: cpf,
-        endereco: endereco,
-        cidade: cidade,
-        cep: cep,
-        numero: numero,
-        uf: uf,
-        bairro: bairro,
-        imagem: "",
-        senha: senha,
-        complemento: complemento ? complemento : "",
-      };
+      user.user_type = userTypeSelected[0].id;
       return user;
+    } else {
+      return false;
     }
   };
 
   function handleSubmit() {
     let insert = validaCampos();
+    setEnviado(true);
     if (insert) {
       insertUser(insert);
-    } else {
-      swal("Erro", "Campus vazios não são permitidos", "error");
     }
   }
 
   function update() {
     let update = validaCampos();
+    setEnviado(true);
     if (update) {
       updateUser(update);
-    } else {
-      swal("Erro", "Campus vazios não são permitidos", "error");
     }
   }
 
@@ -249,18 +269,30 @@ function NewUser() {
                         id="name"
                         label="Nome*"
                         value={name}
+                        error={name.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setName(target.value)}
                       />
+                      {name.length === 0 && enviado ? (
+                        <VerifyInputs value="Nome"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                     <Col xs={12} md={6}>
                       <TextField
                         id="lastName"
                         label="Sobrenome*"
                         value={lastName}
+                        error={lastName.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setLastName(target.value)}
                       />
+                      {lastName.length === 0 && enviado ? (
+                        <VerifyInputs value="Sobrenome"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
 
@@ -270,9 +302,15 @@ function NewUser() {
                         id="userName"
                         label="Nome de Usuário*"
                         value={userName}
+                        error={userName.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setUserName(target.value)}
                       />
+                      {userName.length === 0 && enviado ? (
+                        <VerifyInputs value="Nome de Usuário"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                     <Col xs={12} md={6}>
                       <TextField
@@ -280,9 +318,15 @@ function NewUser() {
                         type="password"
                         label="Senha*"
                         value={senha}
+                        error={senha.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setSenha(target.value)}
                       />
+                      {senha.length === 0 && enviado ? (
+                        <VerifyInputs value="Senha"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
 
@@ -293,9 +337,15 @@ function NewUser() {
                         label="E-mail*"
                         type="email"
                         value={email}
+                        error={email.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setEmail(target.value)}
                       />
+                      {email.length === 0 && enviado ? (
+                        <VerifyInputs value="E-mail"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                     <Col xs={12} md={6}>
                       <InputMask
@@ -308,10 +358,16 @@ function NewUser() {
                             id="phone"
                             label="Celular*"
                             value={celPhone}
+                            error={celPhone.length === 0 && enviado}
                             className="col-md-12"
                           />
                         )}
                       </InputMask>
+                      {celPhone.length === 0 && enviado ? (
+                        <VerifyInputs value="Celular"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
                   <Row className="mt-4 mb-4">
@@ -321,6 +377,7 @@ function NewUser() {
                         select
                         label="Tipo de usuário*"
                         value={typeUser}
+                        error={typeUser.length === 0 && enviado}
                         className="col-md-12"
                         onChange={handleChange}
                       >
@@ -333,6 +390,11 @@ function NewUser() {
                           </MenuItem>
                         ))}
                       </TextField>
+                      {typeUser.length === 0 && enviado ? (
+                        <VerifyInputs value="Tipo de usuário"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                     <Col xs={12} md={6}>
                       <InputMask
@@ -344,11 +406,17 @@ function NewUser() {
                           <TextField
                             id="cpf"
                             label="CPF*"
+                            error={cpf.length === 0 && enviado}
                             value={cpf}
                             className="col-md-12"
                           />
                         )}
                       </InputMask>
+                      {cpf.length === 0 && enviado ? (
+                        <VerifyInputs value="CPF"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
                   <hr></hr>
@@ -359,7 +427,12 @@ function NewUser() {
                       <FormControl
                         className={clsx(classes.margin, classes.textField)}
                       >
-                        <InputLabel htmlFor="cep">CEP*</InputLabel>
+                        <InputLabel
+                          htmlFor="cep"
+                          error={cep.length === 0 && enviado}
+                        >
+                          CEP*
+                        </InputLabel>
                         <InputMask
                           mask="99999-999"
                           value={cep}
@@ -368,6 +441,7 @@ function NewUser() {
                           {() => (
                             <Input
                               id="cep"
+                              error={cep.length === 0 && enviado}
                               endAdornment={
                                 <InputAdornment position="end">
                                   <IconButton onClick={() => getCep(cep)}>
@@ -379,6 +453,11 @@ function NewUser() {
                           )}
                         </InputMask>
                       </FormControl>
+                      {cep.length === 0 && enviado ? (
+                        <VerifyInputs value="CEP"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
 
                     <Col xs={12} md={8}>
@@ -386,9 +465,15 @@ function NewUser() {
                         id="endereco"
                         label="Rua / Avenida*"
                         value={endereco}
+                        error={endereco.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setEndereco(target.value)}
                       />
+                      {endereco.length === 0 && enviado ? (
+                        <VerifyInputs value="Endereço"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
                   <Row className="mt-4">
@@ -397,27 +482,45 @@ function NewUser() {
                         id="cidade"
                         label="Cidade*"
                         value={cidade}
+                        error={cidade.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setCidade(target.value)}
                       />
+                      {cidade.length === 0 && enviado ? (
+                        <VerifyInputs value="Cidade"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                     <Col xs={12} md={4}>
                       <TextField
                         id="uf"
                         label="Nº*"
                         value={numero}
+                        error={numero.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setNumero(target.value)}
                       />
+                      {numero.length === 0 && enviado ? (
+                        <VerifyInputs value="Nº"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                     <Col xs={12} md={4}>
                       <TextField
                         id="uf"
                         label="UF*"
                         value={uf}
+                        error={uf.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setUf(target.value)}
                       />
+                      {uf.length === 0 && enviado ? (
+                        <VerifyInputs value="UF"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
 
@@ -427,9 +530,15 @@ function NewUser() {
                         id="bairro"
                         label="Bairro*"
                         value={bairro}
+                        error={bairro.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setBairro(target.value)}
                       />
+                      {bairro.length === 0 && enviado ? (
+                        <VerifyInputs value="Bairro"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                     <Col xs={12} md={6}>
                       <TextField
@@ -439,6 +548,11 @@ function NewUser() {
                         className="col-md-12"
                         onChange={({ target }) => setComplemento(target.value)}
                       />
+                    </Col>
+                  </Row>
+                  <Row className="mt-4">
+                    <Col xs={12} md={12}>
+                      <p className="mb-0 font-footer-info">(*) Campus Obrigatórios</p>
                     </Col>
                   </Row>
                 </Form>
