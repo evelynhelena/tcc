@@ -27,6 +27,7 @@ import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import FormControl from "@material-ui/core/FormControl";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
+import server from "../../Config/BaseURL";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,7 +70,7 @@ function NewUser() {
   //<functions>
   const getUsersType = async () => {
     try {
-      const { data } = await api.get("http://localhost:3000/findUserType");
+      const { data } = await api.get(`${server.url}findUserType`);
       if (data) setUsersType(data);
     } catch (err) {
       swal("Erro", "Erro ao selecionar os tipos de usuários", "error");
@@ -78,9 +79,8 @@ function NewUser() {
   useEffect(() => {
     getUsersType();
   }, []);
-
   const getUser = async () => {
-    await api.get("http://localhost:3000/users/" + id).then(
+    await api.get(`${server.url}users/` + id).then(
       function ({ data }) {
         if (data.length > 0) {
           setName(data[0].name);
@@ -130,7 +130,7 @@ function NewUser() {
 
   const insertUser = async (newUser) => {
     try {
-      const { data } = await api.post("http://localhost:3000/insert", newUser);
+      const { data } = await api.post(`${server.url}insert/`, newUser);
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
@@ -148,10 +148,7 @@ function NewUser() {
 
   const updateUser = async (userEdit) => {
     try {
-      const { data } = await api.put(
-        "http://localhost:3000/users/" + id,
-        userEdit
-      );
+      const { data } = await api.put(`${server.url}users/` + id,userEdit);
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");

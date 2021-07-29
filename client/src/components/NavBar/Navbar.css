@@ -6,7 +6,7 @@
     align-items: center;
   }
   
-  .MuiButton-root{
+  .min-width-button-header{
     min-width:44px !important;
     border-radius: 50% !important;
   }

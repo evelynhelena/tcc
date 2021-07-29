@@ -3,6 +3,7 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import api from "../../services/Api";
 import swal from "@sweetalert/with-react";
+import server from "../../Config/BaseURL";
 
 function ModalInsertUser(props) {
   //<variable>
@@ -22,7 +23,7 @@ function ModalInsertUser(props) {
   //<functions>
   const getUsersType = async () => {
     try {
-      const { data } = await api.get("http://localhost:3000/findUserType");
+      const { data } = await api.get(`${server.url}findUserType`);
       if (data) setUsersType(data);
     } catch (err) {
       console.log(err);
@@ -44,7 +45,7 @@ function ModalInsertUser(props) {
       }
       const insertUser = async () =>{
         try {
-          const { data } = await api.post("http://localhost:3000/insert",newUser);
+          const { data } = await api.post(`${server.url}insert`,newUser);
           if (data){
             if(undefined !== data.error && data.error.erro === 400){
               swal("Erro", "Usuário já cadastrado no sistema", "error");

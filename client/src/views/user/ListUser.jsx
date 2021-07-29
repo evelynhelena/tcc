@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import server from "../../Config/BaseURL";
 function User() {
   const [users, setUsers] = useState([]);
   const columns = [
@@ -51,7 +52,7 @@ function User() {
 
   const getUsers = async () => {
     try {
-      const { data } = await api.get("http://localhost:3000/users");
+      const { data } = await api.get(`${server.url}users`);
       if (data) setUsers(data);
     } catch (err) {
       console.log(err);
@@ -72,7 +73,7 @@ function User() {
     }).then((willDelete) => {
       if (willDelete) {
         api
-          .delete("http://localhost:3000/users/" + id)
+          .delete(`${server.url}users/` + id)
           .then(function (response) {
             let data = response.data;
             if (data.msg) {
