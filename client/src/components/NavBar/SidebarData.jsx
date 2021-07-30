@@ -21,4 +21,10 @@ export const SidebarData = [
     icon: <FaIcons.FaCartPlus />,
     cName: 'nav-text'
   },
+  {
+    title: 'Calendário',
+    path: '/Calendar',
+    icon: <FaIcons.FaCalendarAlt />,
+    cName: 'nav-text'
+  },
 ];
