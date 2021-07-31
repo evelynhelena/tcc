@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import { Modal, Button, Col, Row } from "react-bootstrap";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -18,57 +18,156 @@ import { ptBR } from "date-fns/locale";
 import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
 import "moment/locale/pt-br";
 import "./Calendar.css";
+import ViewComfyIcon from "@material-ui/icons/ViewComfy";
+import server from "../../Config/BaseURL";
+import swal from "@sweetalert/with-react";
+import api from "../../services/Api";
+import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
 const localizer = momentLocalizer(moment);
 
 function CalendarComponent() {
-  const [events, setEvents] = useState([
-    {
-      title: "All Day Event very long title",
-      start: new Date(2021, 7, 0),
-      end: new Date(2021, 7, 1),
-      color: "red",
-    },
-    {
-      title: "Long Event",
-      start: new Date(2021, 7, 7),
-      end: new Date(2021, 7, 10),
-    },
-  ]);
-  const [selectedDate, handleDateChange] = useState(new Date());
-  const [show, setShow] = useState(false);
-  const [importance, setImportance] = useState([]);
-  const [importanceList, setImportanceList] = useState([  {
-    idInportance: 1,
-    nomInportance: "Muito Uergente",
-    color:"red"
+  const [events, setEvents] = useState([]);
 
-  },
-  {
-    idInportance: 2,
-    nomInportance: "Usergente",
-    color:"orange"
-  },]);
+  const [dtInit, setDtInit] = useState(new Date());
+  const [dtEnd, setDtEnd] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [importance, setImportance] = useState("");
+  let allViews = ["month", "week", "day", "work_week"];
+  const [importanceList, setImportanceList] = useState([]);
+
   const [title, setTitle] = useState("");
   const [localeEvent, setLocaleEvent] = useState("");
   const [note, setNote] = useState("");
   const [enviado, setEnviado] = useState(false);
+  const [updateEvent, setUpdate] = useState(false);
+  //</variable>
 
+  //<functions>
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  let allViews = ["month", "week", "day", "work_week"];
-
-  const teste2 = (titulo) => {
-    console.log("ola mundo");
-    console.log(titulo);
+  const resetaCampos = () => {
+    setImportance("");
+    setTitle("");
+    setLocaleEvent("");
+    setNote("");
+    setEnviado(false);
+    setUpdate(false);
   };
 
-  const handleSelectSlot = ({ start, end, resourceId }) => {
-    console.log(start);
+  const getInportanceTasks = async () => {
+    try {
+      const { data } = await api.get(`${server.url}inportanceTasks`);
+      if (data) setImportanceList(data);
+    } catch (err) {
+      swal("Erro", "Erro ao selecionar a inportancia das tarefas", "error");
+    }
+  };
+  useEffect(() => {
+    getInportanceTasks();
+  }, []);
+
+  const inserEvent = async (newEvent) => {
+    try {
+      const { data } = await api.post(`${server.url}event/`, newEvent);
+      if (data) {
+        swal("Sucesso", "Evento inserirdo com sucesso", "success");
+        getEvent();
+        setShow(false);
+        resetaCampos();
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao inserir o usuário", "error");
+    }
+  };
+
+  const updateEventFunction = () => {
+    console.log("ola mundo");
+  };
+
+  const getEvent = async () => {
+    try {
+      const { data } = await api.get(`${server.url}event`);
+      if (data) {
+        let allEvents = [];
+        data.forEach((ev) => {
+          allEvents.push({
+            objEvent: ev,
+            title: ev.title,
+            start: new Date(ev.dt_init),
+            end: new Date(ev.dt_end),
+            color: ev.color_inportance,
+          });
+        });
+        setEvents(allEvents);
+        console.log(data);
+      }
+    } catch (err) {
+      swal("Erro", "Erro recuperar os eventos", "error");
+    }
+  };
+
+  useEffect(() => {
+    getEvent();
+  }, []);
+
+  const handleSelectEvent = (event) => {
+    setImportance(event.objEvent.idInportance);
+    setTitle(event.objEvent.title);
+    setLocaleEvent(event.objEvent.place);
+    setNote(event.objEvent.descricao);
+    setDtInit(event.objEvent.dt_init);
+    setDtEnd(event.objEvent.dt_end);
+    setShow(true);
+    setUpdate(true);
+  };
+
+  const handleSelectSlot = ({ start, end }) => {
+    setDtInit(start);
+    setDtEnd(start);
+    resetaCampos();
+    setShow(true);
+  };
+
+  const openModalInsert = () => {
+    setShow(true);
+    setDtInit(new Date());
+    setDtEnd(new Date());
+    resetaCampos();
+    setShow(true);
+  };
+
+  const validaCampos = () => {
+    let allInsert = true;
+    const newEvent = {
+      title: title,
+      dtInit: dtInit,
+      dtEnd: dtEnd,
+      place: localeEvent,
+      descricao: note,
+      inportance: importance,
+    };
+
+    for (var [key, value] of Object.entries(newEvent)) {
+      if (null === value) {
+        allInsert = false;
+      }
+    }
+    if (allInsert) {
+      return newEvent;
+    } else {
+      return false;
+    }
   };
 
   const saveEvent = () => {
     setEnviado(true);
+    let newEvent = validaCampos();
+    if (newEvent) {
+      inserEvent(newEvent);
+    }
   };
   const eventStyleGetter = (event, start, end, isSelected) => {
     return {
@@ -81,7 +180,7 @@ function CalendarComponent() {
       <ButtonMaterial
         variant="contained"
         className="button-add-event mb-3"
-        onClick={handleShow}
+        onClick={openModalInsert}
       >
         Add Evento
       </ButtonMaterial>
@@ -91,7 +190,7 @@ function CalendarComponent() {
         startAccessor="start"
         endAccessor="end"
         views={allViews}
-        onSelectEvent={(event) => teste2(event)}
+        onSelectEvent={(event) => handleSelectEvent(event)}
         onSelectSlot={(e) => handleSelectSlot(e)}
         style={{ height: 550 }}
         eventPropGetter={eventStyleGetter}
@@ -100,16 +199,25 @@ function CalendarComponent() {
           next: <FaIcons.FaAngleRight title="Proximo" />,
           today: <FaIcons.FaCalendarAlt title="Hoje" />,
           previous: <FaIcons.FaAngleLeft title="Antes" />,
-          month: <HiViewGrid title="Mês" />,
+          month: (
+            <Tooltip title="Mês">
+              <IconButton aria-label="Deletar">
+                <ViewComfyIcon />
+              </IconButton>
+            </Tooltip>
+          ),
           week: <HiViewBoards title="Semana" />,
           work_week: <HiViewList title="Dias da Letivos" />,
           day: <HiViewGridAdd title="Dia" />,
+          showMore: function showMore(total) {
+            return " Mais " + total + "+";
+          },
         }}
       />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title className="font-header-add-event">
-            Modal heading
+            {updateEvent ? "Editando Evento" : "Add Novo Evento"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -139,9 +247,9 @@ function CalendarComponent() {
               >
                 <Grid container>
                   <DateTimePicker
-                    value={selectedDate}
+                    value={dtInit}
                     format="dd/MM/yyyy - HH:mm"
-                    onChange={handleDateChange}
+                    onChange={setDtInit}
                     label="Início*"
                     className="width-date-time-picker"
                     cancelLabel="Cencelar"
@@ -158,9 +266,9 @@ function CalendarComponent() {
               >
                 <Grid container>
                   <DateTimePicker
-                    value={selectedDate}
+                    value={dtEnd}
                     format="dd/MM/yyyy - HH:mm"
-                    onChange={handleDateChange}
+                    onChange={setDtEnd}
                     label="Fim*"
                     className="width-date-time-picker"
                     cancelLabel="Cencelar"
@@ -210,12 +318,17 @@ function CalendarComponent() {
                 onChange={({ target }) => setImportance(target.value)}
               >
                 {importanceList.map((impotanceElement) => (
-                  <MenuItem key={impotanceElement.idInportance} value={impotanceElement.nomInportance}>
-                    {impotanceElement.nomInportance}
-                    <span 
+                  <MenuItem
+                    key={impotanceElement.idInportance}
+                    value={impotanceElement.idInportance}
+                  >
+                    {impotanceElement.nom_inportance}
+                    <span
                       className="style-list-inportance-event"
-                      style={{backgroundColor:impotanceElement.color}}>
-                    </span>
+                      style={{
+                        backgroundColor: impotanceElement.color_inportance,
+                      }}
+                    ></span>
                   </MenuItem>
                 ))}
               </TextField>
@@ -228,11 +341,20 @@ function CalendarComponent() {
           </Row>
         </Modal.Body>
         <Modal.Footer>
+          <Tooltip title="Deletar">
+            <IconButton color="secondary" aria-label="Deletar">
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
           <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
-          <Button variant="info" className="float-right" onClick={saveEvent}>
-            Salvar
+          <Button
+            variant="info"
+            className="float-right"
+            onClick={() => (updateEvent ? updateEventFunction() : saveEvent())}
+          >
+            {updateEvent ? "Editar" : "Salvar"}
           </Button>
         </Modal.Footer>
       </Modal>
