@@ -5,6 +5,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { HiViewBoards } from "react-icons/hi";
 import { HiViewGrid } from "react-icons/hi";
+import MenuItem from "@material-ui/core/MenuItem";
 import { HiViewGridAdd } from "react-icons/hi";
 import { HiViewList } from "react-icons/hi";
 import * as FaIcons from "react-icons/fa";
@@ -20,21 +21,9 @@ import "./Calendar.css";
 const localizer = momentLocalizer(moment);
 
 function CalendarComponent() {
-  const [events, setEvents] = useState([]);
-  const [selectedDate, handleDateChange] = useState(new Date());
-  const [show, setShow] = useState(false);
-  const [title, setTitle] = useState("");
-  const [enviado, setEnviado] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-  let allViews = ["month", "week", "day", "work_week"];
-
-  let teste = [
+  const [events, setEvents] = useState([
     {
       title: "All Day Event very long title",
-      allDay: true,
       start: new Date(2021, 7, 0),
       end: new Date(2021, 7, 1),
       color: "red",
@@ -44,7 +33,30 @@ function CalendarComponent() {
       start: new Date(2021, 7, 7),
       end: new Date(2021, 7, 10),
     },
-  ];
+  ]);
+  const [selectedDate, handleDateChange] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [importance, setImportance] = useState([]);
+  const [importanceList, setImportanceList] = useState([  {
+    idInportance: 1,
+    nomInportance: "Muito Uergente",
+    color:"red"
+
+  },
+  {
+    idInportance: 2,
+    nomInportance: "Usergente",
+    color:"orange"
+  },]);
+  const [title, setTitle] = useState("");
+  const [localeEvent, setLocaleEvent] = useState("");
+  const [note, setNote] = useState("");
+  const [enviado, setEnviado] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  let allViews = ["month", "week", "day", "work_week"];
 
   const teste2 = (titulo) => {
     console.log("ola mundo");
@@ -75,7 +87,7 @@ function CalendarComponent() {
       </ButtonMaterial>
       <Calendar
         localizer={localizer}
-        events={teste}
+        events={events}
         startAccessor="start"
         endAccessor="end"
         views={allViews}
@@ -130,9 +142,10 @@ function CalendarComponent() {
                     value={selectedDate}
                     format="dd/MM/yyyy - HH:mm"
                     onChange={handleDateChange}
-                    label="Início"
-                    showTodayButton
+                    label="Início*"
                     className="width-date-time-picker"
+                    cancelLabel="Cencelar"
+                    ampm={false}
                   />
                 </Grid>
               </MuiPickersUtilsProvider>
@@ -148,19 +161,75 @@ function CalendarComponent() {
                     value={selectedDate}
                     format="dd/MM/yyyy - HH:mm"
                     onChange={handleDateChange}
-                    label="Fim"
-                    showTodayButton
+                    label="Fim*"
                     className="width-date-time-picker"
+                    cancelLabel="Cencelar"
+                    ampm={false}
                   />
                 </Grid>
               </MuiPickersUtilsProvider>
             </Col>
           </Row>
-    
+          <Row className="mt-3">
+            <Col xs={12} md={12}>
+              <TextField
+                id="localeEvent"
+                label="Local"
+                value={localeEvent}
+                className="col-md-12"
+                onChange={({ target }) => setLocaleEvent(target.value)}
+              />
+            </Col>
+          </Row>
+          <Row className="mt-3">
+            <Col xs={12} md={12}>
+              <TextField
+                id="note"
+                label="Descrição*"
+                value={note}
+                className="col-md-12"
+                error={note.length === 0 && enviado}
+                onChange={({ target }) => setNote(target.value)}
+              />
+              {note.length === 0 && enviado ? (
+                <VerifyInputs value="Descrição"></VerifyInputs>
+              ) : (
+                ""
+              )}
+            </Col>
+          </Row>
+          <Row className="mt-3">
+            <Col xs={12} md={12}>
+              <TextField
+                id="importance"
+                select
+                label="Inportancia*"
+                value={importance}
+                error={importance.length === 0 && enviado}
+                className="col-md-12"
+                onChange={({ target }) => setImportance(target.value)}
+              >
+                {importanceList.map((impotanceElement) => (
+                  <MenuItem key={impotanceElement.idInportance} value={impotanceElement.nomInportance}>
+                    {impotanceElement.nomInportance}
+                    <span 
+                      className="style-list-inportance-event"
+                      style={{backgroundColor:impotanceElement.color}}>
+                    </span>
+                  </MenuItem>
+                ))}
+              </TextField>
+              {importance.length === 0 && enviado ? (
+                <VerifyInputs value="Inportancia"></VerifyInputs>
+              ) : (
+                ""
+              )}
+            </Col>
+          </Row>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Cancelar
           </Button>
           <Button variant="info" className="float-right" onClick={saveEvent}>
             Salvar

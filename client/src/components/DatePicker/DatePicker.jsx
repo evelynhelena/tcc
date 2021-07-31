@@ -24,6 +24,7 @@ function DatePicker(props) {
               value={date}
               onChange={handleDateChange}
               className="mt-0 pr-3"
+              cancelLabel="Cencelar"
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
