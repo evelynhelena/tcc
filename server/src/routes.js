@@ -31,5 +31,7 @@ routes.get("/countAllUsers", Dashboard.countAllUsers);
 routes.get("/inportanceTasks", Calendar.getInportanteTasks);
 routes.get("/event", Calendar.getEventsCalendar);
 routes.post("/event", Calendar.insertEvent);
+routes.put("/event/:id", Calendar.updateEvent);
+routes.delete("/event/:id", Calendar.delete);
 
 module.exports = routes;

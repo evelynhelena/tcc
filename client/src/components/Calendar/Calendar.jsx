@@ -3,12 +3,14 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import { Modal, Button, Col, Row } from "react-bootstrap";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
-import { HiViewBoards } from "react-icons/hi";
-import { HiViewGrid } from "react-icons/hi";
+import ViewDayIcon from "@material-ui/icons/ViewDay";
+import ViewWeekIcon from "@material-ui/icons/ViewWeek";
 import MenuItem from "@material-ui/core/MenuItem";
-import { HiViewGridAdd } from "react-icons/hi";
-import { HiViewList } from "react-icons/hi";
-import * as FaIcons from "react-icons/fa";
+import ViewCompactIcon from "@material-ui/icons/ViewCompact";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ViewListIcon from '@material-ui/icons/ViewList';
+import TodayIcon from '@material-ui/icons/Today';
 import TextField from "@material-ui/core/TextField";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import ButtonMaterial from "@material-ui/core/Button";
@@ -34,8 +36,9 @@ function CalendarComponent() {
   const [dtEnd, setDtEnd] = useState(new Date());
   const [show, setShow] = useState(false);
   const [importance, setImportance] = useState("");
-  let allViews = ["month", "week", "day", "work_week"];
+  let allViews = ["month", "week", "day", "work_week","agenda"];
   const [importanceList, setImportanceList] = useState([]);
+  const [idEvent, setIdEvent] = useState("");
 
   const [title, setTitle] = useState("");
   const [localeEvent, setLocaleEvent] = useState("");
@@ -53,6 +56,7 @@ function CalendarComponent() {
     setTitle("");
     setLocaleEvent("");
     setNote("");
+    setIdEvent("");
     setEnviado(false);
     setUpdate(false);
   };
@@ -83,8 +87,53 @@ function CalendarComponent() {
     }
   };
 
-  const updateEventFunction = () => {
-    console.log("ola mundo");
+  const updateEventFunction = async (event) => {
+    try {
+      const { data } = await api.put(`${server.url}event/${idEvent}`, event);
+      if (data) {
+        swal("Sucesso", "Evento editado com sucesso", "success");
+        getEvent();
+        setShow(false);
+        resetaCampos();
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao editar o usuário", "error");
+    }
+  };
+
+  const deleteEvent = function () {
+    swal({
+      title: "Confermar Alteração !",
+      text: "Deseja deletar este evento",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        api.delete(`${server.url}event/${idEvent}`).then(function (response) {
+          let data = response.data;
+          if (data.msg) {
+            swal("Usuário deletado com sucesso", {
+              icon: "success",
+            });
+            getEvent();
+            setShow(false);
+            resetaCampos();
+          } else if (data.error.status === 500) {
+            swal("Evento não cadastrado", {
+              icon: "error",
+            });
+            getEvent();
+            setShow(false);
+            resetaCampos();
+          } else {
+            swal("Erro ao deletar o evento", {
+              icon: "error",
+            });
+          }
+        });
+      }
+    });
   };
 
   const getEvent = async () => {
@@ -102,7 +151,6 @@ function CalendarComponent() {
           });
         });
         setEvents(allEvents);
-        console.log(data);
       }
     } catch (err) {
       swal("Erro", "Erro recuperar os eventos", "error");
@@ -120,13 +168,14 @@ function CalendarComponent() {
     setNote(event.objEvent.descricao);
     setDtInit(event.objEvent.dt_init);
     setDtEnd(event.objEvent.dt_end);
+    setIdEvent(event.objEvent.idEvent);
     setShow(true);
     setUpdate(true);
   };
 
   const handleSelectSlot = ({ start, end }) => {
-    setDtInit(start);
-    setDtEnd(start);
+    setDtInit(new Date(start));
+    setDtEnd(new Date(end));
     resetaCampos();
     setShow(true);
   };
@@ -151,7 +200,10 @@ function CalendarComponent() {
     };
 
     for (var [key, value] of Object.entries(newEvent)) {
-      if (null === value) {
+      if (
+        (null === value || value === undefined || value.length === 0) &&
+        key !== "place"
+      ) {
         allInsert = false;
       }
     }
@@ -162,11 +214,15 @@ function CalendarComponent() {
     }
   };
 
-  const saveEvent = () => {
+  const saveEvent = (insert) => {
     setEnviado(true);
     let newEvent = validaCampos();
     if (newEvent) {
-      inserEvent(newEvent);
+      if (insert) {
+        inserEvent(newEvent);
+      } else {
+        updateEventFunction(newEvent);
+      }
     }
   };
   const eventStyleGetter = (event, start, end, isSelected) => {
@@ -196,19 +252,49 @@ function CalendarComponent() {
         eventPropGetter={eventStyleGetter}
         selectable={true}
         messages={{
-          next: <FaIcons.FaAngleRight title="Proximo" />,
-          today: <FaIcons.FaCalendarAlt title="Hoje" />,
-          previous: <FaIcons.FaAngleLeft title="Antes" />,
-          month: (
-            <Tooltip title="Mês">
-              <IconButton aria-label="Deletar">
-                <ViewComfyIcon />
-              </IconButton>
+          next: (
+            <Tooltip title="Depois">
+              <ChevronRightIcon />
             </Tooltip>
           ),
-          week: <HiViewBoards title="Semana" />,
-          work_week: <HiViewList title="Dias da Letivos" />,
-          day: <HiViewGridAdd title="Dia" />,
+          today: (
+            <Tooltip title="Hoje">
+              <TodayIcon />
+            </Tooltip>
+          ),
+
+          previous: (
+            <Tooltip title="Antes">
+              <ChevronLeftIcon />
+            </Tooltip>
+          ),
+
+          month: (
+            <Tooltip title="Mês">
+              <ViewComfyIcon />
+            </Tooltip>
+          ),
+          week: (
+            <Tooltip title="Semana">
+              <ViewWeekIcon />
+            </Tooltip>
+          ),
+
+          work_week: (
+            <Tooltip title="Dias da Letivos">
+              <ViewCompactIcon />
+            </Tooltip>
+          ),
+          day: (
+            <Tooltip title="Dia">
+              <ViewDayIcon />
+            </Tooltip>
+          ),
+          agenda:(
+            <Tooltip title="Agenda">
+              <ViewListIcon />
+            </Tooltip>
+          ),
           showMore: function showMore(total) {
             return " Mais " + total + "+";
           },
@@ -341,18 +427,27 @@ function CalendarComponent() {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Tooltip title="Deletar">
-            <IconButton color="secondary" aria-label="Deletar">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          {updateEvent ? (
+            <Tooltip title="Deletar">
+              <IconButton
+                color="secondary"
+                aria-label="Deletar"
+                onClick={deleteEvent}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            ""
+          )}
+
           <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
           <Button
             variant="info"
             className="float-right"
-            onClick={() => (updateEvent ? updateEventFunction() : saveEvent())}
+            onClick={() => (updateEvent ? saveEvent(false) : saveEvent(true))}
           >
             {updateEvent ? "Editar" : "Salvar"}
           </Button>

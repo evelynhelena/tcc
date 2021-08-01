@@ -35,15 +35,21 @@
     background-color: #72148b !important;
     color:#fff;
     border-radius: 14% !important;
+    /*padding: 8px;*/
+}
+
+.wrappe-calendar .rbc-toolbar button{
+    padding: 0;
 }
 
 .wrappe-calendar .rbc-toolbar button:active:hover, .rbc-toolbar button:active:focus, .rbc-toolbar button.rbc-active:hover, .rbc-toolbar button.rbc-active:focus{
     color:#fff;
 }
-
 .wrappe-calendar .rbc-btn-group button{
     margin: 0 15px;
+    padding: 5px;
 }
+
 .wrappe-calendar .rbc-month-view{
     background-color: #fff;
     border-bottom-left-radius: 6px;
