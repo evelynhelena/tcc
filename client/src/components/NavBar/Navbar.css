@@ -42,7 +42,7 @@
   .nav-menu.active {
     left: 0;
     transition: 350ms;
-    z-index: 1;
+    z-index: 9;
   }
   
   .nav-text {
