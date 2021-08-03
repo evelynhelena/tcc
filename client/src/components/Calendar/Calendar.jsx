@@ -298,6 +298,11 @@ function CalendarComponent() {
           showMore: function showMore(total) {
             return " Mais " + total + "+";
           },
+          date: "Data",
+          time: "Hora",
+          event: "Evento",
+          noEventsInRange:'Nenhum Evento Encontrado',
+
         }}
       />
       <Modal show={show} onHide={handleClose}>
@@ -427,16 +432,19 @@ function CalendarComponent() {
           </Row>
         </Modal.Body>
         <Modal.Footer>
+
           {updateEvent ? (
-            <Tooltip title="Deletar">
-              <IconButton
-                color="secondary"
-                aria-label="Deletar"
-                onClick={deleteEvent}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
+            <div className="bt-delete-event">
+              <Tooltip title="Deletar">
+                <IconButton
+                  color="secondary"
+                  aria-label="Deletar"
+                  onClick={deleteEvent}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
           ) : (
             ""
           )}
