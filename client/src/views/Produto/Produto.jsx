@@ -1,45 +1,93 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Card, Button,Image  } from 'react-bootstrap';
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Card,
+  Button,
+} from "react-bootstrap";
 import TextField from "@material-ui/core/TextField";
+import Switch from "@material-ui/core/Switch";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
 
-function Produto(){
+function Produto() {
+  const [type, setType] = useState("");
+  const [value, setValue] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [indeIsentoDataVality, setIndeIsentoDataVality] = useState({
+    checked: false,
+  });
 
-    const [name, setName] = useState("");
-    const [value, setValue] = useState("");
-    const [quantidade, setQuantidade] = useState("");
-    const [description, setDescription] = useState("");
+  const handleSubmit = function () {
+    console.log("ola mundo");
+  };
 
-    const handleSubmit = function (){
-        console.log("ola mundo");
-    }
+  const handleChange = (event) => {
+    setIndeIsentoDataVality({
+      ...indeIsentoDataVality,
+      [event.target.name]: event.target.checked,
+    });
+  };
 
-    return (
-        <div className="products">
-            <Container>
-                <Row>
-                <Col  md={8}>
+  return (
+    <div className="products">
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={8}>
             <Card>
               <Card.Header>
                 <Card.Title>
-                  <h4>Novo Produto</h4>
+                  <h4>Novo Tipo de Produto</h4>
                 </Card.Title>
               </Card.Header>
               <Card.Body>
-                <form noValidate autoComplete="off">
+                <Form noValidate autoComplete="off">
                   <Row>
+                    <FormControl component="fieldset">
+                      <FormGroup aria-label="position" row>
+                        <FormControlLabel
+                          value="top"
+                          control={
+                            <Switch
+                              checked={indeIsentoDataVality.checked}
+                              onChange={handleChange}
+                              name="checked"
+                              color="primary"
+                              inputProps={{
+                                "aria-label": "primary checkbox",
+                              }}
+                            />
+                          }
+                          label="Produto Sem data de Validade"
+                          labelPlacement="start"
+                        />
+                      </FormGroup>
+                    </FormControl>
                     <Col md={12}>
                       <TextField
                         id="name"
-                        label="Nome"
-                        value={name}
+                        label="Tipo"
+                        value={type}
                         className="col-md-12"
-                        onChange={({ target }) => setName(target.value)}
+                        onChange={({ target }) => setType(target.value)}
                       />
                     </Col>
                   </Row>
 
                   <Row className="mt-4">
-                  <Col md={6}>
+                    <Col md={6}>
+                      <TextField
+                        id="quantidade"
+                        label="Qauntidade Mínima"
+                        value={quantidade}
+                        className="col-md-12"
+                        onChange={({ target }) => setQuantidade(target.value)}
+                      />
+                    </Col>
+                    <Col md={6}>
                       <TextField
                         id="value"
                         label="Valor (R$)"
@@ -48,28 +96,8 @@ function Produto(){
                         onChange={({ target }) => setValue(target.value)}
                       />
                     </Col>
-                    <Col md={6}>
-                      <TextField
-                        id="quantidade"
-                        label="Qauntidade"
-                        value={quantidade}
-                        className="col-md-12"
-                        onChange={({ target }) => setQuantidade(target.value)}
-                      />
-                    </Col>
-                    <Col md={12}>
-                      <TextField
-                        id="description"
-                        label="Descrição"
-                        value={description}
-                        className="col-md-12"
-                        multiline
-                        rows={3}
-                        onChange={({ target }) => setDescription(target.value)}
-                      />
-                    </Col>
                   </Row>
-                </form>
+                </Form>
               </Card.Body>
               <Card.Footer>
                 <Button
@@ -82,10 +110,10 @@ function Produto(){
               </Card.Footer>
             </Card>
           </Col>
-                </Row>
-            </Container>
-        </div>
-    );
+        </Row>
+      </Container>
+    </div>
+  );
 }
 
 export default Produto;
