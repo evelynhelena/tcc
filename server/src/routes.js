@@ -10,11 +10,9 @@ routes.get("/", (req, res) => {
 });
 
 // ROTAS PRODUCTS
+routes.post('/products', ProdController.insert)
 routes.get('/products', ProdController.findAll)
-routes.get('/products/:id', ProdController.findOne)
-routes.post('/products/insert', ProdController.insert)
-routes.put('/products/update/:id', ProdController.update)
-routes.delete('/products/delete/:id', ProdController.delete)
+
 
 // ROTAS USERS
 routes.get("/users", UserController.findAll);

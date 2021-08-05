@@ -7,6 +7,7 @@ import Produto from "./views/Produto/Produto";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CalenderPage from "./views/Calender/CalenderPage";
+import ListProducType from "./views/Produto/ListProducType";
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Navbar />
           <Switch>
             <Route path='/' exact component={Dashboard} />
-            <Route path='/Produto' exact component={Produto} />
+            <Route path='/Produto' exact component={ListProducType} />
+            <Route path='/NewProductType' exact component={Produto} />
             <Route path='/Listuser' component={ListUser} />
             <Route path='/NewUser' component={NewUser} />
             <Route path='/EditUser/:id' component={NewUser} />
