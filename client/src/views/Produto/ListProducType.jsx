@@ -18,6 +18,7 @@ import swal from "@sweetalert/with-react";
 import server from "../../Config/BaseURL";
 import api from "../../services/Api";
 import currencyFormatter from 'currency-formatter';
+import Navbar from "../../components/NavBar/Navbar";
 function ListProducType() {
     const [productsType, setProductsType] = useState([]);
     const columns = [
@@ -87,6 +88,8 @@ function ListProducType() {
       }, []);
 
   return (
+    <>
+    <Navbar/>
     <div className="content">
         <Container>
             <Row>
@@ -119,6 +122,7 @@ function ListProducType() {
             </Button>
           </Link>
     </div>
+    </>
   );
 }
 

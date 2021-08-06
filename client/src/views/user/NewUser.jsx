@@ -28,6 +28,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import FormControl from "@material-ui/core/FormControl";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import server from "../../Config/BaseURL";
+import Navbar from "../../components/NavBar/Navbar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -245,6 +246,8 @@ function NewUser() {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="content">
       <Container>
         <Row>
@@ -603,6 +606,7 @@ function NewUser() {
         </Row>
       </Container>
     </div>
+    </>
   );
 }
 

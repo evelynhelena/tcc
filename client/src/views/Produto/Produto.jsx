@@ -9,6 +9,7 @@ import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import server from "../../Config/BaseURL";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
+import Navbar from "../../components/NavBar/Navbar";
 
 function Produto() {
   const [type, setType] = useState("");
@@ -65,6 +66,8 @@ const insertProductType = async (productType) => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="content">
       <Container>
         <Row className="justify-content-center">
@@ -174,6 +177,7 @@ const insertProductType = async (productType) => {
         </Row>
       </Container>
     </div>
+    </>
   );
 }
 

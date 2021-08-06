@@ -13,6 +13,7 @@ import api from "../../services/Api";
 import swal from "@sweetalert/with-react";
 import "./Dashboard.css";
 import server from "../../Config/BaseURL";
+import Navbar from "../../components/NavBar/Navbar";
 function Home() {
   const [countUser,setCountUser] = useState([]);
   const getCountUsers = async () => {
@@ -28,6 +29,8 @@ function Home() {
   }, []);
 
   return (
+    <>
+    <Navbar/>
     <div className="dashboard mt-4">
       <Container>
 
@@ -124,6 +127,7 @@ function Home() {
         </Row>
       </Container>
     </div>
+    </>
   );
 }
 

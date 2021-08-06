@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import server from "../../Config/BaseURL";
+import Navbar from "../../components/NavBar/Navbar";
 function User() {
   const [users, setUsers] = useState([]);
   const columns = [
@@ -97,11 +98,13 @@ function User() {
   };
   return (
     <>
+     <Navbar />
       {!users ? (
         <>
           <p>Carregando...</p>
         </>
       ) : (
+        
         <div className="content wrapper-user">
           <Container>
             <Row>
