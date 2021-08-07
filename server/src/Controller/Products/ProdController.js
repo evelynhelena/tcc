@@ -62,4 +62,23 @@ module.exports = {
       }
     );
   },
+
+  findById(req, res){
+    const connection = bdConnect();
+    const id = req.params.id;
+    connection.query(
+      `select * from tbl_products_type where id_product_type = ${id} and ind_cance = 0`,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar os tipos de produto",
+              error,
+            },
+          });
+        }
+        return res.send(results);
+      }
+    );
+  }
 };

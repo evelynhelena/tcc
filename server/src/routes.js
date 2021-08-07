@@ -10,8 +10,9 @@ routes.get("/", (req, res) => {
 });
 
 // ROTAS PRODUCTS
-routes.post('/products', ProdController.insert)
-routes.get('/products', ProdController.findAll)
+routes.post('/productsType', ProdController.insert)
+routes.get('/productsType', ProdController.findAll)
+routes.get('/productsType/:id', ProdController.findById)
 
 
 // ROTAS USERS

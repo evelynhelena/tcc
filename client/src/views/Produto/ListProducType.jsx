@@ -13,12 +13,15 @@ import * as FaIcons from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import swal from "@sweetalert/with-react";
 import server from "../../Config/BaseURL";
 import api from "../../services/Api";
 import currencyFormatter from 'currency-formatter';
 import Navbar from "../../components/NavBar/Navbar";
+import Tooltip from "@material-ui/core/Tooltip";
+import "./ListProductType.css";
 function ListProducType() {
     const [productsType, setProductsType] = useState([]);
     const columns = [
@@ -50,25 +53,33 @@ function ListProducType() {
       {
         name: "Ações",
         cell: (data) => (
-          <div className="pl-0">
-          <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
-            <Link as={Link} to={"/EditUser/" + data.id}>
+          <>
+            <Tooltip title="Editar">
+              <Link as={Link} to={"/EditUser/" + data.id} className="btn-link-trable btn-link-trable-color-simple">
               <EditIcon />
-            </Link>
-          </IconButton>
-          <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
-            <Link as={Link} to={"/EditUser/" + data.id}>
+              </Link>
+            </Tooltip>
+            <Tooltip title="Cadastar Produto">
+              <Link as={Link} to={"/EditUser/" + data.id} className="btn-link-trable btn-link-trable-color-sucess">
               <AddIcon />
-            </Link>
-          </IconButton>
-        </div>
+              </Link>
+            </Tooltip>
+            <Tooltip title="Desativar">
+              <Link as={Link} to={"/EditUser/" + data.id} className="btn-link-trable btn-link-trable-color-danger">
+              <DeleteIcon />
+              </Link>
+            </Tooltip>
+            </>
+      
+            
+         
         ),
       },
     ];
 
     const getProductType = async () => {
         try {
-          const { data } = await api.get(`${server.url}products`);
+          const { data } = await api.get(`${server.url}productsType`);
           if (data) {
             data.forEach(el => {
                 el.dataValitObrigatorio = el.ind_isento_data_vality === 1 ? "Sim" : "Não";
@@ -78,7 +89,7 @@ function ListProducType() {
             console.log(data);
           }
         } catch (err) {
-          swal("Erro", "Erro ao inserir o tipo de produto", "error");
+          swal("Erro", "Erro ao listar tipo de produto", "error");
         }
         console.log()
       }
@@ -90,7 +101,7 @@ function ListProducType() {
   return (
     <>
     <Navbar/>
-    <div className="content">
+    <div className="content wrapper-product-type">
         <Container>
             <Row>
               <Col xs={12} md={12}>

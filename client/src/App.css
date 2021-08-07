@@ -189,3 +189,59 @@
 .font-footer-info{
   font-size:13px;
 }
+
+
+
+.btn-link-trable{
+  padding:5px;
+}
+
+.btn-link-trable-color-sucess{
+  color: #198754;
+}
+
+.btn-link-trable-color-sucess:hover{
+  background-color: #ade9cd52;
+  color: #198754;
+}
+
+.btn-link-trable-color-danger{
+  color: #f50057;
+}
+
+.btn-link-trable-color-danger:hover{
+  background-color: #ce698d42;
+  color: #f50057;
+}
+
+.btn-link-trable-color-simple{
+  color: #820b9a;
+}
+
+.btn-link-trable-color-simple:hover{
+  background-color: #b45dc526;
+  color: #820b9a;
+}
+
+.btn-normal-denger{
+  background-color: #fff !important;
+  border: none !important;
+}
+.btn-normal-denger:hover{
+  background-color: #ce698d42 !important;
+  color: #f50057 !important;
+}
+
+.btn-normal-denger:active{
+  background-color: #ce698d42 !important;
+  color: #f50057 !important;
+  outline: none !important;
+  border:none !important;
+}
+.btn-normal-denger:focus{
+  background-color: #ce698d42 !important;
+  color: #f50057 !important;
+  outline: none !important;
+  border:none !important;
+}
+

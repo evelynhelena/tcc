@@ -11,6 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import server from "../../Config/BaseURL";
 import Navbar from "../../components/NavBar/Navbar";
+import Tooltip from "@material-ui/core/Tooltip";
 function User() {
   const [users, setUsers] = useState([]);
   const columns = [
@@ -37,7 +38,22 @@ function User() {
     {
       name: "Ações",
       cell: (data) => (
-        <div className="pl-0">
+
+        <>
+        <Tooltip title="Editar">
+          <Link as={Link} to={"/EditUser/" + data.id} className="btn-link-trable btn-link-trable-color-simple">
+          <EditIcon />
+          </Link>
+        </Tooltip>
+        <Tooltip title="Deletar">
+        <Button className="btn-link-trable btn-link-trable-color-danger btn-normal-denger">
+                  <DeleteIcon/>
+        </Button>
+        
+        </Tooltip>
+        </>
+
+        /*<div className="pl-0">
         <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
           <Link as={Link} to={"/EditUser/" + data.id}>
             <EditIcon />
@@ -46,7 +62,7 @@ function User() {
         <IconButton className="p-1" onClick={() => deleteUser(data.id)} color="secondary" aria-label="delete">
           <DeleteIcon />
         </IconButton>
-      </div>
+      </div>*/
       ),
     },
   ];
