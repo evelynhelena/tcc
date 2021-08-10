@@ -1,217 +1,164 @@
-import moment from 'moment';
-import conexao from '../../Configs/bd'
+const mysql = require("mysql");
+const bdConnect = () => {
+  return mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASS,
+    database: process.env.MYSQL_DB,
+  });
+};
 
-import * as Yup from 'yup'
-const date = moment().utc().format("yyyy-MM-DD hh:mm:ss");
-
-class Products {
-    async insert (req, res)  {
-        try {
-            let response
-            const connection = await conexao()
-
-            const { name, value, quantidade } = req.body
-
-            const validation = Yup.object().shape({
-                name: Yup.string().required(),
-                value: Yup.number().required(),
-                quantidade: Yup.number().required()
-            })
-
-            if(!(await validation.isValid(req.body))) return res.status(400).json({
-                erro: 'Dados Incorretos'
-            })
-
-            const values = [
-                null,
-                name,
-                value,
-                quantidade,
-                date,
-                0
-            ]
-
-            // VERIFICANDO SE O PRODUTO JA EXISTE NO BANCO DE DADOS
-            connection.query(`select name from tbl_products where name= ? `, name,
-                (error, result) => {
-
-                if(error) return res.status(400).json({
-                    erro: 'Erro ao buscar dados do produto'
-                })
-
-                // PERCORRENDO QUERY DO BANCO
-                result.forEach(element => {
-                    if(element.name == name) return response = true
-                });
-
-                if(response) return res.status(400).json({
-                    erro: 'Dados duplicados'
-                })
-
-                if(!response) return connection.query('insert into tbl_products values(?,?,?,?,?,?)',values,
-                    (error, result) => {
-                    if(error) res.status(400).json({
-                        erro: 'Error ao inserir dados'
-                    })
-    
-                    if(!error) console.log('Insert ok')
-    
-                    res.json({ result })
-                })
-            })
-
-        } catch (error) {
-            console.log("erro" + error)
-        }
-        
+const verifyRequest = (obj) => {
+  for (var [key, value] of Object.entries(obj)) {
+    if (null === value || undefined === value || value.length === 0) {
+      return false;
     }
+  }
+  return true;
+};
 
-    async update (req, res) {
-        try {
-            const { id } = req.params
-
-            const connection = await conexao()
-            
-            const { name, value, quantidade } = req.body
-
-            const validation = Yup.object().shape({
-                name: Yup.string().required(),
-                value: Yup.number().required(),
-                quantidade: Yup.number().required()
-            })
-
-            if(!validation.isValid(req.body)) return res.status(400).json({
-                erro: 'Dados incorretos'
-            })
-
-            const values = [
-                name,
-                value,
-                quantidade,
-                id
-            ]
-
-            const fields = [
-                name,
-                id
-            ]
-
-            if(id <= 0 ) return res.status(400).json({
-                erro: 'Parametros invalidos'
-            })
-
-
-            connection.query(`SELECT * FROM tbl_products where name = ? and id = ? `, fields,
-                (error, result) => {
-
-                if(error) return res.status(400).json({
-                    erro: 'Dados não encontrados'
-                })
-
-                if(result.length == 0){
-                    
-                    connection.query(`update tbl_products set name = ?, value = ? ,
-                        quantity = ? where id = ? `, values,
-                            (error, result) => {
-
-                                if(error) return res.status(400).json({
-                                    erro: 'Dados não atualizados'
-                                })
-
-                                res.json({
-                                    result, id
-                                })
-                            })
-                }
-            })
-
-        } catch (error) {
-            res.status(400).json({
-                erro: 'Erro ao atualizar'
-            })
+module.exports = {
+  insert(req, res) {
+    let fields = [
+      null,
+      req.body.type,
+      req.body.indeIsentoDataVality,
+      req.body.quantidadeMin,
+      "0",
+      req.body.value,
+    ];
+    const connection = bdConnect();
+    connection.query(
+      "insert into tbl_products_type values (?, ?, ?, ?, ?, ?)",
+      fields,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao tentar inserir um tipo de produto",
+              error,
+            },
+          });
         }
-    }
+        return res.send(results);
+      }
+    );
+  },
 
-    async delete (req, res) {
-        const { id } = req.params
-        try {
-            const connection = await conexao()
-
-            if(id <= 0) return res.status(500).json({
-                erro: 'Parametros invalidos'
-            })
-
-            connection.query(`update tbl_products set ind_cance = '1' where id = ? and ind_cance = '0' `,id,
-                (error, result) => {
-
-                    if (error) return res.status(400).json({
-                        erro: 'Não foi possivel deletar esse produto'
-                    })
-
-                    if(result.changedRows === 0) return res.status(500).json({
-                        erro: 'Produto não encontrado ou já exluido'
-                    })
-
-                    res.status(200).json({
-                        sucess: 'Produto excluido com sucesso'
-                    })
-                })
-
-            
-        } catch (error) {
-            res.status(400).json({
-                erro: 'Erro ao excluir produto'
-            })
+  findAll(req, res) {
+    const connection = bdConnect();
+    connection.query(
+      "select * from tbl_products_type",
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar os tipos de produto",
+              error,
+            },
+          });
         }
-    }
+        return res.send(results);
+      }
+    );
+  },
 
-    async findAll (req, res) {
-        try {
-            const connection = await conexao()
-
-            connection.query('SELECT * FROM tbl_products',
-             (error, result) => {
-                if(error) res.status(400).json({
-                    erro: 'Error ao buscar os dados'
-                })
-
-                if(!error) console.log('Busca ok')
-
-                res.json({ result })
-            })
-
-
-        } catch (error) {
-            console.log("erro" + error)
+  findById(req, res){
+    const connection = bdConnect();
+    const id = req.params.id;
+    connection.query(
+      `select * from tbl_products_type where id_product_type = ${id}`,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar os tipos de produto",
+              error,
+            },
+          });
         }
-    }
+        return res.send(results);
+      }
+    );
+  },
 
-    async findOne (req, res) {
-        const { id } = req.params
-
-        try {
-            const connection = await conexao()
-
-            if(id <= 0) return res.status(400).json({
-                erro: 'Erro na busca'
-            })
-
-            connection.query(`SELECT * FROM tbl_products where id = ${id}`,
-             (error, result) => {
-                if(error) res.status(400).json({
-                    erro: 'Error ao buscar os dados'
-                })
-
-                if(!error) console.log('Busca ok')
-
-                res.json({ result })
-            })
-
-
-        } catch (error) {
-            console.log("erro" + error)
+  update(req, res) {
+    const connection = bdConnect();
+    const id = req.params.id;
+    let fields = [
+      req.body.type,
+      req.body.indeIsentoDataVality,
+      req.body.quantidadeMin,
+      "0",
+      req.body.value,
+    ];
+    connection.query(
+      `update tbl_products_type set type = ?, ind_isento_data_vality = ? , quantity_minima = ?, ind_cance = ?, value = ? where id_product_type = ${id}`,
+      fields,
+      function (error, results) {
+        if (error) {
+          return res.status(404).send({
+            error: {
+              msg: "Erro ao tentar alterar o tipo de produto",
+              error,
+            },
+          });
         }
-    }
-}
+        return res.send({
+          ...req.body,
+          id,
+        });
+      }
+    );
+  },
 
-export default new Products
+  delete(req, res) {
+    const connection = bdConnect();
+    const id = req.params.id;
+
+    connection.query(
+      "update tbl_products_type set ind_cance = '1' where id_product_type = ?",
+      [id],
+      function (error, results) {
+        if (error) {
+          return res
+            .status(501)
+            .send({ error: { msg: "Erro ao tentar excluir",erro: error } });
+        } else if (results.changedRows === 0) {
+          return res.send({
+            error: { msg: "Tipo de Produto  não cadastrado", status: 500 },
+          });
+        }
+        return res.send({
+          msg: "Registro excluído com sucesso",
+        });
+      }
+    );
+  },
+  
+  reability(req, res) {
+    const connection = bdConnect();
+    const id = req.params.id;
+
+    connection.query(
+      "update tbl_products_type set ind_cance = '0' where id_product_type = ?",
+      [id],
+      function (error, results) {
+        if (error) {
+          return res
+            .status(501)
+            .send({ error: { msg: "Erro ao tentar reativar tipo de produto",erro: error } });
+        } else if (results.changedRows === 0) {
+          return res.send({
+            error: { msg: "Tipo de Produto  não cadastrado", status: 500 },
+          });
+        }
+        return res.send({
+          msg: "Registro rativado com sucesso",
+        });
+      }
+    );
+  },
+
+
+};

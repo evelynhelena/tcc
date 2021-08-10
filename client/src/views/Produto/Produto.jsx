@@ -1,91 +1,228 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Card, Button,Image  } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Container, Row, Col, Form, Card, Button } from "react-bootstrap";
 import TextField from "@material-ui/core/TextField";
+import Switch from "@material-ui/core/Switch";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
+import server from "../../Config/BaseURL";
+import swal from "@sweetalert/with-react";
+import api from "../../services/Api";
+import Navbar from "../../components/NavBar/Navbar";
+import currencyFormatter from 'currency-formatter';
 
-function Produto(){
+function Produto() {
+  const [type, setType] = useState("");
+  const [preco, setPreco] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [indeIsentoDataVality, setIndeIsentoDataVality] = useState({
+    checked: false,
+  });
+  const { id } = useParams();
+  const [enviado, setEnviado] = useState(false);
+  
+const validaCampos = () =>{
+  let typeProductInsert = {
+    type: type,
+    quantidadeMin: quantidade,
+    value: parseFloat(preco),
+    indeIsentoDataVality: indeIsentoDataVality.checked
+  }
 
-    const [name, setName] = useState("");
-    const [value, setValue] = useState("");
-    const [quantidade, setQuantidade] = useState("");
-    const [description, setDescription] = useState("");
-
-    const handleSubmit = function (){
-        console.log("ola mundo");
+  for (var [key, value] of Object.entries(typeProductInsert)) {
+    if (null === value || value.length === 0 || undefined === value) {
+      return false;
     }
+  }
 
-    return (
-        <div className="products">
-            <Container>
-                <Row>
-                <Col  md={8}>
+  return typeProductInsert;
+}
+
+const insertProductType = async (productType) => {
+  try {
+    const { data } = await api.post(`${server.url}productsType/`, productType);
+    if (data) {
+        swal("Sucesso", "Tipo de produdo inserido com sucesso", "success");
+    }
+  } catch (err) {
+    swal("Erro", "Erro ao inserir o tipo de produto", "error");
+  }
+}
+
+const getProductTypeByID = async () =>{
+  try {
+    const { data } = await api.get(`${server.url}productsType/` + id);
+    if (data) {
+      setType(data[0].type);
+      setPreco(currencyFormatter.format(data[0].value, { code: 'pt-BR', decimal: '.', decimalDigits:2 }));
+      setQuantidade(data[0].quantity_minima);
+      setIndeIsentoDataVality({
+        checked: data[0].ind_isento_data_vality === 1,
+      });
+
+    }
+  } catch (err) {
+    swal("Erro", "Erro ao resgatar produto selecionado", "error");
+  }
+}
+
+useEffect(() =>{
+  if(id){
+    getProductTypeByID();
+  }
+},[])
+
+  const handleSubmit =  () => {
+    let insert = validaCampos();
+    setEnviado(true);
+    if (insert) {
+      insertProductType(insert);
+    }
+  };
+
+  const update = async () =>{
+    let updateProduct = validaCampos();
+    if(updateProduct){
+      try {
+        const { data } = await api.put(`${server.url}productsType/` + id,updateProduct);
+        if (data) {
+          swal("Sucesso", "Tipo de Produto editado com sucesso", "success");
+          setType(data.type);
+          setPreco(currencyFormatter.format(data.value, { code: 'pt-BR', decimal: '.', decimalDigits:2 }));
+          setQuantidade(data.quantidadeMin);
+          setIndeIsentoDataVality({
+            checked: data.indeIsentoDataVality,
+          });
+    
+        }
+      } catch (err) {
+        swal("Erro", "Erro ao editar tipo de produto", "error");
+      }
+    }
+  }
+
+  const handleChange = (event) => {
+    setIndeIsentoDataVality({
+      ...indeIsentoDataVality,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  return (
+    <>
+    <Navbar/>
+    <div className="content">
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={8}>
             <Card>
               <Card.Header>
-                <Card.Title>
-                  <h4>Novo Produto</h4>
+                <Card.Title className="mb-0">
+                  <h4 className="mb-0">{ id ? "Editando Produto - " + id :  "Novo Tipo de Produto"}</h4>
                 </Card.Title>
               </Card.Header>
               <Card.Body>
-                <form noValidate autoComplete="off">
+                <Form noValidate autoComplete="off">
                   <Row>
-                    <Col md={12}>
+                    <FormControl component="fieldset">
+                      <FormGroup aria-label="position" row>
+                        <FormControlLabel
+                          value="top"
+                          control={
+                            <Switch
+                              checked={indeIsentoDataVality.checked}
+                              onChange={handleChange}
+                              name="checked"
+                              color="primary"
+                              inputProps={{
+                                "aria-label": "primary checkbox",
+                              }}
+                            />
+                          }
+                          label="Produto Sem data de Validade"
+                          labelPlacement="start"
+                        />
+                      </FormGroup>
+                    </FormControl>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={12}>
                       <TextField
-                        id="name"
-                        label="Nome"
-                        value={name}
+                        id="tipo"
+                        label="Tipo*"
+                        value={type}
+                        error={type.length === 0 && enviado}
                         className="col-md-12"
-                        onChange={({ target }) => setName(target.value)}
+                        onChange={({ target }) => setType(target.value)}
                       />
+                      {type.length === 0 && enviado ? (
+                        <VerifyInputs value="Nome"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
 
                   <Row className="mt-4">
-                  <Col md={6}>
-                      <TextField
-                        id="value"
-                        label="Valor (R$)"
-                        value={value}
-                        className="col-md-12"
-                        onChange={({ target }) => setValue(target.value)}
-                      />
-                    </Col>
                     <Col md={6}>
                       <TextField
                         id="quantidade"
-                        label="Qauntidade"
+                        type="number"
+                        label="Quantidade Mínima*"
                         value={quantidade}
+                        error={quantidade.length === 0 && enviado}
                         className="col-md-12"
                         onChange={({ target }) => setQuantidade(target.value)}
                       />
+                      {quantidade.length === 0 && enviado ? (
+                        <VerifyInputs value="Quantidade Mínima"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
-                    <Col md={12}>
-                      <TextField
-                        id="description"
-                        label="Descrição"
-                        value={description}
+                    <Col md={6}>
+                    <TextField
+                        id="value"
+                        label="Preço(R$)*"
+                        value={preco}
+                        error={preco.length === 0 && enviado}
                         className="col-md-12"
-                        multiline
-                        rows={3}
-                        onChange={({ target }) => setDescription(target.value)}
+                        onChange={({ target }) => setPreco(target.value.replace(',', '.'))}
                       />
+                      {preco.length === 0 && enviado ? (
+                        <VerifyInputs value="Preço"></VerifyInputs>
+                      ) : (
+                        ""
+                      )}
                     </Col>
                   </Row>
-                </form>
+                  <Row className="mt-4">
+                    <Col xs={12} md={12}>
+                      <p className="mb-0 font-footer-info">
+                        (*) Campus Obrigatórios
+                      </p>
+                    </Col>
+                  </Row>
+                </Form>
               </Card.Body>
               <Card.Footer>
                 <Button
                   variant="info"
                   className="float-right"
-                  onClick={handleSubmit}
+                  onClick={() => (id ? update() : handleSubmit())}
                 >
-                  Salvar
+                  {id ? "Editar" :  "Salvar"}
                 </Button>
               </Card.Footer>
             </Card>
           </Col>
-                </Row>
-            </Container>
-        </div>
-    );
+        </Row>
+      </Container>
+    </div>
+    </>
+  );
 }
 
 export default Produto;

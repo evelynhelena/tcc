@@ -1,0 +1,27 @@
+.btn-link-trable{
+    padding:5px;
+}
+
+.btn-link-trable-color-sucess{
+    color: #198754;
+}
+
+.btn-link-trable-color-sucess:hover{
+    background-color: #ade9cd52;
+}
+
+.btn-link-trable-color-danger{
+    color: #f50057;
+}
+
+.btn-link-trable-color-danger:hover{
+    background-color: #ce698d42;
+}
+
+.btn-link-trable-color-simple{
+    color: #820b9a;
+}
+
+.btn-link-trable-color-simple:hover{
+    background-color: #b45dc526;
+}

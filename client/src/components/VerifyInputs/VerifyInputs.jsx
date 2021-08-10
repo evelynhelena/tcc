@@ -3,7 +3,7 @@ import "./VerifyInputs.css";
 function VerifyInputs(props) {
     return (
         <>
-             <div className="mt-1 text-danger font-verify-input">{props.value} é obrigatório</div>
+             <div className="text-danger font-verify-input">{props.value} é obrigatório</div>
         </>
     )
 }

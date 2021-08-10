@@ -28,6 +28,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import FormControl from "@material-ui/core/FormControl";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import server from "../../Config/BaseURL";
+import Navbar from "../../components/NavBar/Navbar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -106,7 +107,9 @@ function NewUser() {
     );
   };
   useEffect(() => {
-    getUser();
+    if(id){
+      getUser();
+    }
   }, []);
 
   const resetaCampos = () => {
@@ -245,6 +248,8 @@ function NewUser() {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="content">
       <Container>
         <Row>
@@ -253,7 +258,7 @@ function NewUser() {
               <Card.Header>
                 <Card.Title className="mb-0">
                   <h4 className="mb-0">
-                    {id ? "Editando o " : "Novo"} Usuário {id ? " - " + id : ""}
+                    {id ? "Editando " : "Novo"} Usuário {id ? " - " + id : ""}
                   </h4>
                 </Card.Title>
               </Card.Header>
@@ -603,6 +608,7 @@ function NewUser() {
         </Row>
       </Container>
     </div>
+    </>
   );
 }
 

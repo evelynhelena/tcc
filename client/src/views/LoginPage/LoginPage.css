@@ -1,0 +1,16 @@
+.wrapper-login .width-card-login{
+    width:400px;
+}
+
+.background-login-page{
+    background-Image: url("https://demos.creative-tim.com/material-dashboard-pro-react/static/media/login.c8a507cf.jpeg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+@media screen and (max-width:760px) {
+    .wrapper-login .width-card-login{
+        width:100%;
+    }
+}
