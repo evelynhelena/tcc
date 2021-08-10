@@ -10,6 +10,7 @@ import CalenderPage from "./views/Calender/CalenderPage";
 import ListProducType from "./views/Produto/ListProducType";
 import ErrorPage from "./views/ErrorPage/ErrorPage";
 import LoginPage from "./views/LoginPage/LoginPage";
+import EntradaProduto from "./views/EntradaProduto/EntradaProduto";
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
             <Route path='/Produto' exact component={ListProducType} />
             <Route path='/NewProductType' exact component={Produto} />
             <Route path='/EditProductType/:id' exact component={Produto} />
+
+            {/* Entrada de Prduto */}
+            <Route path='/EntradaProduto' exact component={EntradaProduto} />
 
             {/* Usuario */}
             <Route path='/Listuser' component={ListUser} />
