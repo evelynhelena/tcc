@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { Button, Container, Row, Col,Card } from "react-bootstrap";
+import { Button, Container, Row, Col, Card } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import "../../css/User.css";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
 import { Link } from "react-router-dom";
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 import server from "../../Config/BaseURL";
 import Navbar from "../../components/NavBar/Navbar";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -38,31 +37,25 @@ function User() {
     {
       name: "Ações",
       cell: (data) => (
-
         <>
-        <Tooltip title="Editar">
-          <Link as={Link} to={"/EditUser/" + data.id} className="btn-link-trable btn-link-trable-color-simple">
-          <EditIcon />
-          </Link>
-        </Tooltip>
-        <Tooltip title="Deletar">
-        <Button className="btn-link-trable btn-link-trable-color-danger btn-normal-denger">
-                  <DeleteIcon/>
-        </Button>
-        
-        </Tooltip>
+          <Tooltip title="Editar">
+            <Link
+              as={Link}
+              to={"/EditUser/" + data.id}
+              className="btn-link-trable btn-link-trable-color-simple"
+            >
+              <EditIcon />
+            </Link>
+          </Tooltip>
+          <Tooltip title="Deletar">
+            <Button
+              className="btn-link-trable btn-link-trable-color-danger btn-normal-denger"
+              onClick={() => deleteUser(data.id)}
+            >
+              <DeleteIcon />
+            </Button>
+          </Tooltip>
         </>
-
-        /*<div className="pl-0">
-        <IconButton className="p-1" color="primary" aria-label="add to shopping cart">
-          <Link as={Link} to={"/EditUser/" + data.id}>
-            <EditIcon />
-          </Link>
-        </IconButton>
-        <IconButton className="p-1" onClick={() => deleteUser(data.id)} color="secondary" aria-label="delete">
-          <DeleteIcon />
-        </IconButton>
-      </div>*/
       ),
     },
   ];
@@ -80,7 +73,7 @@ function User() {
     getUsers();
   }, []);
 
-  const deleteUser = function (id) {
+  const deleteUser = (id) => {
     swal({
       title: "Confermar Alteração !",
       text: "Deseja desativar este usuário",
@@ -89,61 +82,59 @@ function User() {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        api
-          .delete(`${server.url}users/` + id)
-          .then(function (response) {
-            let data = response.data;
-            if (data.msg) {
-              swal("Usuário deletado com sucesso", {
-                icon: "success",
-              });
-              getUsers();
-            } else if (data.error.status === 500) {
-              swal("Usuário não cadastrado", {
-                icon: "error",
-              })
-              getUsers();
-            } else {
-              swal("Erro ao deletar o usuário", {
-                icon: "error",
-              });
-            }
-          });
+        api.delete(`${server.url}users/` + id).then(function (response) {
+          let data = response.data;
+          if (data.msg) {
+            swal("Usuário deletado com sucesso", {
+              icon: "success",
+            });
+            getUsers();
+          } else if (data.error.status === 500) {
+            swal("Usuário não cadastrado", {
+              icon: "error",
+            });
+            getUsers();
+          } else {
+            swal("Erro ao deletar o usuário", {
+              icon: "error",
+            });
+          }
+        });
       }
     });
   };
+
   return (
     <>
-     <Navbar />
+      <Navbar />
       {!users ? (
         <>
           <p>Carregando...</p>
         </>
       ) : (
-        
         <div className="content wrapper-user">
           <Container>
             <Row>
               <Col xs={12} md={12}>
-              <Card>
-                <Card.Header>
-                  <Card.Title className="mb-0">
-                    <h4>Usuários</h4>
-                    <Card.Subtitle className="mt-1">
+                <Card>
+                  <Card.Header>
+                    <Card.Title className="mb-0">
+                      <h4>Usuários</h4>
+                      <Card.Subtitle className="mt-1">
                         Lista de usuários cadastrados
-                    </Card.Subtitle>
-                  </Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <DataTable
-                    columns={columns}
-                    data={users}
-                    defaultSortFieldId={1}
-                    sortIcon={<FaIcons.FaAngleUp />}
-                    pagination
-                  />
-                </Card.Body>
-              </Card>
+                      </Card.Subtitle>
+                    </Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <DataTable
+                      columns={columns}
+                      data={users}
+                      defaultSortFieldId={1}
+                      sortIcon={<FaIcons.FaAngleUp />}
+                      pagination
+                    />
+                  </Card.Body>
+                </Card>
               </Col>
             </Row>
           </Container>

@@ -107,7 +107,9 @@ function NewUser() {
     );
   };
   useEffect(() => {
-    getUser();
+    if(id){
+      getUser();
+    }
   }, []);
 
   const resetaCampos = () => {
@@ -256,7 +258,7 @@ function NewUser() {
               <Card.Header>
                 <Card.Title className="mb-0">
                   <h4 className="mb-0">
-                    {id ? "Editando o " : "Novo"} Usuário {id ? " - " + id : ""}
+                    {id ? "Editando " : "Novo"} Usuário {id ? " - " + id : ""}
                   </h4>
                 </Card.Title>
               </Card.Header>

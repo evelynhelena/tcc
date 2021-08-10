@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Container, Row, Col, Form, Card, Button } from "react-bootstrap";
 import TextField from "@material-ui/core/TextField";
 import Switch from "@material-ui/core/Switch";
@@ -10,6 +11,7 @@ import server from "../../Config/BaseURL";
 import swal from "@sweetalert/with-react";
 import api from "../../services/Api";
 import Navbar from "../../components/NavBar/Navbar";
+import currencyFormatter from 'currency-formatter';
 
 function Produto() {
   const [type, setType] = useState("");
@@ -18,10 +20,10 @@ function Produto() {
   const [indeIsentoDataVality, setIndeIsentoDataVality] = useState({
     checked: false,
   });
+  const { id } = useParams();
   const [enviado, setEnviado] = useState(false);
-
+  
 const validaCampos = () =>{
-
   let typeProductInsert = {
     type: type,
     quantidadeMin: quantidade,
@@ -40,7 +42,7 @@ const validaCampos = () =>{
 
 const insertProductType = async (productType) => {
   try {
-    const { data } = await api.post(`${server.url}products/`, productType);
+    const { data } = await api.post(`${server.url}productsType/`, productType);
     if (data) {
         swal("Sucesso", "Tipo de produdo inserido com sucesso", "success");
     }
@@ -49,14 +51,57 @@ const insertProductType = async (productType) => {
   }
 }
 
-  const handleSubmit = function () {
+const getProductTypeByID = async () =>{
+  try {
+    const { data } = await api.get(`${server.url}productsType/` + id);
+    if (data) {
+      setType(data[0].type);
+      setPreco(currencyFormatter.format(data[0].value, { code: 'pt-BR', decimal: '.', decimalDigits:2 }));
+      setQuantidade(data[0].quantity_minima);
+      setIndeIsentoDataVality({
+        checked: data[0].ind_isento_data_vality === 1,
+      });
+
+    }
+  } catch (err) {
+    swal("Erro", "Erro ao resgatar produto selecionado", "error");
+  }
+}
+
+useEffect(() =>{
+  if(id){
+    getProductTypeByID();
+  }
+},[])
+
+  const handleSubmit =  () => {
     let insert = validaCampos();
     setEnviado(true);
     if (insert) {
       insertProductType(insert);
     }
-
   };
+
+  const update = async () =>{
+    let updateProduct = validaCampos();
+    if(updateProduct){
+      try {
+        const { data } = await api.put(`${server.url}productsType/` + id,updateProduct);
+        if (data) {
+          swal("Sucesso", "Tipo de Produto editado com sucesso", "success");
+          setType(data.type);
+          setPreco(currencyFormatter.format(data.value, { code: 'pt-BR', decimal: '.', decimalDigits:2 }));
+          setQuantidade(data.quantidadeMin);
+          setIndeIsentoDataVality({
+            checked: data.indeIsentoDataVality,
+          });
+    
+        }
+      } catch (err) {
+        swal("Erro", "Erro ao editar tipo de produto", "error");
+      }
+    }
+  }
 
   const handleChange = (event) => {
     setIndeIsentoDataVality({
@@ -75,7 +120,7 @@ const insertProductType = async (productType) => {
             <Card>
               <Card.Header>
                 <Card.Title className="mb-0">
-                  <h4 className="mb-0">Novo Tipo de Produto</h4>
+                  <h4 className="mb-0">{ id ? "Editando Produto - " + id :  "Novo Tipo de Produto"}</h4>
                 </Card.Title>
               </Card.Header>
               <Card.Body>
@@ -140,12 +185,11 @@ const insertProductType = async (productType) => {
                     <Col md={6}>
                     <TextField
                         id="value"
-                        type="number"
                         label="Preço(R$)*"
                         value={preco}
                         error={preco.length === 0 && enviado}
                         className="col-md-12"
-                        onChange={({ target }) => setPreco(target.value)}
+                        onChange={({ target }) => setPreco(target.value.replace(',', '.'))}
                       />
                       {preco.length === 0 && enviado ? (
                         <VerifyInputs value="Preço"></VerifyInputs>
@@ -167,9 +211,9 @@ const insertProductType = async (productType) => {
                 <Button
                   variant="info"
                   className="float-right"
-                  onClick={handleSubmit}
+                  onClick={() => (id ? update() : handleSubmit())}
                 >
-                  Salvar
+                  {id ? "Editar" :  "Salvar"}
                 </Button>
               </Card.Footer>
             </Card>

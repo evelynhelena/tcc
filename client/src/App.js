@@ -19,6 +19,7 @@ function App() {
             <Route path='/Dashboard' exact component={Dashboard} />
             <Route path='/Produto' exact component={ListProducType} />
             <Route path='/NewProductType' exact component={Produto} />
+            <Route path='/EditProductType/:id' exact component={Produto} />
             <Route path='/Listuser' component={ListUser} />
             <Route path='/NewUser' component={NewUser} />
             <Route path='/EditUser/:id' component={NewUser} />

@@ -189,11 +189,14 @@
 .font-footer-info{
   font-size:13px;
 }
-
+.btn-contained{
+  cursor: not-allowed;
+}
 
 
 .btn-link-trable{
   padding:5px;
+  border-radius: 4px;
 }
 
 .btn-link-trable-color-sucess{
@@ -212,6 +215,15 @@
 .btn-link-trable-color-danger:hover{
   background-color: #ce698d42;
   color: #f50057;
+}
+
+.btn-link-trable-color-reative{
+  color: #ff9800 !important;
+}
+
+.btn-link-trable-color-reative:hover{
+  background-color: #ff980029;
+  color: #ff9800 !important;
 }
 
 .btn-link-trable-color-simple{
@@ -236,12 +248,32 @@
   background-color: #ce698d42 !important;
   color: #f50057 !important;
   outline: none !important;
-  border:none !important;
+  border-color: #ce698d42;
 }
 .btn-normal-denger:focus{
   background-color: #ce698d42 !important;
   color: #f50057 !important;
-  outline: none !important;
-  border:none !important;
+  border-color: #ce698d42;
 }
 
+
+.btn-normal-reative{
+  background-color: #fff !important;
+  border: none !important;
+}
+.btn-normal-reative:hover{
+  background-color: #ff980029 !important;
+  color: #ff9800 !important;
+}
+
+.btn-normal-reative:active{
+  background-color: #ff980029 !important;
+  color: #ff9800 !important;
+  outline: none !important;
+  border-color: #ff980029;
+}
+.btn-normal-reative:focus{
+  background-color: #ff980029 !important;
+  color: #ff9800 !important;
+  border-color: #ff980029;
+}
