@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import DataTable from "react-data-table-component";
-import IconButton from "@material-ui/core/IconButton";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -55,6 +55,15 @@ function ListProducType() {
       name: "Ações",
       cell: (data) => (
         <>
+          <Tooltip title="Lista de Produtos">
+            <Link
+              as={Link}
+              to={"/EditProductType/" + data.id_product_type}
+              className="btn-link-trable btn-link-trable-color-primery"
+            >
+              <VisibilityIcon />
+            </Link>
+          </Tooltip>
           <Tooltip title="Editar">
             <Link
               as={Link}
@@ -68,7 +77,7 @@ function ListProducType() {
             <Tooltip title="Cadastar Produto">
               <Link
                 as={Link}
-                to={"/EditProductType/" + data.id}
+                to={"/EntradaProduto/" + data.id_product_type}
                 className="btn-link-trable btn-link-trable-color-sucess"
               >
                 <AddIcon />
