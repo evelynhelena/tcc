@@ -17,13 +17,21 @@ function App() {
           <Switch>
             <Route path='/' exact component={LoginPage} />
             <Route path='/Dashboard' exact component={Dashboard} />
+
+            {/* Tipo de produto */}
             <Route path='/Produto' exact component={ListProducType} />
             <Route path='/NewProductType' exact component={Produto} />
             <Route path='/EditProductType/:id' exact component={Produto} />
+
+            {/* Usuario */}
             <Route path='/Listuser' component={ListUser} />
             <Route path='/NewUser' component={NewUser} />
             <Route path='/EditUser/:id' component={NewUser} />
+
+            {/* Calendario */}
             <Route path='/Calendar' component={CalenderPage} />
+            
+            {/* Pagina de erro */}
             <Route path='*' component={ErrorPage} />
           </Switch>
       </Router>
