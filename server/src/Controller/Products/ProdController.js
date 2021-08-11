@@ -28,21 +28,29 @@ module.exports = {
       req.body.value,
     ];
     const connection = bdConnect();
-    connection.query(
-      "insert into tbl_products_type values (?, ?, ?, ?, ?, ?)",
-      fields,
-      function (error, results) {
-        if (error) {
-          return res.status(500).send({
-            error: {
-              msg: "Erro ao tentar inserir um tipo de produto",
-              error,
-            },
-          });
+    if(verifyRequest(req.body)){
+      connection.query(
+        "insert into tbl_products_type values (?, ?, ?, ?, ?, ?)",
+        fields,
+        function (error, results) {
+          if (error) {
+            return res.status(500).send({
+              error: {
+                msg: "Erro ao tentar inserir um tipo de produto",
+                error,
+              },
+            });
+          }
+          return res.send(results);
         }
-        return res.send(results);
-      }
-    );
+      );
+    }else{
+      return res.status(500).send({
+        error: {
+          msg: "Campus vazios não são permitidos"
+        },
+      });
+    }
   },
 
   findAll(req, res) {
@@ -92,24 +100,32 @@ module.exports = {
       "0",
       req.body.value,
     ];
-    connection.query(
-      `update tbl_products_type set type = ?, ind_isento_data_vality = ? , quantity_minima = ?, ind_cance = ?, value = ? where id_product_type = ${id}`,
-      fields,
-      function (error, results) {
-        if (error) {
-          return res.status(404).send({
-            error: {
-              msg: "Erro ao tentar alterar o tipo de produto",
-              error,
-            },
+    if(verifyRequest(req.body)){
+      connection.query(
+        `update tbl_products_type set type = ?, ind_isento_data_vality = ? , quantity_minima = ?, ind_cance = ?, value = ? where id_product_type = ${id}`,
+        fields,
+        function (error, results) {
+          if (error) {
+            return res.status(404).send({
+              error: {
+                msg: "Erro ao tentar alterar o tipo de produto",
+                error,
+              },
+            });
+          }
+          return res.send({
+            ...req.body,
+            id,
           });
         }
-        return res.send({
-          ...req.body,
-          id,
-        });
-      }
-    );
+      );
+    }else{
+      return res.status(500).send({
+        error: {
+          msg: "Campus vazios não são permitidos"
+        },
+      });
+    }
   },
 
   delete(req, res) {

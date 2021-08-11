@@ -62,11 +62,31 @@ function EntradaProduto() {
   }, []);
 
   const handleSubmit = () => {
-      setVisibleAlert(true)
-      setTimeout(
-        () => setVisibleAlert(false), 
-        3000
-      );
+    const data = {
+      idTypeProd: idPrduto,
+      quantidade: qauntidade,
+    }
+    if(produtoSemDataValid){
+      data.dataValidy = new Date(date) 
+    }
+
+    if(qauntidade < estoqueMin){
+      swal({
+        title: "Atenção?",
+        text: "Produto abaixo do estoque Minímo, deseja proseguir ? ",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((wiInsert) => {
+        if (wiInsert) {
+          setVisibleAlert(true);
+          setTimeout(
+           () => setVisibleAlert(false), 
+           3000
+         );
+        }
+      });
+    }
   };
 
 
@@ -74,10 +94,9 @@ function EntradaProduto() {
   return (
     <>
       <Navbar/>
-      <Alerts visible={visibleAlert} type="warning" title="Atenção! Produto abaixo do estoque Minímo"></Alerts>
+      <Alerts visible={visibleAlert} type="warning" title="Atenção! Produto inserido a lista de produtos com estoque baixo"></Alerts>
       <div className="content">
         <Container>
-       
           <Row className="justify-content-center">
             <Col md={8}>
               <Card>

@@ -45,7 +45,7 @@ function Navbar() {
           </Link>
           <div className="d-flex">
             <DatePicker date={date} />
-            <Button
+            {/*<Button
               className="min-width-button-header"
               aria-controls="menuAlert"
               aria-haspopup="true"
@@ -55,7 +55,7 @@ function Navbar() {
                 <span>3</span>
               </div>
               <FaIcons.FaBell className="icon-header" />
-            </Button>
+            </Button>*/}
             <Menu
               id="menuAlert"
               anchorEl={menuAlert}

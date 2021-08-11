@@ -9,7 +9,7 @@ routes.get("/", (req, res) => {
   res.send("Teste");
 });
 
-// ROTAS PRODUCTS
+// ROTAS Tipos Produto
 routes.post('/productsType', ProdController.insert);
 routes.get('/productsType', ProdController.findAll);
 routes.get('/productsType/:id', ProdController.findById);
@@ -17,8 +17,10 @@ routes.put('/productsType/:id', ProdController.update);
 routes.put('/productsTypeReability/:id', ProdController.reability);
 routes.delete('/productsType/:id', ProdController.delete);
 
+// ROTAS Entrada Produto
 
-// ROTAS USERS
+
+// ROTAS Usuarios
 routes.get("/users", UserController.findAll);
 routes.get("/findUserType",UserController.findUserType);
 routes.post("/insert", UserController.insert);

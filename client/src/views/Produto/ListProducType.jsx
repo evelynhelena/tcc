@@ -55,15 +55,6 @@ function ListProducType() {
       name: "Ações",
       cell: (data) => (
         <>
-          <Tooltip title="Lista de Produtos">
-            <Link
-              as={Link}
-              to={"/EditProductType/" + data.id_product_type}
-              className="btn-link-trable btn-link-trable-color-primery"
-            >
-              <VisibilityIcon />
-            </Link>
-          </Tooltip>
           <Tooltip title="Editar">
             <Link
               as={Link}
@@ -71,6 +62,15 @@ function ListProducType() {
               className="btn-link-trable btn-link-trable-color-simple"
             >
               <EditIcon />
+            </Link>
+          </Tooltip>
+          <Tooltip title="Lista de Produtos">
+            <Link
+              as={Link}
+              to={"/EditProductType/" + data.id_product_type}
+              className="btn-link-trable btn-link-trable-color-primery"
+            >
+              <VisibilityIcon />
             </Link>
           </Tooltip>
           {data.ind_cance === 0 ? (
@@ -124,7 +124,7 @@ function ListProducType() {
       if (data) {
         data.forEach((el) => {
           el.dataValitObrigatorio =
-            el.ind_isento_data_vality === 1 ? "Sim" : "Não";
+            el.ind_isento_data_vality === 0 ? "Sim" : "Não";
           el.valueFormt = currencyFormatter.format(el.value, {
             code: "pt-BR",
             decimal: ",",
