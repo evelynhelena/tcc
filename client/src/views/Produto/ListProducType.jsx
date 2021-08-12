@@ -6,12 +6,10 @@ import {
   Col,
   Card,
   Button,
-  Image,
-  Form,
 } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import DataTable from "react-data-table-component";
-import VisibilityIcon from "@material-ui/icons/Visibility";
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -70,7 +68,7 @@ function ListProducType() {
               to={"/EditProductType/" + data.id_product_type}
               className="btn-link-trable btn-link-trable-color-primery"
             >
-              <VisibilityIcon />
+              <FormatListBulletedIcon />
             </Link>
           </Tooltip>
           {data.ind_cance === 0 ? (

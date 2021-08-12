@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/NavBar/Navbar";
-import { useParams } from "react-router-dom";
+import { useParams , Redirect} from "react-router-dom";
 import { Container, Row, Col, Form, Card, Button } from "react-bootstrap";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import server from "../../Config/BaseURL";
@@ -17,14 +17,13 @@ import api from "../../services/Api";
 import currencyFormatter from "currency-formatter";
 import Alerts from "../../components/Alerts/Alerts";
 
-
 function EntradaProduto() {
   const [idPrduto, setIdPrduto] = useState("");
   const [value, setValue] = useState("");
   const [typeProduct, setTypeProduct] = useState("");
   const [estoqueMin, setEstoqueMin] = useState("");
   const [produtoSemDataValid, setProdutoSemDataValid] = useState(false);
-  const [qauntidade, setQauntidade] = useState("");
+  const [quantidade, setQuantidade] = useState(0);
   const [date, setDate] = useState(new Date());
   const [visibleAlert, setVisibleAlert] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -33,6 +32,29 @@ function EntradaProduto() {
   const handleDateChange = (date) => {
     setDate(date);
   };
+
+  const validaCampus = () =>{
+    const data = {
+      idTypeProd: idPrduto,
+      quantidade: parseInt(quantidade),
+    };
+    if (produtoSemDataValid) {
+      data.dataValidy = date;
+    } else {
+      data.dataValidy = null;
+    }
+
+    if(produtoSemDataValid && !data.dataValidy){
+      return false;
+    }
+
+    for (var [key, value] of Object.entries(data)) {
+      if (((null === value || undefined === value || value.length === 0) && (key !== 'dataValidy')) ) {
+        return false;
+      }
+    }
+    return data;
+  }
 
   const getProductTypeByID = async () => {
     try {
@@ -61,40 +83,54 @@ function EntradaProduto() {
     }
   }, []);
 
-  const handleSubmit = () => {
-    const data = {
-      idTypeProd: idPrduto,
-      quantidade: qauntidade,
-    }
-    if(produtoSemDataValid){
-      data.dataValidy = new Date(date) 
-    }
-
-    if(qauntidade < estoqueMin){
-      swal({
-        title: "Atenção?",
-        text: "Produto abaixo do estoque Minímo, deseja proseguir ? ",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-      }).then((wiInsert) => {
-        if (wiInsert) {
-          setVisibleAlert(true);
-          setTimeout(
-           () => setVisibleAlert(false), 
-           3000
-         );
-        }
-      });
+  const insertProduct = async (product) => {
+    try {
+      const { data } = await api.post(`${server.url}entradaProduto/`, product);
+      if (data) {
+        swal("Sucesso", "Tipo de produdo inserido com sucesso", "success").then(() =>{
+          if(validaCampus().quantidade < estoqueMin){
+            setVisibleAlert(true);
+            setTimeout(
+             () => setVisibleAlert(false), 
+             3000
+           );
+          }
+        });
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao inserir o tipo de produto", "error");
     }
   };
 
-
+  const handleSubmit = () => {
+    setEnviado(true); 
+    if(validaCampus() && quantidade > 0){
+      if(quantidade < estoqueMin){
+        swal({
+          title: "Atenção?",
+          text: "Produto abaixo do estoque Minímo, deseja proseguir ? ",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((wiInsert) => {
+          if (wiInsert) {
+            insertProduct(validaCampus());
+          }
+        });
+      }else{
+        insertProduct(validaCampus());
+      }
+    }
+  };
 
   return (
     <>
-      <Navbar/>
-      <Alerts visible={visibleAlert} type="warning" title="Atenção! Produto inserido a lista de produtos com estoque baixo"></Alerts>
+      <Navbar />
+      <Alerts
+        visible={visibleAlert}
+        type="warning"
+        title="Atenção! Produto inserido a lista de produtos com estoque baixo"
+      ></Alerts>
       <div className="content">
         <Container>
           <Row className="justify-content-center">
@@ -148,16 +184,16 @@ function EntradaProduto() {
                     <Row className="mt-4">
                       <Col xs={6} md={6}>
                         <TextField
-                          id="qauntidade"
+                          id="quantidade"
                           label="Quantidade*"
                           type="number"
-                          value={qauntidade}
-                          error={qauntidade.length === 0 && enviado}
+                          value={quantidade}
+                          error={quantidade === 0 && enviado}
                           className="col-md-12 mt-3"
-                          onChange={({ target }) => setQauntidade(target.value)}
+                          onChange={({ target }) => setQuantidade(target.value)}
                         />
-                        {qauntidade.length === 0 && enviado ? (
-                          <VerifyInputs value="Qauntidade"></VerifyInputs>
+                        {quantidade === 0 && enviado ? (
+                          <VerifyInputs value="quantidade"></VerifyInputs>
                         ) : (
                           ""
                         )}
@@ -173,6 +209,7 @@ function EntradaProduto() {
                               id="date-picker-dialog"
                               format="dd/MM/yyyy"
                               value={date}
+                              error={!date && enviado}
                               onChange={handleDateChange}
                               cancelLabel="Cencelar"
                               className="w-100"
@@ -182,6 +219,11 @@ function EntradaProduto() {
                               }}
                             />
                           </MuiPickersUtilsProvider>
+                          {!date && enviado ? (
+                          <VerifyInputs value="Data de Validade"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
                         </Col>
                       ) : (
                         ""

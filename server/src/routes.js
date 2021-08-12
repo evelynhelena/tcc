@@ -4,7 +4,7 @@ const UserController = require("./Controller/User/UserController");
 import ProdController from './Controller/Products/ProdController'
 import Dashboard from './Controller/Dashboard/Dashboard';
 import Calendar from './Controller/Calendar/Calendar';
-
+import EntradaProduto from './Controller/EntradaProduto/EntradaProduto';
 routes.get("/", (req, res) => {
   res.send("Teste");
 });
@@ -18,7 +18,7 @@ routes.put('/productsTypeReability/:id', ProdController.reability);
 routes.delete('/productsType/:id', ProdController.delete);
 
 // ROTAS Entrada Produto
-
+routes.post('/entradaProduto', EntradaProduto.insert);
 
 // ROTAS Usuarios
 routes.get("/users", UserController.findAll);

@@ -19,6 +19,7 @@ const verifyRequest = (obj) => {
 
 module.exports = {
   insert(req, res) {
+    const connection = bdConnect();
     let fields = [
       null,
       req.body.type,
@@ -27,7 +28,6 @@ module.exports = {
       "0",
       req.body.value,
     ];
-    const connection = bdConnect();
     if(verifyRequest(req.body)){
       connection.query(
         "insert into tbl_products_type values (?, ?, ?, ?, ?, ?)",

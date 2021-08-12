@@ -1,5 +1,4 @@
 import { createConnection } from "mysql";
-import moment from 'moment';
 import moment from 'moment-timezone/builds/moment-timezone-with-data-2012-2022';
 const bdConnect = () => {
   return createConnection({
