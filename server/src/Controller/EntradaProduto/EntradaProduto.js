@@ -57,6 +57,36 @@ module.exports = {
         },
       });
     }
+  },
+
+  findByIdPrductType(req, res){
+    const connection = bdConnect();
+    const id = req.params.id;
+    connection.query(
+      `select tp.id_product,
+      tp.quantity,
+      tp.data_validy, 
+      tp.fk_product_type_id,
+      tp.ind_cance as status_product,
+      tpt.id_product_type,
+      tpt.type,
+      tpt.ind_isento_data_vality,
+      tpt.quantity_minima,
+      tpt.ind_cance as status_product_type,
+      tpt.value
+      from tbl_product tp join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type where tp.fk_product_type_id = ${id}`,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar produtos",
+              error,
+            },
+          });
+        }
+        return res.send(results);
+      }
+    );
   }
 
 }

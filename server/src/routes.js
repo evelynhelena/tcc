@@ -18,7 +18,8 @@ routes.put('/productsTypeReability/:id', ProdController.reability);
 routes.delete('/productsType/:id', ProdController.delete);
 
 // ROTAS Entrada Produto
-routes.post('/entradaProduto', EntradaProduto.insert);
+routes.post("/entradaProduto", EntradaProduto.insert);
+routes.get("/entradaProduto/:id", EntradaProduto.findByIdPrductType);
 
 // ROTAS Usuarios
 routes.get("/users", UserController.findAll);

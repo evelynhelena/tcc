@@ -65,7 +65,7 @@ function ListProducType() {
           <Tooltip title="Lista de Produtos">
             <Link
               as={Link}
-              to={"/EditProductType/" + data.id_product_type}
+              to={"/ListaProdutos/" + data.id_product_type}
               className="btn-link-trable btn-link-trable-color-primery"
             >
               <FormatListBulletedIcon />

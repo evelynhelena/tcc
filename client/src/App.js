@@ -11,7 +11,7 @@ import ListProducType from "./views/Produto/ListProducType";
 import ErrorPage from "./views/ErrorPage/ErrorPage";
 import LoginPage from "./views/LoginPage/LoginPage";
 import EntradaProduto from "./views/EntradaProduto/EntradaProduto";
-
+import ListProduct from "./views/EntradaProduto/ListProduct";
 function App() {
   return (
     <Router>
@@ -26,6 +26,7 @@ function App() {
 
             {/* Entrada de Prduto */}
             <Route path='/EntradaProduto/:id' exact component={EntradaProduto} />
+            <Route path='/ListaProdutos/:id' exact component={ListProduct} />
 
             {/* Usuario */}
             <Route path='/Listuser' component={ListUser} />

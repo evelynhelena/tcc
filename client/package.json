@@ -18,6 +18,7 @@
     "chartist": "^0.11.4",
     "currency-formatter": "^1.5.8",
     "date-fns": "^2.22.1",
+    "dateformat": "^4.5.1",
     "history": "^5.0.0",
     "moment": "^2.29.1",
     "react": "^17.0.2",
