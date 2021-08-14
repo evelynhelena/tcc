@@ -105,7 +105,8 @@ module.exports = {
       });
     } else {
       connection.query(
-        `update tbl_events_calendar set title = ?, dt_init = ? , dt_end = ?, place = ?, descricao = ?, fk_inportance = ?, ind_cance = 0 where idEvent = ${id}`,
+        `update tbl_events_calendar set title = ?, dt_init = ? , dt_end = ?, 
+        place = ?, descricao = ?, fk_inportance = ?, ind_cance = 0 where idEvent = ${id}`,
         fields,
         function (error, results) {
           if (error) {

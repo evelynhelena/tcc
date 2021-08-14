@@ -76,7 +76,7 @@ function ListProduct() {
         try {
           const { data } = await api.get(`${server.url}entradaProduto/${id}`);
           if (data) {
-            setTypeProducts(data[0].type);
+            setTypeProducts(data[0] ? data[0].type : "");
             data.forEach((el) => {
                 
               el.data_validy = el.data_validy ? dateFormat(el.data_validy, "dd/mm/yyyy") : "-"
@@ -113,7 +113,7 @@ function ListProduct() {
                   <Card.Title className="mb-0">
                     <h4>Prdutos</h4>
                     <Card.Subtitle className="mt-1">
-                    Lista de Prdutos do Tipo - "{typeProducts}"
+                    {typeProducts ? "Lista de Prdutos do Tipo - " + typeProducts : "Nnehum produtos cadastrado"}
                     </Card.Subtitle>
                   </Card.Title>
                 </Card.Header>

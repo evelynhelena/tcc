@@ -62,15 +62,27 @@ function ListProducType() {
               <EditIcon />
             </Link>
           </Tooltip>
-          <Tooltip title="Lista de Produtos">
-            <Link
-              as={Link}
-              to={"/ListaProdutos/" + data.id_product_type}
-              className="btn-link-trable btn-link-trable-color-primery"
+          
+          {data.ind_cance === 0 ? (
+              <Tooltip title="Lista de Produtos">
+                <Link
+                  as={Link}
+                  to={"/ListaProdutos/" + data.id_product_type}
+                  className="btn-link-trable btn-link-trable-color-primery"
+                >
+                  <FormatListBulletedIcon />
+                </Link>
+             </Tooltip>
+          ) : (
+            <Button
+              disabled
+              variant="contained"
+              style={{ padding: "5px" }}
             >
               <FormatListBulletedIcon />
-            </Link>
-          </Tooltip>
+            </Button>
+          )}
+
           {data.ind_cance === 0 ? (
             <Tooltip title="Cadastar Produto">
               <Link
@@ -86,7 +98,6 @@ function ListProducType() {
               disabled
               variant="contained"
               style={{ padding: "5px" }}
-              onClick={() => deleteProductType(data.id_product_type)}
             >
               <AddIcon />
             </Button>
@@ -143,7 +154,7 @@ function ListProducType() {
   const deleteProductType = async (id) => {
     swal({
       title: "Deseja desativar este tipo produto ?",
-      text: "Todos os Produtos com esse tipo serão desativados do sistema.",
+      text: "Todos os Produtos com esse tipo não poderão ser vendidos.",
       icon: "warning",
       buttons: true,
       dangerMode: true,
