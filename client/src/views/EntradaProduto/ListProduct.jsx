@@ -51,7 +51,7 @@ function ListProduct() {
               <Tooltip title="Editar">
                 <Link
                   as={Link}
-                  to={"/EditProductType/" + data.id_product_type}
+                  to={"/EditPtoduto/" + data.id_product}
                   className="btn-link-trable btn-link-trable-color-simple"
                 >
                   <EditIcon />
@@ -98,7 +98,36 @@ function ListProduct() {
     }, []);
 
     const deleteProduct = async (id) =>{
-        console.log(id);
+
+
+      swal({
+        title: "Confirmar Alteração !",
+        text: "Deseja excluir este produto?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          api.delete(`${server.url}entradaProduto/${id}`).then(function (response) {
+            let data = response.data;
+            if (data.msg) {
+              swal("Prduto deletado com sucesso", {
+                icon: "success",
+              });
+              getProduc();
+            } else if (data.error.status === 500) {
+              swal("Produto não cadastrado", {
+                icon: "error",
+              });
+              getProduc();
+            } else {
+              swal("Erro ao excluir o produto", {
+                icon: "error",
+              });
+            }
+          });
+        }
+      });
     }
 
     return (

@@ -27,6 +27,7 @@ function App() {
             {/* Entrada de Prduto */}
             <Route path='/EntradaProduto/:id' exact component={EntradaProduto} />
             <Route path='/ListaProdutos/:id' exact component={ListProduct} />
+            <Route path='/EditPtoduto/:idProduct' exact component={EntradaProduto} />
 
             {/* Usuario */}
             <Route path='/Listuser' component={ListUser} />

@@ -59,6 +59,46 @@ module.exports = {
     }
   },
 
+  update(req, res){
+    const connection = bdConnect();
+    let dtValidy = null;
+    const id = req.params.id;
+    let fields = [
+      req.body.quantidade,
+      dtValidy,
+      req.body.idTypeProd,
+      "0",
+    ];
+    if(req.body.dataValidy){
+      dtValidy = moment.tz(req.body.dataValidy,'America/Sao_Paulo');
+      fields[1] = dtValidy.format();
+    }
+
+    if(verifyRequest(req.body)){
+      connection.query(
+        `update tbl_product set quantity = ?, data_validy = ? , fk_product_type_id = ?, ind_cance = ? where id_product = ${id}`,
+        fields,
+        function (error, results) {
+          if (error) {
+            return res.status(500).send({
+              error: {
+                msg: "Erro ao tentar editar o produto",
+                error,
+              },
+            });
+          }
+          return res.send(results);
+        }
+      );
+    }else{
+      return res.status(501).send({
+        error: {
+          msg: "Campus vazios não são permitidos"
+        },
+      });
+    }
+  },
+
   findByIdPrductType(req, res){
     const connection = bdConnect();
     const id = req.params.id;
@@ -88,6 +128,60 @@ module.exports = {
         return res.send(results);
       }
     );
-  }
+  },  
+
+  findById(req, res){
+    const connection = bdConnect();
+    const id = req.params.id;
+    connection.query(
+      `select tp.id_product,
+      tp.quantity,
+      tp.data_validy, 
+      tp.fk_product_type_id,
+      tp.ind_cance as status_product,
+      tpt.id_product_type,
+      tpt.type,
+      tpt.ind_isento_data_vality,
+      tpt.quantity_minima,
+      tpt.ind_cance as status_product_type,
+      tpt.value
+      from tbl_product tp join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type 
+      where tp.id_product = ${id} and tp.ind_cance = 0 and tpt.ind_cance = 0`,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar produtos",
+              error,
+            },
+          });
+        }
+        return res.send(results);
+      }
+    );
+  }, 
+
+  delete(req, res) {
+    const connection = bdConnect();
+    const id = req.params.id;
+    connection.query(
+      "update tbl_product set ind_cance = '1' where id_product = ?",
+      [id],
+      function (error, results) {
+        if (error) {
+          return res
+            .status(501)
+            .send({ error: { msg: "Erro ao tentar excluir",erro: error } });
+        } else if (results.changedRows === 0) {
+          return res.send({
+            error: { msg: "Tipo de Produto  não cadastrado", status: 500 },
+          });
+        }
+        return res.send({
+          msg: "Registro excluído com sucesso",
+        });
+      }
+    );
+  },
 
 }

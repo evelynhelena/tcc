@@ -29,6 +29,7 @@ function EntradaProduto() {
   const [enviado, setEnviado] = useState(false);
 
   const { id } = useParams();
+  const { idProduct } = useParams();
   const handleDateChange = (date) => {
     setDate(date);
   };
@@ -58,7 +59,7 @@ function EntradaProduto() {
 
   const getProductTypeByID = async () => {
     try {
-      const { data } = await api.get(`${server.url}productsType/` + id);
+      const { data } = await api.get(`${server.url}productsType/${id}`);
       if (data) {
         setTypeProduct(data[0].type);
         setIdPrduto(data[0].id_product_type);
@@ -83,6 +84,35 @@ function EntradaProduto() {
     }
   }, []);
 
+  const getByIdProduct = async () =>{
+    try {
+      const { data } = await api.get(`${server.url}findById/${idProduct}`);
+      if (data) {
+        setTypeProduct(data[0].type);
+        setIdPrduto(data[0].fk_product_type_id);
+        setQuantidade(data[0].quantity);
+        setDate(data[0].data_validy);
+        setValue(
+          currencyFormatter.format(data[0].value, {
+            code: "pt-BR",
+            decimal: ".",
+            decimalDigits: 2,
+          })
+        );
+        setEstoqueMin(data[0].quantity_minima);
+        setProdutoSemDataValid(data[0].ind_isento_data_vality === 0);
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao resgatar produto selecionado", "error");
+    }
+  }
+
+  useEffect(() => {
+    if (idProduct) {
+      getByIdProduct();
+    }
+  }, []);
+
   const insertProduct = async (product) => {
     try {
       const { data } = await api.post(`${server.url}entradaProduto/`, product);
@@ -102,7 +132,7 @@ function EntradaProduto() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (edit) => {
     setEnviado(true); 
     if(validaCampus() && quantidade > 0){
       if(quantidade < estoqueMin){
@@ -114,14 +144,41 @@ function EntradaProduto() {
           dangerMode: true,
         }).then((wiInsert) => {
           if (wiInsert) {
-            insertProduct(validaCampus());
+            if(edit){
+              editProduct(validaCampus())
+            }else{
+              insertProduct(validaCampus());
+            }
           }
         });
       }else{
-        insertProduct(validaCampus());
+        if(edit){
+          editProduct(validaCampus())
+        }else{
+          insertProduct(validaCampus());
+        }
       }
     }
   };
+
+  const editProduct = async (product) =>{
+    try {
+      const { data } = await api.put(`${server.url}entradaProduto/${idProduct}`, product);
+      if (data) {
+        swal("Sucesso", "Tipo de produdo editado com sucesso", "success").then(() =>{
+          if(validaCampus().quantidade < estoqueMin){
+            setVisibleAlert(true);
+            setTimeout(
+             () => setVisibleAlert(false), 
+             3000
+           );
+          }
+        });
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao editar o tipo de produto", "error");
+    }
+  } 
 
   return (
     <>
@@ -138,7 +195,7 @@ function EntradaProduto() {
               <Card>
                 <Card.Header>
                   <Card.Title className="mb-0">
-                    <h4 className="mb-0">Entrada de Produto</h4>
+                    <h4 className="mb-0">{idProduct ? "Editando Produto" : "Entrada de Produto"}</h4>
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
@@ -242,9 +299,9 @@ function EntradaProduto() {
                   <Button
                     variant="info"
                     className="float-right"
-                    onClick={handleSubmit}
+                    onClick={() => idProduct ? handleSubmit(true) : handleSubmit(false)}
                   >
-                    Salvar
+                    {idProduct ? "Editar" : "Salvar"}
                   </Button>
                 </Card.Footer>
               </Card>
