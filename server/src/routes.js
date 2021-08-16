@@ -4,12 +4,12 @@ const UserController = require("./Controller/User/UserController");
 import ProdController from './Controller/Products/ProdController'
 import Dashboard from './Controller/Dashboard/Dashboard';
 import Calendar from './Controller/Calendar/Calendar';
-
+import EntradaProduto from './Controller/EntradaProduto/EntradaProduto';
 routes.get("/", (req, res) => {
   res.send("Teste");
 });
 
-// ROTAS PRODUCTS
+// ROTAS Tipos Produto
 routes.post('/productsType', ProdController.insert);
 routes.get('/productsType', ProdController.findAll);
 routes.get('/productsType/:id', ProdController.findById);
@@ -17,8 +17,14 @@ routes.put('/productsType/:id', ProdController.update);
 routes.put('/productsTypeReability/:id', ProdController.reability);
 routes.delete('/productsType/:id', ProdController.delete);
 
+// ROTAS Entrada Produto
+routes.post("/entradaProduto", EntradaProduto.insert);
+routes.get("/findById/:id", EntradaProduto.findById);
+routes.get("/entradaProduto/:id", EntradaProduto.findByIdPrductType);
+routes.put("/entradaProduto/:id", EntradaProduto.update);
+routes.delete("/entradaProduto/:id", EntradaProduto.delete);
 
-// ROTAS USERS
+// ROTAS Usuarios
 routes.get("/users", UserController.findAll);
 routes.get("/findUserType",UserController.findUserType);
 routes.post("/insert", UserController.insert);

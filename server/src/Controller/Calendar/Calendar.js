@@ -1,5 +1,4 @@
 import { createConnection } from "mysql";
-import moment from 'moment';
 import moment from 'moment-timezone/builds/moment-timezone-with-data-2012-2022';
 const bdConnect = () => {
   return createConnection({
@@ -106,7 +105,8 @@ module.exports = {
       });
     } else {
       connection.query(
-        `update tbl_events_calendar set title = ?, dt_init = ? , dt_end = ?, place = ?, descricao = ?, fk_inportance = ?, ind_cance = 0 where idEvent = ${id}`,
+        `update tbl_events_calendar set title = ?, dt_init = ? , dt_end = ?, 
+        place = ?, descricao = ?, fk_inportance = ?, ind_cance = 0 where idEvent = ${id}`,
         fields,
         function (error, results) {
           if (error) {

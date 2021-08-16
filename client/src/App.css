@@ -208,6 +208,15 @@
   color: #198754;
 }
 
+.btn-link-trable-color-primery{
+  color: #17a2b8 !important;
+}
+
+.btn-link-trable-color-primery:hover{
+  background-color: #17a2b836 !important;
+  color: #17a2b8 !important;
+}
+
 .btn-link-trable-color-danger{
   color: #f50057;
 }

@@ -6,12 +6,10 @@ import {
   Col,
   Card,
   Button,
-  Image,
-  Form,
 } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import DataTable from "react-data-table-component";
-import IconButton from "@material-ui/core/IconButton";
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -64,11 +62,32 @@ function ListProducType() {
               <EditIcon />
             </Link>
           </Tooltip>
+          
+          {data.ind_cance === 0 ? (
+              <Tooltip title="Lista de Produtos">
+                <Link
+                  as={Link}
+                  to={"/ListaProdutos/" + data.id_product_type}
+                  className="btn-link-trable btn-link-trable-color-primery"
+                >
+                  <FormatListBulletedIcon />
+                </Link>
+             </Tooltip>
+          ) : (
+            <Button
+              disabled
+              variant="contained"
+              style={{ padding: "5px" }}
+            >
+              <FormatListBulletedIcon />
+            </Button>
+          )}
+
           {data.ind_cance === 0 ? (
             <Tooltip title="Cadastar Produto">
               <Link
                 as={Link}
-                to={"/EditProductType/" + data.id}
+                to={"/EntradaProduto/" + data.id_product_type}
                 className="btn-link-trable btn-link-trable-color-sucess"
               >
                 <AddIcon />
@@ -79,7 +98,6 @@ function ListProducType() {
               disabled
               variant="contained"
               style={{ padding: "5px" }}
-              onClick={() => deleteProductType(data.id_product_type)}
             >
               <AddIcon />
             </Button>
@@ -115,7 +133,7 @@ function ListProducType() {
       if (data) {
         data.forEach((el) => {
           el.dataValitObrigatorio =
-            el.ind_isento_data_vality === 1 ? "Sim" : "Não";
+            el.ind_isento_data_vality === 0 ? "Sim" : "Não";
           el.valueFormt = currencyFormatter.format(el.value, {
             code: "pt-BR",
             decimal: ",",
@@ -136,7 +154,7 @@ function ListProducType() {
   const deleteProductType = async (id) => {
     swal({
       title: "Deseja desativar este tipo produto ?",
-      text: "Todos os Produtos com esse tipo serão desativados do sistema.",
+      text: "Todos os Produtos com esse tipo não poderão ser vendidos.",
       icon: "warning",
       buttons: true,
       dangerMode: true,
