@@ -3,12 +3,13 @@ import CardDashboard from "../../components/CardDashboard/CardDashboard";
 import { Container, Row, Col } from "react-bootstrap";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
-import RemoveIcon from "@material-ui/icons/Remove";
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import TwitterIcon from "@material-ui/icons/Twitter";
 import CardGraphic from "../../components/CardGraphic/CardGraphic";
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import CalendarComponent from "../../components/Calendar/Calendar";
 import api from "../../services/Api";
 import swal from "@sweetalert/with-react";
 import "./Dashboard.css";
@@ -16,6 +17,7 @@ import server from "../../Config/BaseURL";
 import Navbar from "../../components/NavBar/Navbar";
 function Home() {
   const [countUser,setCountUser] = useState([]);
+  const [productEstoqueBaixo,setProductEstoqueBaixo] = useState([]);
   const getCountUsers = async () => {
     try {
       const { data } = await api.get(`${server.url}countAllUsers`);
@@ -28,10 +30,23 @@ function Home() {
     getCountUsers();
   }, []);
 
+
+  const getCountProductEstoqueBaixo= async () => {
+    try {
+      const { data } = await api.get(`${server.url}countProductsEstoqueBaixo`);
+      if (data) setProductEstoqueBaixo(data);
+    } catch (err) {
+      swal("Erro", "Erro ao carregar os usuários cadastrados", "error");
+    }
+  };
+  useEffect(() => {
+    getCountProductEstoqueBaixo();
+  }, []);
+
   return (
     <>
     <Navbar/>
-    <div className="dashboard mt-4">
+    <div className="dashboard mt-4 mb-5">
       <Container>
 
         <Row>
@@ -40,6 +55,8 @@ function Home() {
               <CardDashboard
                 title="Usuários Cadastrados"
                 info={countUser.totalUser}
+                link={`/Listuser`}
+                titleTooltip={"Usuário"}
                 color="card-orange"
                 icon={<SupervisorAccountIcon className="icon-card" />}
               ></CardDashboard>
@@ -51,6 +68,8 @@ function Home() {
               <CardDashboard
                 title="Faturamento do Mês"
                 info="R$800,00"
+                link={`/Listuser`}
+                titleTooltip="Faturamento"
                 color="card-green"
                 icon={<AttachMoneyIcon className="icon-card" />}
               ></CardDashboard>
@@ -60,10 +79,12 @@ function Home() {
           <Col md={3} className="mb-5">
             <div className="position-relative">
               <CardDashboard
-                title="Gastos do Mês"
-                info="R$400,00"
+                title="Estoque Baixo"
+                link={`/ProdutoEstoqueBaixo/${true}`}
+                info={productEstoqueBaixo.totalProduct}
+                titleTooltip="Produtos com estoque baixo"
                 color="card-red"
-                icon={<RemoveIcon className="icon-card" />}
+                icon={<ShoppingCartIcon className="icon-card" />}
               ></CardDashboard>
             </div>
           </Col>
@@ -71,6 +92,8 @@ function Home() {
           <Col md={3}>
             <div className="position-relative">
               <CardDashboard
+                titleTooltip="Seguidores"
+                link={`/Listuser`}
                 title="Seguidores"
                 info="+500"
                 color="card-blue"
@@ -79,8 +102,8 @@ function Home() {
             </div>
           </Col>
         </Row>
-
-        <Row className="mt-3">
+        <CalendarComponent></CalendarComponent>
+        {/*<Row className="mt-3">
           <Col md={4}>
             <CardGraphic 
               color="card-graphic-green"
@@ -124,7 +147,7 @@ function Home() {
               textFooter="Atualizado a 2 minutos"
             />
           </Col>
-        </Row>
+        </Row>*/}
       </Container>
     </div>
     </>

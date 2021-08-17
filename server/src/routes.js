@@ -34,6 +34,8 @@ routes.delete("/users/:id", UserController.delete);
 
 // Rotas Dashboard
 routes.get("/countAllUsers", Dashboard.countAllUsers);
+routes.get("/countProductsEstoqueBaixo", Dashboard.countProductsEstoqueBaixo);
+routes.get("/getProductsEstoqueBaixo", Dashboard.getProductsEstoqueBaixo);
 
 //Rotas Calendar
 routes.get("/inportanceTasks", Calendar.getInportanteTasks);

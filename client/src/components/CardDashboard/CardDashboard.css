@@ -9,8 +9,7 @@
     text-align: center;
     position: absolute;
     bottom: 26px;
-    width: 80px;
-    height: 80px;
+    padding: 17px;
     border-radius: 4px;
     color: #fff;
 }
@@ -40,4 +39,21 @@
 }
 .card-blue{
     background: linear-gradient(60deg, #26c6da, #00acc1);
+}
+
+.link-card-dash{
+    position: absolute;
+    display: flex;
+    top: 0;
+    right: 0;
+    padding: 5px;
+    color: #212529;
+}
+
+.link-card-dash:hover{
+    color: #212529;
+}
+
+.link-card-dash svg{
+    font-size:17px;
 }
