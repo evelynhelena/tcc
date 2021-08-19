@@ -67,7 +67,6 @@ function ListProduct() {
 
   if(estoqueBaixo){
     columns.splice(1,0, {name: "Tipo", selector: "type",sortable: true,});
-    columns[3].selector = "quantidadeEstoque"
     columns[3].name = "Quantidade em Estoque"
   }
 

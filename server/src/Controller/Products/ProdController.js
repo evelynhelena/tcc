@@ -71,6 +71,27 @@ module.exports = {
     );
   },
 
+  validaProdCadastrado(req, res){
+    const connection = bdConnect();
+    connection.query(
+      `select tp.id_product,
+      tp.fk_product_type_id
+      from tbl_product tp join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type
+      where tp.ind_cance = 0`,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar os produto",
+              error,
+            },
+          });
+        }
+        return res.send(results);
+      }
+    );
+  },
+
   findById(req, res){
     const connection = bdConnect();
     const id = req.params.id;
@@ -102,7 +123,8 @@ module.exports = {
     ];
     if(verifyRequest(req.body)){
       connection.query(
-        `update tbl_products_type set type = ?, ind_isento_data_vality = ? ,quantity_minima = ?, ind_cance = ?, value = ? where id_product_type = ${id}`,
+        `update tbl_products_type set type = ?, ind_isento_data_vality = ? ,quantity_minima = ?, ind_cance = ?, 
+        value = ? where id_product_type = ${id}`,
         fields,
         function (error, results) {
           if (error) {

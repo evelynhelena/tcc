@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Row, Col, Form, Card, Button } from "react-bootstrap";
 import TextField from "@material-ui/core/TextField";
-import Switch from "@material-ui/core/Switch";
+/*import Switch from "@material-ui/core/Switch";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
+import FormControl from "@material-ui/core/FormControl";*/
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import server from "../../Config/BaseURL";
 import swal from "@sweetalert/with-react";
@@ -18,7 +18,7 @@ function Produto() {
   const [preco, setPreco] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [indeIsentoDataVality, setIndeIsentoDataVality] = useState({
-    checked: false,
+    checked: true,
   });
   const { id } = useParams();
   const [enviado, setEnviado] = useState(false);
@@ -45,6 +45,13 @@ function Produto() {
     return typeProductInsert;
   };
 
+  const resetaCampus = () =>{
+    setType("");
+    setPreco("");
+    setQuantidade("");
+    setEnviado(false);
+  }
+
   const insertProductType = async (productType) => {
     try {
       const { data } = await api.post(
@@ -53,6 +60,7 @@ function Produto() {
       );
       if (data) {
         swal("Sucesso", "Tipo de produdo inserido com sucesso", "success");
+        resetaCampus();
       }
     } catch (err) {
       swal("Erro", "Erro ao inserir o tipo de produto", "error");
@@ -137,12 +145,12 @@ function Produto() {
     }
   };
 
-  const handleChange = (event) => {
+ /* const handleChange = (event) => {
     setIndeIsentoDataVality({
       ...indeIsentoDataVality,
       [event.target.name]: event.target.checked,
     });
-  };
+  };*/
 
   return (
     <>
@@ -161,7 +169,7 @@ function Produto() {
                 </Card.Header>
                 <Card.Body>
                   <Form noValidate autoComplete="off">
-                    <Row>
+                    {/*<Row>
                       <FormControl component="fieldset">
                         <FormGroup aria-label="position" row>
                           <FormControlLabel
@@ -182,7 +190,7 @@ function Produto() {
                           />
                         </FormGroup>
                       </FormControl>
-                    </Row>
+                    </Row>*/}
                     <Row>
                       <Col xs={12} md={12}>
                         <TextField

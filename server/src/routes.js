@@ -13,6 +13,7 @@ routes.get("/", (req, res) => {
 routes.post('/productsType', ProdController.insert);
 routes.get('/productsType', ProdController.findAll);
 routes.get('/productsType/:id', ProdController.findById);
+routes.get('/prodCadastrado', ProdController.validaProdCadastrado);
 routes.put('/productsType/:id', ProdController.update);
 routes.put('/productsTypeReability/:id', ProdController.reability);
 routes.delete('/productsType/:id', ProdController.delete);

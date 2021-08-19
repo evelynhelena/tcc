@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Button,
-} from "react-bootstrap";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import * as FaIcons from "react-icons/fa";
 import DataTable from "react-data-table-component";
-import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -34,11 +28,11 @@ function ListProducType() {
       selector: "type",
       sortable: true,
     },
-    {
+    /*{
       name: "Data de Validade Obrigatória",
       selector: "dataValitObrigatorio",
       sortable: true,
-    },
+    },*/
     {
       name: "Estoque Mínimo",
       selector: "quantity_minima",
@@ -62,43 +56,35 @@ function ListProducType() {
               <EditIcon />
             </Link>
           </Tooltip>
-          
-          {data.ind_cance === 0 ? (
-              <Tooltip title="Lista de Produtos">
-                <Link
-                  as={Link}
-                  to={"/ListaProdutos/" + data.id_product_type}
-                  className="btn-link-trable btn-link-trable-color-primery"
-                >
-                  <FormatListBulletedIcon />
-                </Link>
-             </Tooltip>
-          ) : (
-            <Button
-              disabled
-              variant="contained"
-              style={{ padding: "5px" }}
-            >
-              <FormatListBulletedIcon />
-            </Button>
-          )}
 
           {data.ind_cance === 0 ? (
-            <Tooltip title="Cadastar Produto">
-              <Link
-                as={Link}
-                to={"/EntradaProduto/" + data.id_product_type}
-                className="btn-link-trable btn-link-trable-color-sucess"
-              >
-                <AddIcon />
-              </Link>
-            </Tooltip>
+            data.haveProd ? (
+              <Tooltip title="Visualizar Produto">
+                <Link
+                  as={Link}
+                  to={"/EditPtoduto/" + data.haveProd.id_product}
+                  className="btn-link-trable btn-link-trable-color-primery"
+                >
+                  <VisibilityIcon />
+                </Link>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Cadastar Produto">
+                <Link
+                  as={Link}
+                  to={"/EntradaProduto/" + data.id_product_type}
+                  className="btn-link-trable btn-link-trable-color-sucess"
+                >
+                  <AddIcon />
+                </Link>
+              </Tooltip>
+            )
+          ) : data.haveProd ? (
+            <Button disabled variant="contained" style={{ padding: "5px" }}>
+              <VisibilityIcon />
+            </Button>
           ) : (
-            <Button
-              disabled
-              variant="contained"
-              style={{ padding: "5px" }}
-            >
+            <Button disabled variant="contained" style={{ padding: "5px" }}>
               <AddIcon />
             </Button>
           )}
@@ -129,6 +115,8 @@ function ListProducType() {
 
   const getProductType = async () => {
     try {
+      const pordCadastrados = await api.get(`${server.url}prodCadastrado`);
+      //console.log(pordCadastrados.data);
       const { data } = await api.get(`${server.url}productsType`);
       if (data) {
         data.forEach((el) => {
@@ -139,6 +127,7 @@ function ListProducType() {
             decimal: ",",
             decimalDigits: 2,
           });
+          el.haveProd =  pordCadastrados.data.find((prod) => prod.fk_product_type_id === el.id_product_type);
         });
         setProductsType(data);
       }
