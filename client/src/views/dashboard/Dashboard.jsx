@@ -5,6 +5,7 @@ import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import TwitterIcon from "@material-ui/icons/Twitter";
+import RemoveIcon from '@material-ui/icons/Remove';
 import CardGraphic from "../../components/CardGraphic/CardGraphic";
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
@@ -66,43 +67,43 @@ function Home() {
           <Col md={3} className="mb-5">
             <div className="position-relative">
               <CardDashboard
-                title="Faturamento do Mês"
-                info="R$800,00"
+                title="Estoque Baixo"
+                link={`/ProdutoEstoqueBaixo/${true}`}
+                info={productEstoqueBaixo.totalProduct}
+                titleTooltip="Produtos com estoque baixo"
+                color="card-blue"
+                icon={<ShoppingCartIcon className="icon-card" />}
+              ></CardDashboard>
+            </div>
+          </Col>
+          <Col md={3} className="mb-5">
+            <div className="position-relative">
+              <CardDashboard
+                title="Faturamento (R$)"
+                info="800,00"
                 link={`/Listuser`}
-                titleTooltip="Faturamento"
+                titleTooltip="Faturamento do Dia"
                 color="card-green"
                 icon={<AttachMoneyIcon className="icon-card" />}
               ></CardDashboard>
             </div>
           </Col>
-
-          <Col md={3} className="mb-5">
-            <div className="position-relative">
-              <CardDashboard
-                title="Estoque Baixo"
-                link={`/ProdutoEstoqueBaixo/${true}`}
-                info={productEstoqueBaixo.totalProduct}
-                titleTooltip="Produtos com estoque baixo"
-                color="card-red"
-                icon={<ShoppingCartIcon className="icon-card" />}
-              ></CardDashboard>
-            </div>
-          </Col>
-
           <Col md={3}>
             <div className="position-relative">
               <CardDashboard
-                titleTooltip="Seguidores"
+                titleTooltip="Fiados do Dia"
                 link={`/Listuser`}
-                title="Seguidores"
-                info="+500"
-                color="card-blue"
-                icon={<TwitterIcon className="icon-card" />}
+                title="Fiados do Dia (R$)"
+                info="-200,00"
+                color="card-red"
+                icon={<RemoveIcon className="icon-card" />}
               ></CardDashboard>
             </div>
           </Col>
         </Row>
-        <CalendarComponent></CalendarComponent>
+        <div className="mt-4">
+          <CalendarComponent></CalendarComponent>
+        </div>
         {/*<Row className="mt-3">
           <Col md={4}>
             <CardGraphic 

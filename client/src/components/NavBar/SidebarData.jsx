@@ -22,9 +22,27 @@ export const SidebarData = [
     cName: 'nav-text'
   },
   {
+    title: 'Vender',
+    path: '/Produto',
+    icon: <FaIcons.FaShoppingBasket />,
+    cName: 'nav-text'
+  },
+  {
     title: 'Calendário',
     path: '/Calendar',
     icon: <FaIcons.FaCalendarAlt />,
+    cName: 'nav-text'
+  },
+  {
+    title: 'Histório de Produto',
+    path: '/Calendar',
+    icon: <FaIcons.FaHistory />,
+    cName: 'nav-text'
+  },
+  {
+    title: 'Histório de Venda',
+    path: '/Calendar',
+    icon: <FaIcons.FaHistory />,
     cName: 'nav-text'
   },
 ];

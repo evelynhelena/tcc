@@ -21,9 +21,7 @@ module.exports = {
   findAll(req, res) {
     const connection = bdConnect();
     connection.query(
-      "select tu.fk_user_name , tu.id , tu.ind_cance , tu.last_name , tu.last_update , tu.name , tu.phone , tu.user_name , tu.email," +
-        "tu.cpf, tu.endereco, tu.cidade, tu.cep, tu.numero, tu.uf,tu.bairro, tu.url_foto_perfil,tu.senha, tu.complemento," +
-        "ttu.type_user  from tbl_users tu  join tbl_type_users ttu on ttu.id = tu.fk_user_name where tu.ind_cance=0 order by tu.id asc",
+      "select * from vw_find_all_users",
 
       function (error, results, fields) {
         if (error) {
