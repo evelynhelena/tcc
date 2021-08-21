@@ -13,6 +13,7 @@ routes.get("/", (req, res) => {
 routes.post('/productsType', ProdController.insert);
 routes.get('/productsType', ProdController.findAll);
 routes.get('/productsType/:id', ProdController.findById);
+routes.get('/prodCadastrado', ProdController.validaProdCadastrado);
 routes.put('/productsType/:id', ProdController.update);
 routes.put('/productsTypeReability/:id', ProdController.reability);
 routes.delete('/productsType/:id', ProdController.delete);
@@ -34,6 +35,8 @@ routes.delete("/users/:id", UserController.delete);
 
 // Rotas Dashboard
 routes.get("/countAllUsers", Dashboard.countAllUsers);
+routes.get("/countProductsEstoqueBaixo", Dashboard.countProductsEstoqueBaixo);
+routes.get("/getProductsEstoqueBaixo", Dashboard.getProductsEstoqueBaixo);
 
 //Rotas Calendar
 routes.get("/inportanceTasks", Calendar.getInportanteTasks);

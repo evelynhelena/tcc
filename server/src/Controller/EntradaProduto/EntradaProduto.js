@@ -103,19 +103,7 @@ module.exports = {
     const connection = bdConnect();
     const id = req.params.id;
     connection.query(
-      `select tp.id_product,
-      tp.quantity,
-      tp.data_validy, 
-      tp.fk_product_type_id,
-      tp.ind_cance as status_product,
-      tpt.id_product_type,
-      tpt.type,
-      tpt.ind_isento_data_vality,
-      tpt.quantity_minima,
-      tpt.ind_cance as status_product_type,
-      tpt.value
-      from tbl_product tp join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type 
-      where tp.fk_product_type_id = ${id} and tp.ind_cance = 0 and tpt.ind_cance = 0`,
+      `select * from vw_find_by_id_prod_type where fk_product_type_id = ${id}`,
       function (error, results) {
         if (error) {
           return res.status(500).send({
@@ -134,19 +122,7 @@ module.exports = {
     const connection = bdConnect();
     const id = req.params.id;
     connection.query(
-      `select tp.id_product,
-      tp.quantity,
-      tp.data_validy, 
-      tp.fk_product_type_id,
-      tp.ind_cance as status_product,
-      tpt.id_product_type,
-      tpt.type,
-      tpt.ind_isento_data_vality,
-      tpt.quantity_minima,
-      tpt.ind_cance as status_product_type,
-      tpt.value
-      from tbl_product tp join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type 
-      where tp.id_product = ${id} and tp.ind_cance = 0 and tpt.ind_cance = 0`,
+      `select * from vw_find_by_idProd where id_product = ${id}`,
       function (error, results) {
         if (error) {
           return res.status(500).send({

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/NavBar/Navbar";
-import { useParams , Redirect} from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { Container, Row, Col, Form, Card, Button } from "react-bootstrap";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import server from "../../Config/BaseURL";
 import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Tooltip from "@material-ui/core/Tooltip";
 import DateFnsUtils from "@date-io/date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -33,8 +35,9 @@ function EntradaProduto() {
   const handleDateChange = (date) => {
     setDate(date);
   };
+  let history = useHistory();
 
-  const validaCampus = () =>{
+  const validaCampus = () => {
     const data = {
       idTypeProd: idPrduto,
       quantidade: parseInt(quantidade),
@@ -45,17 +48,20 @@ function EntradaProduto() {
       data.dataValidy = null;
     }
 
-    if(produtoSemDataValid && !data.dataValidy){
+    if (produtoSemDataValid && !data.dataValidy) {
       return false;
     }
 
     for (var [key, value] of Object.entries(data)) {
-      if (((null === value || undefined === value || value.length === 0) && (key !== 'dataValidy')) ) {
+      if (
+        (null === value || undefined === value || value.length === 0) &&
+        key !== "dataValidy"
+      ) {
         return false;
       }
     }
     return data;
-  }
+  };
 
   const getProductTypeByID = async () => {
     try {
@@ -84,7 +90,7 @@ function EntradaProduto() {
     }
   }, []);
 
-  const getByIdProduct = async () =>{
+  const getByIdProduct = async () => {
     try {
       const { data } = await api.get(`${server.url}findById/${idProduct}`);
       if (data) {
@@ -105,7 +111,7 @@ function EntradaProduto() {
     } catch (err) {
       swal("Erro", "Erro ao resgatar produto selecionado", "error");
     }
-  }
+  };
 
   useEffect(() => {
     if (idProduct) {
@@ -117,25 +123,57 @@ function EntradaProduto() {
     try {
       const { data } = await api.post(`${server.url}entradaProduto/`, product);
       if (data) {
-        swal("Sucesso", "Tipo de produdo inserido com sucesso", "success").then(() =>{
-          if(validaCampus().quantidade < estoqueMin){
-            setVisibleAlert(true);
-            setTimeout(
-             () => setVisibleAlert(false), 
-             3000
-           );
+        swal("Sucesso", "Produdo inserido com sucesso", "success").then(
+          () => {
+            if (validaCampus().quantidade < estoqueMin) {
+              setVisibleAlert(true);
+              setTimeout(() => setVisibleAlert(false), 3000);
+            }
           }
-        });
+        );
       }
     } catch (err) {
-      swal("Erro", "Erro ao inserir o tipo de produto", "error");
+      swal("Erro", "Erro ao inserir o produto", "error");
     }
   };
 
+  const deleteProduct = async () => {
+    swal({
+      title: "Confirmar Alteração !",
+      text: "Deseja excluir este produto?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        api
+          .delete(`${server.url}entradaProduto/${idProduct}`)
+          .then(function (response) {
+            let data = response.data;
+            if (data.msg) {
+              swal("Prduto deletado com sucesso", {
+                icon: "success",
+              });
+              history.push("/Produto");
+            } else if (data.error.status === 500) {
+              swal("Produto não cadastrado", {
+                icon: "error",
+              });
+              history.push("/Produto");
+            } else {
+              swal("Erro ao excluir o produto", {
+                icon: "error",
+              });
+            }
+          });
+      }
+    });
+  };
+
   const handleSubmit = (edit) => {
-    setEnviado(true); 
-    if(validaCampus() && quantidade > 0){
-      if(quantidade < estoqueMin){
+    setEnviado(true);
+    if (validaCampus() && quantidade > 0) {
+      if (quantidade < estoqueMin) {
         swal({
           title: "Atenção?",
           text: "Produto abaixo do estoque Minímo, deseja proseguir ? ",
@@ -144,41 +182,43 @@ function EntradaProduto() {
           dangerMode: true,
         }).then((wiInsert) => {
           if (wiInsert) {
-            if(edit){
-              editProduct(validaCampus())
-            }else{
+            if (edit) {
+              editProduct(validaCampus());
+            } else {
               insertProduct(validaCampus());
             }
           }
         });
-      }else{
-        if(edit){
-          editProduct(validaCampus())
-        }else{
+      } else {
+        if (edit) {
+          editProduct(validaCampus());
+        } else {
           insertProduct(validaCampus());
         }
       }
     }
   };
 
-  const editProduct = async (product) =>{
+  const editProduct = async (product) => {
     try {
-      const { data } = await api.put(`${server.url}entradaProduto/${idProduct}`, product);
+      const { data } = await api.put(
+        `${server.url}entradaProduto/${idProduct}`,
+        product
+      );
       if (data) {
-        swal("Sucesso", "Tipo de produdo editado com sucesso", "success").then(() =>{
-          if(validaCampus().quantidade < estoqueMin){
-            setVisibleAlert(true);
-            setTimeout(
-             () => setVisibleAlert(false), 
-             3000
-           );
+        swal("Sucesso", "Tipo de produdo editado com sucesso", "success").then(
+          () => {
+            if (validaCampus().quantidade < estoqueMin) {
+              setVisibleAlert(true);
+              setTimeout(() => setVisibleAlert(false), 3000);
+            }
           }
-        });
+        );
       }
     } catch (err) {
       swal("Erro", "Erro ao editar o tipo de produto", "error");
     }
-  } 
+  };
 
   return (
     <>
@@ -195,13 +235,15 @@ function EntradaProduto() {
               <Card>
                 <Card.Header>
                   <Card.Title className="mb-0">
-                    <h4 className="mb-0">{idProduct ? "Editando Produto" : "Entrada de Produto"}</h4>
+                    <h4 className="mb-0">
+                      {idProduct ? "Editando Produto" : "Entrada de Produto"}
+                    </h4>
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
                   <Form noValidate autoComplete="off">
                     <Row>
-                      <Col xs={5} md={5}>
+                      <Col xs={6} md={6}>
                         <TextField
                           disabled
                           id="typeProduct"
@@ -210,7 +252,7 @@ function EntradaProduto() {
                           className="col-md-12"
                         />
                       </Col>
-                      <Col xs={2} md={2}>
+                      <Col xs={3} md={3}>
                         <TextField
                           disabled
                           id="idProduto"
@@ -219,7 +261,7 @@ function EntradaProduto() {
                           className="col-md-12"
                         />
                       </Col>
-                      <Col xs={2} md={2}>
+                      <Col xs={3} md={3}>
                         <TextField
                           disabled
                           id="value"
@@ -228,7 +270,9 @@ function EntradaProduto() {
                           className="col-md-12"
                         />
                       </Col>
-                      <Col xs={3} md={3}>
+                    </Row>
+                    <Row className="mt-4">
+                      <Col xs={6} md={6}>
                         <TextField
                           disabled
                           id="estoqueMin"
@@ -237,8 +281,6 @@ function EntradaProduto() {
                           className="col-md-12"
                         />
                       </Col>
-                    </Row>
-                    <Row className="mt-4">
                       <Col xs={6} md={6}>
                         <TextField
                           id="quantidade"
@@ -246,7 +288,7 @@ function EntradaProduto() {
                           type="number"
                           value={quantidade}
                           error={quantidade === 0 && enviado}
-                          className="col-md-12 mt-3"
+                          className="col-md-12"
                           onChange={({ target }) => setQuantidade(target.value)}
                         />
                         {quantidade === 0 && enviado ? (
@@ -255,6 +297,7 @@ function EntradaProduto() {
                           ""
                         )}
                       </Col>
+
                       {produtoSemDataValid ? (
                         <Col xs={6} md={6}>
                           <MuiPickersUtilsProvider
@@ -277,10 +320,10 @@ function EntradaProduto() {
                             />
                           </MuiPickersUtilsProvider>
                           {!date && enviado ? (
-                          <VerifyInputs value="Data de Validade"></VerifyInputs>
-                        ) : (
-                          ""
-                        )}
+                            <VerifyInputs value="Data de Validade"></VerifyInputs>
+                          ) : (
+                            ""
+                          )}
                         </Col>
                       ) : (
                         ""
@@ -296,10 +339,27 @@ function EntradaProduto() {
                   </Form>
                 </Card.Body>
                 <Card.Footer>
+                  {idProduct ? (
+                    <Tooltip title="Deletar">
+                      <IconButton
+                        color="secondary"
+                        aria-label="Deletar"
+                        className="float-left"
+                        onClick={deleteProduct}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    ""
+                  )}
+
                   <Button
                     variant="info"
                     className="float-right"
-                    onClick={() => idProduct ? handleSubmit(true) : handleSubmit(false)}
+                    onClick={() =>
+                      idProduct ? handleSubmit(true) : handleSubmit(false)
+                    }
                   >
                     {idProduct ? "Editar" : "Salvar"}
                   </Button>
