@@ -116,7 +116,27 @@ module.exports = {
         return res.send(results);
       }
     );
-  },  
+  },
+  
+  findAll(req, res){
+    const connection = bdConnect();
+    connection.query(
+      `select * from tbl_product tp
+      join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type
+      where tp.ind_cance = 0`,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar os produtos",
+              error,
+            },
+          });
+        }
+        return res.send(results);
+      }
+    );
+  },
 
   findById(req, res){
     const connection = bdConnect();
