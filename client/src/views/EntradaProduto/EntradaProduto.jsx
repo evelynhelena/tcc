@@ -130,7 +130,8 @@ function EntradaProduto() {
               setTimeout(() => setVisibleAlert(false), 3000);
             }
           }
-        );
+          );
+          history.push("/Produto");
       }
     } catch (err) {
       swal("Erro", "Erro ao inserir o produto", "error");

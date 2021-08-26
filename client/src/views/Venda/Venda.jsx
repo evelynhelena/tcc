@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Modal } from "react-bootstrap";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddIcon from "@material-ui/icons/Add";
 import ButtonMaterial from "@material-ui/core/Button";
 import Navbar from "../../components/NavBar/Navbar";
 import swal from "@sweetalert/with-react";
+import Alert from "@material-ui/lab/Alert";
+import Collapse from "@material-ui/core/Collapse";
 import api from "../../services/Api";
 import server from "../../Config/BaseURL";
 import CloseIcon from "@material-ui/icons/Close";
@@ -21,21 +23,26 @@ import "./Venda.css";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 
 function Venda() {
-  const [quantidade, setQuantidade] = useState(0);
+  const [quantidade, setQuantidade] = useState("");
   const [preco, setPreco] = useState("");
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
   const [enviado, setEnviado] = useState(false);
   const [productSelectd, setProductSelectd] = useState("");
   const [clienteSelectd, setClienteSelectd] = useState("");
+  const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
-  
+  const [modalShow, setModalShow] = useState(false);
 
-  function createData(idProd,produto, quantidade) {
-    return { idProd, produto, quantidade};
+  function createData(idProd, produto, quantidade) {
+    return { idProd, produto, quantidade };
   }
-const productToVend = [];
-  
+
+  const resetaCampus = () => {
+    setQuantidade("");
+    setEnviado(false);
+  };
+
   const clientes = {
     options: clients,
     getOptionLabel: (option) => option.name,
@@ -76,12 +83,51 @@ const productToVend = [];
     getProduct();
   }, []);
 
+  const verificaListaProd = () => {
+    let insert = rows.find((el) => el.idProd === productSelectd.id_product);
+    return insert;
+  };
+
   const addProduct = () => {
     setEnviado(true);
-    console.log(productSelectd);
-    console.log(clienteSelectd);
-    productToVend.push(createData(productSelectd.id_product, productSelectd.type, quantidade));
-    setRows(productToVend);    
+    if (
+      (quantidade > 0 || quantidade.length !== 0) &&
+      productSelectd !== "" &&
+      productSelectd
+    ) {
+      if (rows.length > 0) {
+        if (!verificaListaProd()) {
+          setRows((oldArray) => [
+            ...oldArray,
+            createData(
+              productSelectd.id_product,
+              productSelectd.type,
+              quantidade
+            ),
+          ]);
+          setOpen(false);
+          resetaCampus();
+        } else {
+          setOpen(true);
+        }
+      } else {
+        setRows((oldArray) => [
+          ...oldArray,
+          createData(
+            productSelectd.id_product,
+            productSelectd.type,
+            quantidade
+          ),
+        ]);
+        resetaCampus();
+      }
+    }
+  };
+
+  const deleteProduct = (index) => {
+    var newRows = [...rows];
+    newRows.splice(index, 1);
+    setRows(newRows);
   };
 
   return (
@@ -98,6 +144,26 @@ const productToVend = [];
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
+                  <Collapse in={open}>
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="secondary"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      Produto já está na lista
+                    </Alert>
+                  </Collapse>
+
                   <Row>
                     <Col xs={12} md={6}>
                       <Row>
@@ -105,7 +171,9 @@ const productToVend = [];
                           <Autocomplete
                             {...produtos}
                             id="produto"
+                            clearOnBlur={true}
                             debug
+                            clearText="Limpar"
                             onChange={(event, newValue) => {
                               setProductSelectd(newValue);
                             }}
@@ -126,27 +194,6 @@ const productToVend = [];
                         </Col>
                       </Row>
 
-                      <Row>
-                        <Col xs={12} md={12}>
-                          <Autocomplete
-                            {...clientes}
-                            id="cliente"
-                            debug
-                            onChange={(event, newValue) => {
-                              setClienteSelectd(newValue);
-                            }}
-                            noOptionsText="Nenhum Registro"
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Cliente"
-                                margin="normal"
-                              />
-                            )}
-                          />
-                        </Col>
-                      </Row>
-
                       <Row className="mt-4">
                         <Col xs={12} md={12}>
                           <TextField
@@ -155,14 +202,16 @@ const productToVend = [];
                             type="number"
                             value={quantidade}
                             error={
-                              (quantidade === 0 || quantidade < 0) && enviado
+                              (quantidade <= 0 || quantidade.length === "") &&
+                              enviado
                             }
                             onChange={({ target }) =>
                               setQuantidade(target.value)
                             }
                             className="col-md-12"
                           />
-                          {(quantidade === 0 || quantidade < 0) && enviado ? (
+                          {(quantidade <= 0 || quantidade.length === "") &&
+                          enviado ? (
                             <VerifyInputs value="Qauntidade"></VerifyInputs>
                           ) : (
                             ""
@@ -200,7 +249,7 @@ const productToVend = [];
                                 </TableRow>
                               </TableHead>
                               <TableBody>
-                                {rows.map((row) => (
+                                {rows.map((row, index) => (
                                   <TableRow key={row.idProd}>
                                     <TableCell component="th" scope="row">
                                       {row.produto}
@@ -212,6 +261,7 @@ const productToVend = [];
                                       <IconButton
                                         color="secondary"
                                         aria-label="add an alarm"
+                                        onClick={() => deleteProduct(index)}
                                       >
                                         <CloseIcon />
                                       </IconButton>
@@ -227,7 +277,11 @@ const productToVend = [];
                   </Row>
                 </Card.Body>
                 <Card.Footer>
-                  <Button variant="info" className="float-right">
+                  <Button
+                    variant="info"
+                    className="float-right"
+                    onClick={() => setModalShow(true)}
+                  >
                     Finalizar Venda
                   </Button>
                 </Card.Footer>
@@ -235,6 +289,50 @@ const productToVend = [];
             </Col>
           </Row>
         </Container>
+
+        <Modal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          backdrop="static"
+          size="lg"
+          keyboard={false}
+        >
+          <Modal.Header closeButton className="p-2">
+            <span>Realizar Venda</span>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col xs={12} md={6}>
+                <Row>
+                  <Col xs={12} md={12}>
+                    <Autocomplete
+                      {...clientes}
+                      id="cliente"
+                      debug
+                      onChange={(event, newValue) => {
+                        setClienteSelectd(newValue);
+                      }}
+                      noOptionsText="Nenhum Registro"
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Cliente"
+                          margin="normal"
+                        />
+                      )}
+                    />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setModalShow(false)}>
+              Close
+            </Button>
+            <Button variant="primary">Understood</Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </>
   );
