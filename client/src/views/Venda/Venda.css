@@ -5,6 +5,6 @@
 .wrapper-venda .MuiPaper-elevation1{
     box-shadow: none;
 }
-/*.wrapper-venda .principal-card{
-    height: 500px;
-}*/
+.wrapper-venda .max-height-table-product{
+    max-height: 281px;
+}

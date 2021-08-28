@@ -21,6 +21,12 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import currencyFormatter from "currency-formatter";
+import DateFnsUtils from "@date-io/date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
 import "./Venda.css";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 
@@ -33,6 +39,7 @@ function Venda() {
   const [precoTotalFilter, setPrecoTotalFilter] = useState(0);
   const [precoDescontoFilter, setPrecoDescontoFilter] = useState(0);
 
+  const [date, setDate] = useState(new Date());
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
   const [paymentType, setPaymentType] = useState([]);
@@ -52,6 +59,10 @@ function Venda() {
   const resetaCampus = () => {
     setQuantidade("");
     setEnviado(false);
+  };
+
+  const handleDateChange = (date) => {
+    setDate(date);
   };
 
   const clientes = {
@@ -122,7 +133,8 @@ function Venda() {
   const addProduct = async () => {
     setEnviado(true);
     if (
-      (quantidade > 0 || quantidade.length !== 0) &&
+      quantidade > 0 &&
+      quantidade.length !== 0 &&
       productSelectd !== "" &&
       productSelectd
     ) {
@@ -178,65 +190,54 @@ function Venda() {
     });
     setPrecoTotal(preco);
     setPrecoTotalFilter(
-      currencyFormatter.format(
-        preco,
-        {
-          code: "pt-BR",
-          decimal: ",",
-          decimalDigits: 2,
-        }
-      ),
-    )
+      currencyFormatter.format(preco, {
+        code: "pt-BR",
+        decimal: ",",
+        decimalDigits: 2,
+      })
+    );
     let allDesconto = (desconto * preco) / 100;
     setPrecoDesconto(preco - allDesconto);
     setPrecoDescontoFilter(
-      currencyFormatter.format(
-        preco - allDesconto,
-        {
-          code: "pt-BR",
-          decimal: ",",
-          decimalDigits: 2,
-        }
-      ),
-    )
+      currencyFormatter.format(preco - allDesconto, {
+        code: "pt-BR",
+        decimal: ",",
+        decimalDigits: 2,
+      })
+    );
   };
 
   useEffect(() => {
     seteTotalValue();
   }, [rows]);
 
-  const calcPorcent = (value) =>{
+  const calcPorcent = (value) => {
     let allDesconto = (value * precoTotal) / 100;
     return precoTotal - allDesconto;
-  }
+  };
 
-  const aplyDesconto = (value) =>{
-    if(value.length > 0 && value){
+  const aplyDesconto = (value) => {
+    if (value.length > 0 && value) {
       setPrecoDesconto(calcPorcent(value));
       setPrecoDescontoFilter(
-        currencyFormatter.format(
-          calcPorcent(value),
-          {
-            code: "pt-BR",
-            decimal: ",",
-            decimalDigits: 2,
-          }
-        ),
-      )
+        currencyFormatter.format(calcPorcent(value), {
+          code: "pt-BR",
+          decimal: ",",
+          decimalDigits: 2,
+        })
+      );
       setDesconto(value);
-    }else{
+    } else {
       setPrecoDescontoFilter(
-        currencyFormatter.format(
-          calcPorcent(value),
-          {
-            code: "pt-BR",
-            decimal: ",",
-            decimalDigits: 2,
-          }
-        ),
-      )
+        currencyFormatter.format(calcPorcent(value), {
+          code: "pt-BR",
+          decimal: ",",
+          decimalDigits: 2,
+        })
+      );
+      setDesconto(0);
     }
-  }
+  };
 
   const deleteProduct = (index) => {
     var newRows = [...rows];
@@ -247,7 +248,7 @@ function Venda() {
   const finishVend = () => {
     if (rows.length > 0) {
       setSendVend(true);
-      if (paymentTypeSelected !== "" && paymentTypeSelected) {
+      if ((paymentTypeSelected !== "" && paymentTypeSelected) && date) {
         if (
           paymentTypeSelected.id_payme_type === 4 &&
           (!clienteSelectd || clienteSelectd === "")
@@ -257,6 +258,16 @@ function Venda() {
             "Selecione um cliente para esse tipo de venda",
             "warning"
           );
+        }else{
+          const data = {
+            dateCompra: new Date(date.getFullYear(), date.getMonth(), date.getDate(),0,0,0,0),
+            valorFinal: precoTotal,
+            desconto: desconto,
+            cliente: clienteSelectd,
+            paymentType: paymentTypeSelected,
+            products: rows,
+          }
+          console.log(data);
         }
       }
     } else {
@@ -367,7 +378,10 @@ function Venda() {
 
                       <Row className="mt-4">
                         <Col xs={12} md={12}>
-                          <TableContainer component={Paper}>
+                          <TableContainer
+                            component={Paper}
+                            className="max-height-table-product"
+                          >
                             <Table size="small" aria-label="a dense table">
                               <TableHead>
                                 <TableRow>
@@ -452,11 +466,16 @@ function Venda() {
                       <Row className="mt-4">
                         <Col xs={12} md={6}>
                           <TextField
+                            className="w-100 mt-3"
                             label="Desconto"
                             id="desconto"
                             type="number"
+                            value={desconto}
+                            error={desconto < 0}
                             disabled={rows.length === 0}
-                            onChange={({ target }) => aplyDesconto(target.value)}
+                            onChange={({ target }) =>
+                              aplyDesconto(target.value)
+                            }
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
@@ -466,6 +485,33 @@ function Venda() {
                             }}
                           />
                         </Col>
+                        <Col xs={12} md={6}>
+                          <MuiPickersUtilsProvider
+                            utils={DateFnsUtils}
+                            locale={ptBR}
+                          >
+                            <KeyboardDatePicker
+                              margin="normal"
+                              id="date-picker-dialog"
+                              format="dd/MM/yyyy"
+                              value={date}
+                              error={!date && sendVend}
+                              onChange={handleDateChange}
+                              cancelLabel="Cencelar"
+                              className="w-100"
+                              label="Data da Venda*"
+                              KeyboardButtonProps={{
+                                "aria-label": "change date",
+                              }}
+                            />
+                          </MuiPickersUtilsProvider>
+                          {!date && sendVend ? (
+                            <VerifyInputs value="Data da Venda"></VerifyInputs>
+                          ) : (
+                            ""
+                          )}
+                        </Col>
+                        
                       </Row>
 
                       <Row className="mt-4 pr-2">
