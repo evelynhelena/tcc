@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Modal } from "react-bootstrap";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddIcon from "@material-ui/icons/Add";
 import ButtonMaterial from "@material-ui/core/Button";
@@ -19,23 +20,33 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import currencyFormatter from "currency-formatter";
 import "./Venda.css";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 
 function Venda() {
   const [quantidade, setQuantidade] = useState("");
-  const [preco, setPreco] = useState("");
+
+  const [precoTotal, setPrecoTotal] = useState(0);
+  const [precoDesconto, setPrecoDesconto] = useState(0);
+
+  const [precoTotalFilter, setPrecoTotalFilter] = useState(0);
+  const [precoDescontoFilter, setPrecoDescontoFilter] = useState(0);
+
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
+  const [paymentType, setPaymentType] = useState([]);
   const [enviado, setEnviado] = useState(false);
+  const [sendVend, setSendVend] = useState(false);
   const [productSelectd, setProductSelectd] = useState("");
   const [clienteSelectd, setClienteSelectd] = useState("");
+  const [desconto, setDesconto] = useState(0);
+  const [paymentTypeSelected, setPaymentTypeSelected] = useState("");
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
-  const [modalShow, setModalShow] = useState(false);
 
-  function createData(idProd, produto, quantidade) {
-    return { idProd, produto, quantidade };
+  function createData(idProd, produto, valor, quantidade) {
+    return { idProd, produto, valor, quantidade };
   }
 
   const resetaCampus = () => {
@@ -51,6 +62,11 @@ function Venda() {
   const produtos = {
     options: products,
     getOptionLabel: (option) => option.type,
+  };
+
+  const payment = {
+    options: paymentType,
+    getOptionLabel: (option) => option.non_payme_type,
   };
 
   const getClient = async () => {
@@ -75,6 +91,17 @@ function Venda() {
     }
   };
 
+  const getPaymentType = async () => {
+    try {
+      const { data } = await api.get(`${server.url}paymentType`);
+      if (data) {
+        setPaymentType(data);
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao resgatar tipo de pagamento", "error");
+    }
+  };
+
   useEffect(() => {
     getClient();
   }, []);
@@ -83,12 +110,16 @@ function Venda() {
     getProduct();
   }, []);
 
+  useEffect(() => {
+    getPaymentType();
+  }, []);
+
   const verificaListaProd = () => {
     let insert = rows.find((el) => el.idProd === productSelectd.id_product);
     return insert;
   };
 
-  const addProduct = () => {
+  const addProduct = async () => {
     setEnviado(true);
     if (
       (quantidade > 0 || quantidade.length !== 0) &&
@@ -102,7 +133,15 @@ function Venda() {
             createData(
               productSelectd.id_product,
               productSelectd.type,
-              quantidade
+              currencyFormatter.format(
+                productSelectd.value * parseInt(quantidade),
+                {
+                  code: "pt-BR",
+                  decimal: ",",
+                  decimalDigits: 2,
+                }
+              ),
+              parseInt(quantidade)
             ),
           ]);
           setOpen(false);
@@ -116,7 +155,15 @@ function Venda() {
           createData(
             productSelectd.id_product,
             productSelectd.type,
-            quantidade
+            currencyFormatter.format(
+              productSelectd.value * parseInt(quantidade),
+              {
+                code: "pt-BR",
+                decimal: ",",
+                decimalDigits: 2,
+              }
+            ),
+            parseInt(quantidade)
           ),
         ]);
         resetaCampus();
@@ -124,10 +171,97 @@ function Venda() {
     }
   };
 
+  const seteTotalValue = () => {
+    let preco = 0;
+    rows.forEach((el) => {
+      preco += parseFloat(el.valor.replace(",", "."));
+    });
+    setPrecoTotal(preco);
+    setPrecoTotalFilter(
+      currencyFormatter.format(
+        preco,
+        {
+          code: "pt-BR",
+          decimal: ",",
+          decimalDigits: 2,
+        }
+      ),
+    )
+    let allDesconto = (desconto * preco) / 100;
+    setPrecoDesconto(preco - allDesconto);
+    setPrecoDescontoFilter(
+      currencyFormatter.format(
+        preco - allDesconto,
+        {
+          code: "pt-BR",
+          decimal: ",",
+          decimalDigits: 2,
+        }
+      ),
+    )
+  };
+
+  useEffect(() => {
+    seteTotalValue();
+  }, [rows]);
+
+  const calcPorcent = (value) =>{
+    let allDesconto = (value * precoTotal) / 100;
+    return precoTotal - allDesconto;
+  }
+
+  const aplyDesconto = (value) =>{
+    if(value.length > 0 && value){
+      setPrecoDesconto(calcPorcent(value));
+      setPrecoDescontoFilter(
+        currencyFormatter.format(
+          calcPorcent(value),
+          {
+            code: "pt-BR",
+            decimal: ",",
+            decimalDigits: 2,
+          }
+        ),
+      )
+      setDesconto(value);
+    }else{
+      setPrecoDescontoFilter(
+        currencyFormatter.format(
+          calcPorcent(value),
+          {
+            code: "pt-BR",
+            decimal: ",",
+            decimalDigits: 2,
+          }
+        ),
+      )
+    }
+  }
+
   const deleteProduct = (index) => {
     var newRows = [...rows];
     newRows.splice(index, 1);
     setRows(newRows);
+  };
+
+  const finishVend = () => {
+    if (rows.length > 0) {
+      setSendVend(true);
+      if (paymentTypeSelected !== "" && paymentTypeSelected) {
+        if (
+          paymentTypeSelected.id_payme_type === 4 &&
+          (!clienteSelectd || clienteSelectd === "")
+        ) {
+          swal(
+            "Atenção",
+            "Selecione um cliente para esse tipo de venda",
+            "warning"
+          );
+        }
+      }
+    } else {
+      swal("Erro", "Nnehum produto selecionado", "error");
+    }
   };
 
   return (
@@ -143,7 +277,7 @@ function Venda() {
                     <h4 className="mb-0">Vender</h4>
                   </Card.Title>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className="principal-card">
                   <Collapse in={open}>
                     <Alert
                       severity="error"
@@ -167,7 +301,7 @@ function Venda() {
                   <Row>
                     <Col xs={12} md={6}>
                       <Row>
-                        <Col xs={12} md={12}>
+                        <Col xs={12} md={6}>
                           <Autocomplete
                             {...produtos}
                             id="produto"
@@ -192,10 +326,8 @@ function Venda() {
                             ""
                           )}
                         </Col>
-                      </Row>
 
-                      <Row className="mt-4">
-                        <Col xs={12} md={12}>
+                        <Col xs={12} md={6} className="mt-3">
                           <TextField
                             id="quantidade"
                             label="Quantidade*"
@@ -219,7 +351,7 @@ function Venda() {
                         </Col>
                       </Row>
 
-                      <Row className="mt-4">
+                      <Row className="mt-1">
                         <Col xs={12} md={12}>
                           <ButtonMaterial
                             variant="contained"
@@ -232,9 +364,7 @@ function Venda() {
                           </ButtonMaterial>
                         </Col>
                       </Row>
-                    </Col>
 
-                    <Col xs={12} md={6}>
                       <Row className="mt-4">
                         <Col xs={12} md={12}>
                           <TableContainer component={Paper}>
@@ -242,9 +372,8 @@ function Venda() {
                               <TableHead>
                                 <TableRow>
                                   <TableCell>Produto</TableCell>
-                                  <TableCell align="right">
-                                    Quantidade
-                                  </TableCell>
+                                  <TableCell>Quantidade</TableCell>
+                                  <TableCell>Preço</TableCell>
                                   <TableCell align="right">Ação</TableCell>
                                 </TableRow>
                               </TableHead>
@@ -254,9 +383,8 @@ function Venda() {
                                     <TableCell component="th" scope="row">
                                       {row.produto}
                                     </TableCell>
-                                    <TableCell align="right">
-                                      {row.quantidade}
-                                    </TableCell>
+                                    <TableCell>{row.quantidade}</TableCell>
+                                    <TableCell>{row.valor}</TableCell>
                                     <TableCell align="right">
                                       <IconButton
                                         color="secondary"
@@ -274,13 +402,112 @@ function Venda() {
                         </Col>
                       </Row>
                     </Col>
+
+                    <Col xs={12} md={6}>
+                      <Row>
+                        <Col xs={12} md={6}>
+                          <Autocomplete
+                            {...clientes}
+                            id="cliente"
+                            debug
+                            onChange={(event, newValue) => {
+                              setClienteSelectd(newValue);
+                            }}
+                            noOptionsText="Nenhum Registro"
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Cliente"
+                                margin="normal"
+                              />
+                            )}
+                          />
+                        </Col>
+                        <Col xs={12} md={6}>
+                          <Autocomplete
+                            {...payment}
+                            id="TipoPagamento"
+                            debug
+                            onChange={(event, newValue) => {
+                              setPaymentTypeSelected(newValue);
+                            }}
+                            noOptionsText="Nenhum Registro"
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                error={!paymentTypeSelected && sendVend}
+                                label="Tipo de Pagamento*"
+                                margin="normal"
+                              />
+                            )}
+                          />
+                          {!paymentTypeSelected && sendVend ? (
+                            <VerifyInputs value="Tipio de Pagamento"></VerifyInputs>
+                          ) : (
+                            ""
+                          )}
+                        </Col>
+                      </Row>
+
+                      <Row className="mt-4">
+                        <Col xs={12} md={6}>
+                          <TextField
+                            label="Desconto"
+                            id="desconto"
+                            type="number"
+                            disabled={rows.length === 0}
+                            onChange={({ target }) => aplyDesconto(target.value)}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  %
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Col>
+                      </Row>
+
+                      <Row className="mt-4 pr-2">
+                        <Card>
+                          <Card.Body>
+                            <Row>
+                              <Col xs={12} md={9}>
+                                <span>Total</span>
+                              </Col>
+                              <Col xs={12} md={3}>
+                                <span>R$ {precoTotalFilter}</span>
+                              </Col>
+                            </Row>
+                            <hr></hr>
+                            <Row>
+                              <Col xs={12} md={9}>
+                                <span>Desconto</span>
+                              </Col>
+                              <Col xs={12} md={3}>
+                                <span>{desconto}%</span>
+                              </Col>
+                            </Row>
+                            <hr></hr>
+                            <Row>
+                              <Col xs={12} md={9}>
+                                <span>Total com desconto</span>
+                              </Col>
+                              <Col xs={12} md={3}>
+                                <span>R$ {precoDescontoFilter}</span>
+                              </Col>
+                            </Row>
+                          </Card.Body>
+                        </Card>
+                      </Row>
+                    </Col>
                   </Row>
                 </Card.Body>
                 <Card.Footer>
                   <Button
                     variant="info"
                     className="float-right"
-                    onClick={() => setModalShow(true)}
+                    onClick={finishVend}
                   >
                     Finalizar Venda
                   </Button>
@@ -289,50 +516,6 @@ function Venda() {
             </Col>
           </Row>
         </Container>
-
-        <Modal
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-          backdrop="static"
-          size="lg"
-          keyboard={false}
-        >
-          <Modal.Header closeButton className="p-2">
-            <span>Realizar Venda</span>
-          </Modal.Header>
-          <Modal.Body>
-            <Row>
-              <Col xs={12} md={6}>
-                <Row>
-                  <Col xs={12} md={12}>
-                    <Autocomplete
-                      {...clientes}
-                      id="cliente"
-                      debug
-                      onChange={(event, newValue) => {
-                        setClienteSelectd(newValue);
-                      }}
-                      noOptionsText="Nenhum Registro"
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Cliente"
-                          margin="normal"
-                        />
-                      )}
-                    />
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setModalShow(false)}>
-              Close
-            </Button>
-            <Button variant="primary">Understood</Button>
-          </Modal.Footer>
-        </Modal>
       </div>
     </>
   );

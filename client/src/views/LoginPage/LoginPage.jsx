@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import { Link } from "react-router-dom";
 import {Container,Card, Row,Col } from "react-bootstrap";
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -95,8 +96,9 @@ function LoginPage(){
                 </FormControl>
                     </Col>
                 </Row>
-                
-                <Button  className="w-100 mt-5" color="secondary" onClick={handleSubmit}>Entrar</Button>
+                <Link to={"/Dashboard"} style={{textDecoration: 'none'}}>
+                  <Button  className="w-100 mt-5" color="secondary" onClick={handleSubmit}>Entrar</Button>
+                </Link>
               </Card.Body>
             </Card>
           </div>
