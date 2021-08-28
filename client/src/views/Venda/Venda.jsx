@@ -245,6 +245,17 @@ function Venda() {
     setRows(newRows);
   };
 
+  const insertVend = async (objct) => {
+    try {
+      const { data } = await api.post(`${server.url}venda`,objct);
+      if (data) {
+        setProducts(data);
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao resgatar produto selecionado", "error");
+    }
+  };
+
   const finishVend = () => {
     if (rows.length > 0) {
       setSendVend(true);
@@ -267,6 +278,7 @@ function Venda() {
             paymentType: paymentTypeSelected,
             products: rows,
           }
+          insertVend(data);
           console.log(data);
         }
       }
