@@ -23,7 +23,7 @@ export const SidebarData = [
   },
   {
     title: 'Vender',
-    path: '/Produto',
+    path: '/NewVend',
     icon: <FaIcons.FaShoppingBasket />,
     cName: 'nav-text'
   },

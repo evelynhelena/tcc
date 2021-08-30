@@ -25,9 +25,23 @@ module.exports = {
 
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           return res.status(404).send({
             error: { msg: "Erro ao tentar recuperar os usuários" },
+          });
+        }
+        return res.send(results);
+      }
+    );
+  },
+
+  findAllClient(req, res) {
+    const connection = bdConnect();
+    connection.query(
+      "select * from vw_find_all_users where fk_user_name = 2",
+      function (error, results, fields) {
+        if (error) {
+          return res.status(404).send({
+            error: { msg: "Erro ao tentar recuperar os clientes" },
           });
         }
         return res.send(results);

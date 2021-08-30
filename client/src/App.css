@@ -285,3 +285,7 @@
   color: #ff9800 !important;
   border-color: #ff980029;
 }
+
+.MuiInputBase-input.Mui-disabled{
+  cursor: not-allowed;
+}

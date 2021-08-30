@@ -5,6 +5,7 @@ import ProdController from './Controller/Products/ProdController'
 import Dashboard from './Controller/Dashboard/Dashboard';
 import Calendar from './Controller/Calendar/Calendar';
 import EntradaProduto from './Controller/EntradaProduto/EntradaProduto';
+import Venda from "./Controller/Venda/Venda";
 routes.get("/", (req, res) => {
   res.send("Teste");
 });
@@ -20,13 +21,19 @@ routes.delete('/productsType/:id', ProdController.delete);
 
 // ROTAS Entrada Produto
 routes.post("/entradaProduto", EntradaProduto.insert);
+routes.get("/entradaProduto", EntradaProduto.findAll);
 routes.get("/findById/:id", EntradaProduto.findById);
 routes.get("/entradaProduto/:id", EntradaProduto.findByIdPrductType);
 routes.put("/entradaProduto/:id", EntradaProduto.update);
 routes.delete("/entradaProduto/:id", EntradaProduto.delete);
 
+//ROTAS Venda
+routes.post("/venda",Venda.insert);
+routes.get("/paymentType",Venda.getPaymentType);
+
 // ROTAS Usuarios
 routes.get("/users", UserController.findAll);
+routes.get("/clients", UserController.findAllClient);
 routes.get("/findUserType",UserController.findUserType);
 routes.post("/insert", UserController.insert);
 routes.get("/users/:id", UserController.findById);
