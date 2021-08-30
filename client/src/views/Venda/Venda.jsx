@@ -249,7 +249,7 @@ function Venda() {
     try {
       const { data } = await api.post(`${server.url}venda`,objct);
       if (data) {
-        setProducts(data);
+        swal("Sucesso", "Venda realizada com sucesso", "success");
       }
     } catch (err) {
       swal("Erro", "Erro ao resgatar produto selecionado", "error");
@@ -279,7 +279,6 @@ function Venda() {
             products: rows,
           }
           insertVend(data);
-          console.log(data);
         }
       }
     } else {
