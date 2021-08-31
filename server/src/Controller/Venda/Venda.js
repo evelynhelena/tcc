@@ -16,7 +16,7 @@ const calcPorcent = (desconto , precoTotal) => {
 module.exports = {
   getPaymentType(req, res) {
     const connection = bdConnect();
-    connection.query("select * from tbl_payme_type", function (error, results) {
+    connection.query("select * from tbl_payme_type",(error, results) => {
       if (error) {
         return res.status(500).send({
           error: {
@@ -90,5 +90,24 @@ module.exports = {
       );
     }
   },
+  findAll(req, res){
+    const { dateCompra, clienteId, } = req.body;
+    const connection = bdConnect();
+    connection.query(
+      `select * from tbl_seles ts join tbl_users tu on ts.fk_cliente = tu.id 
+      where ts.date_compra = '${dateCompra}' 
+      and ts.fk_cliente = ${clienteId} and ts.ind_cance = 0`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro as Vendas",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  }
 };
 

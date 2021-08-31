@@ -29,6 +29,7 @@ routes.delete("/entradaProduto/:id", EntradaProduto.delete);
 
 //ROTAS Venda
 routes.post("/venda",Venda.insert);
+routes.post("/findAll",Venda.findAll);
 routes.get("/paymentType",Venda.getPaymentType);
 
 // ROTAS Usuarios

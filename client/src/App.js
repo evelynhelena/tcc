@@ -13,6 +13,7 @@ import LoginPage from "./views/LoginPage/LoginPage";
 import EntradaProduto from "./views/EntradaProduto/EntradaProduto";
 import ListProduct from "./views/EntradaProduto/ListProduct";
 import Venda from "./views/Venda/Venda";
+import ListVenda from "./views/Venda/ListVenda";
 function App() {
   return (
     <Router>
@@ -27,6 +28,7 @@ function App() {
 
             {/*Venda*/}
             <Route path='/NewVend' exact component={Venda} />
+            <Route path='/ListVenda' exact component={ListVenda} />
 
             {/* Entrada de Prduto */}
             <Route path='/EntradaProduto/:id' exact component={EntradaProduto} />
