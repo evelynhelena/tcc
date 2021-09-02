@@ -12,6 +12,10 @@ import server from "../../Config/BaseURL";
 import swal from "@sweetalert/with-react";
 import Tooltip from "@material-ui/core/Tooltip";
 import DateFnsUtils from "@date-io/date-fns";
+import Alert from "@material-ui/lab/Alert";
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
+import Collapse from "@material-ui/core/Collapse";
 import { ptBR } from "date-fns/locale";
 import {
   MuiPickersUtilsProvider,
@@ -22,10 +26,11 @@ import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 
 function ListVenda() {
   const [clients, setClients] = useState([]);
-  const [clienteSelectd, setClienteSelectd] = useState("");
+  const [clienteSelectd, setClienteSelectd] = useState({});
   const [enviado, setEnviado] = useState("");
   const [date, setDate] = useState(new Date());
   const [sales, setSales] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const columns = [
     {
@@ -35,11 +40,11 @@ function ListVenda() {
     },
     {
       name: "Cliente",
-      selector: "user_name",
+      selector: "name",
       sortable: true,
     },
     {
-      name: "Valor",
+      name: "Valor(R$)",
       selector: "value",
       sortable: true,
     },
@@ -49,14 +54,19 @@ function ListVenda() {
       sortable: true,
     },
     {
+      name: "Tipo de Pagamento",
+      selector: "non_payme_type",
+      sortable: true,
+    },
+    {
       name: "Ações",
       cell: (data) => (
         <>
-          <Tooltip title="Editar">
+          <Tooltip title="Visualizar Venda">
             <Link
               as={Link}
               to={"/EditProductType/" + data.id_sales}
-              className="btn-link-trable btn-link-trable-color-simple"
+              className="btn-link-trable btn-link-trable-color-primery"
             >
               <VisibilityIcon />
             </Link>
@@ -91,20 +101,27 @@ function ListVenda() {
   }, []);
 
   const getVend = async () => {
-    console.log(clienteSelectd);
-    try {
-      const { data } = await api.post(`${server.url}findAll`, {
-        clienteId: 34,
-        dateCompra: "2021-08-30",
-      });
-      if (data) {
-        setSales(data);
-        console.log(data);
+    if(clienteSelectd || date){
+      setOpen(false);
+      try {
+        const { data } = await api.post(`${server.url}findAll`, {
+          clienteId: clienteSelectd ? clienteSelectd.id : null,
+          dateCompra: date ? date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() : null,
+        });
+        if (data) {
+          setSales(data);
+        }
+      } catch (err) {
+        swal("Erro", "Erro as vendas", "error");
       }
-    } catch (err) {
-      swal("Erro", "Erro ao resgatar produto selecionado", "error");
+    }else{
+      setOpen(true);
     }
   };
+
+  useEffect(() => {
+    getVend();
+  }, []);
 
   return (
     <>
@@ -120,6 +137,25 @@ function ListVenda() {
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
+                <Collapse in={open}>
+                    <Alert
+                      severity="warning"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="default"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      É preciso selecionar <b>Cliente</b> ou <b>Data da Venda</b>
+                    </Alert>
+                  </Collapse>
                   <Row>
                     <Col xs={12} md={3}>
                       <Autocomplete
@@ -153,7 +189,9 @@ function ListVenda() {
                           onChange={handleDateChange}
                           cancelLabel="Cencelar"
                           className="w-100"
-                          label="Data da Venda*"
+                          label="Data da Venda"
+                          showTodayButton={true}
+                          todayLabel="Hoje"
                           KeyboardButtonProps={{
                             "aria-label": "change date",
                           }}
@@ -177,6 +215,7 @@ function ListVenda() {
                         data={sales}
                         defaultSortFieldId={1}
                         sortIcon={<FaIcons.FaAngleUp />}
+                        noDataComponent="Nenhum Registro Encontrado"
                         pagination
                       />
         

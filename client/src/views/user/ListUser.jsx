@@ -130,6 +130,7 @@ function User() {
                       columns={columns}
                       data={users}
                       defaultSortFieldId={1}
+                      noDataComponent="Nenhum Registro Encontrado"
                       sortIcon={<FaIcons.FaAngleUp />}
                       pagination
                     />

@@ -225,6 +225,7 @@ function ListProducType() {
                     columns={columns}
                     data={productsType}
                     defaultSortFieldId={1}
+                    noDataComponent="Nenhum Registro Encontrado"
                     sortIcon={<FaIcons.FaAngleUp />}
                     pagination
                   />

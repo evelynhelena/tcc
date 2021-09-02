@@ -30,6 +30,8 @@ module.exports = {
   },
   async insert(req, res) {
     const { paymentType, cliente, products } = req.body;
+
+    let indBaixa = paymentType.id_payme_type !== 4;
     if (paymentType.id_payme_type == 4 && !cliente) {
       return res.status(501).send({
         error: {
@@ -43,7 +45,7 @@ module.exports = {
         calcPorcent(req.body.desconto,req.body.valorFinal),
         req.body.desconto,
         "0",
-        "0",
+        indBaixa,
         (req.body.cliente = req.body.cliente ? req.body.cliente.id : null),
         req.body.paymentType.id_payme_type,
       ];
@@ -77,7 +79,7 @@ module.exports = {
                 if (error) {
                   return res.status(500).send({
                     error: {
-                      msg: "Erro ao tentar recuperar os tipos de pagamentos",
+                      msg: "Erro ao realizar uma venda",
                     },
                     error,
                   });
@@ -93,10 +95,16 @@ module.exports = {
   findAll(req, res){
     const { dateCompra, clienteId, } = req.body;
     const connection = bdConnect();
+    let str = "";
+    if(dateCompra && clienteId){
+      str = `date_compra = '${dateCompra}' and fk_cliente = ${clienteId}`;
+    }else if(dateCompra && !clienteId){
+      str = `date_compra = '${dateCompra}'`;
+    }else if(!dateCompra && clienteId){
+      str = `fk_cliente = ${clienteId}`;
+    }
     connection.query(
-      `select * from tbl_seles ts join tbl_users tu on ts.fk_cliente = tu.id 
-      where ts.date_compra = '${dateCompra}' 
-      and ts.fk_cliente = ${clienteId} and ts.ind_cance = 0`,
+      `select * from vw_sales where ${str} and ind_cance = 0`,
       (error, results) =>{
       if (error) {
         return res.status(500).send({
