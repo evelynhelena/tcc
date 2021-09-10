@@ -5,10 +5,14 @@ import ProdController from './Controller/Products/ProdController'
 import Dashboard from './Controller/Dashboard/Dashboard';
 import Calendar from './Controller/Calendar/Calendar';
 import EntradaProduto from './Controller/EntradaProduto/EntradaProduto';
+import Login from './Controller/Login/Login';
 import Venda from "./Controller/Venda/Venda";
 routes.get("/", (req, res) => {
   res.send("Teste");
 });
+
+//ROTAS Login
+routes.post('/login', Login.getUser);
 
 // ROTAS Tipos Produto
 routes.post('/productsType', ProdController.insert);

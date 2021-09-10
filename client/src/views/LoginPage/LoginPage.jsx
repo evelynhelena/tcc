@@ -9,6 +9,9 @@ import FaceIcon from '@material-ui/icons/Face';
 import LockIcon from '@material-ui/icons/Lock';
 import Button from '@material-ui/core/Button';
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
+import api from "../../services/Api";
+import server from "../../Config/BaseURL";
+import swal from "@sweetalert/with-react";
 import "./LoginPage.css";
 
   
@@ -29,10 +32,17 @@ function LoginPage(){
     return loginObject;
    }
 
-    const handleSubmit = () =>{
+    const handleSubmit = async () =>{
         setEnviado(true)
         if(validaCampos()){
-            console.log(validaCampos());
+          try {
+            const { data } = await api.post(`${server.url}login`,validaCampos());
+            if (data) {
+              console.log(data);
+            }
+          } catch (err) {
+            swal("Erro", "Erro ao resgatar produto selecionado", "error");
+          }
         }
     }
 
@@ -96,9 +106,7 @@ function LoginPage(){
                 </FormControl>
                     </Col>
                 </Row>
-                <Link to={"/Dashboard"} style={{textDecoration: 'none'}}>
                   <Button  className="w-100 mt-5" color="secondary" onClick={handleSubmit}>Entrar</Button>
-                </Link>
               </Card.Body>
             </Card>
           </div>
