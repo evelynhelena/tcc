@@ -31,12 +31,14 @@ function LoginPage(){
       }
     return loginObject;
    }
-
+const config = {
+  headers: {Authorization: 'Bearer ' + "teste"}
+};
     const handleSubmit = async () =>{
         setEnviado(true)
         if(validaCampos()){
           try {
-            const { data } = await api.post(`${server.url}login`,validaCampos());
+            const { data } = await api.post(`${server.url}login`,validaCampos(),config);
             if (data) {
               console.log(data);
             }
