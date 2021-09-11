@@ -17,6 +17,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import "./ListProductType.css";
 function ListProducType() {
   const [productsType, setProductsType] = useState([]);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
   const columns = [
     {
       name: "ID",
@@ -115,9 +118,9 @@ function ListProducType() {
 
   const getProductType = async () => {
     try {
-      const pordCadastrados = await api.get(`${server.url}prodCadastrado`);
+      const pordCadastrados = await api.get(`${server.url}prodCadastrado`,config);
       //console.log(pordCadastrados.data);
-      const { data } = await api.get(`${server.url}productsType`);
+      const { data } = await api.get(`${server.url}productsType`,config);
       if (data) {
         data.forEach((el) => {
           el.dataValitObrigatorio =
@@ -149,7 +152,7 @@ function ListProducType() {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        api.delete(`${server.url}productsType/` + id).then(function (response) {
+        api.delete(`${server.url}productsType/` + id,config).then(function (response) {
           let data = response.data;
           if (data.msg) {
             swal("Tipo de Prduto deletado com sucesso", {
@@ -181,7 +184,7 @@ function ListProducType() {
     }).then((willDelete) => {
       if (willDelete) {
         api
-          .put(`${server.url}productsTypeReability/` + id)
+          .put(`${server.url}productsTypeReability/` + id,config)
           .then(function (response) {
             let data = response.data;
             if (data.msg) {

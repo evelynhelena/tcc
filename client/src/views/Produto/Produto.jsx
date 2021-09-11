@@ -22,6 +22,9 @@ function Produto() {
   });
   const { id } = useParams();
   const [enviado, setEnviado] = useState(false);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
 
   const validaCampos = () => {
     let typeProductInsert = {
@@ -56,7 +59,8 @@ function Produto() {
     try {
       const { data } = await api.post(
         `${server.url}productsType/`,
-        productType
+        productType,
+        config
       );
       if (data) {
         swal("Sucesso", "Tipo de produdo inserido com sucesso", "success");
@@ -69,7 +73,7 @@ function Produto() {
 
   const getProductTypeByID = async () => {
     try {
-      const { data } = await api.get(`${server.url}productsType/` + id);
+      const { data } = await api.get(`${server.url}productsType/` + id,config);
       if (data) {
         setType(data[0].type);
         setPreco(
@@ -119,7 +123,8 @@ function Produto() {
           try {
             const { data } = await api.put(
               `${server.url}productsType/` + id,
-              updateProduct
+              updateProduct,
+              config
             );
             if (data) {
               swal("Sucesso", "Tipo de Produto editado com sucesso", "success");

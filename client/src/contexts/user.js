@@ -6,9 +6,12 @@ const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
   const getUsers = async () => {
     try {
-      const { data } = await api.get(`${server.url}users`);
+      const { data } = await api.get(`${server.url}users`,config);
       if (data) setUsers(data);
     } catch (err) {
       console.log(err);

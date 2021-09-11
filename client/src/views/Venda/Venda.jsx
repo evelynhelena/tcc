@@ -31,6 +31,9 @@ import "./Venda.css";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 
 function Venda() {
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
   const [quantidade, setQuantidade] = useState("");
 
   const [precoTotal, setPrecoTotal] = useState(0);
@@ -89,7 +92,7 @@ function Venda() {
 
   const getClient = async () => {
     try {
-      const { data } = await api.get(`${server.url}clients`);
+      const { data } = await api.get(`${server.url}clients`,config);
       if (data) {
         setClients(data);
       }
@@ -100,7 +103,7 @@ function Venda() {
 
   const getProduct = async () => {
     try {
-      const { data } = await api.get(`${server.url}entradaProduto`);
+      const { data } = await api.get(`${server.url}entradaProduto`,config);
       if (data) {
         setProducts(data);
       }
@@ -111,7 +114,7 @@ function Venda() {
 
   const getPaymentType = async () => {
     try {
-      const { data } = await api.get(`${server.url}paymentType`);
+      const { data } = await api.get(`${server.url}paymentType`,config);
       if (data) {
         setPaymentType(data);
       }
@@ -254,7 +257,7 @@ function Venda() {
 
   const insertVend = async (objct) => {
     try {
-      const { data } = await api.post(`${server.url}venda`,objct);
+      const { data } = await api.post(`${server.url}venda`,objct,config);
       if (data) {
         swal("Sucesso", "Venda realizada com sucesso", "success");
         clearCampus();

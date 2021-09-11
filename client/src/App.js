@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route,Redirect } from "react-router-dom";
+import { UserProvider } from "./contexts/user";
 import Navbar from './components/NavBar/Navbar';
 import Dashboard from './views/dashboard/Dashboard';
 import ListUser from './views/user/ListUser';
@@ -14,38 +15,45 @@ import EntradaProduto from "./views/EntradaProduto/EntradaProduto";
 import ListProduct from "./views/EntradaProduto/ListProduct";
 import Venda from "./views/Venda/Venda";
 import ListVenda from "./views/Venda/ListVenda";
+function CustomRoute({isPrivaty, ...rest}){
+  if(isPrivaty && ("null" === localStorage.getItem('token') || !localStorage.getItem('token'))){
+    return  <Redirect to="/"></Redirect>
+  }else{
+    return <Route {...rest}></Route>
+  }
+}
 function App() {
   return (
     <Router>
           <Switch>
-            <Route path='/' exact component={LoginPage} />
-            <Route path='/Dashboard' exact component={Dashboard} />
+            <CustomRoute path='/' exact component={LoginPage} />
+            <CustomRoute isPrivaty path='/Dashboard' exact component={Dashboard} />
 
             {/* Tipo de produto */}
-            <Route path='/Produto' exact component={ListProducType} />
-            <Route path='/NewProductType' exact component={Produto} />
-            <Route path='/EditProductType/:id' exact component={Produto} />
+            <CustomRoute isPrivaty path='/Produto' exact component={ListProducType} />
+            <CustomRoute isPrivaty path='/NewProductType' exact component={Produto} />
+            <CustomRoute isPrivaty path='/EditProductType/:id' exact component={Produto} />
 
             {/*Venda*/}
-            <Route path='/NewVend' exact component={Venda} />
-            <Route path='/ListVenda' exact component={ListVenda} />
+            <CustomRoute isPrivaty path='/NewVend' exact component={Venda} />
+            <CustomRoute isPrivaty path='/ListVenda' exact component={ListVenda} />
 
             {/* Entrada de Prduto */}
-            <Route path='/EntradaProduto/:id' exact component={EntradaProduto} />
-            <Route path='/ListaProdutos/:id' exact component={ListProduct} />
-            <Route path='/ProdutoEstoqueBaixo/:estoqueBaixo' exact component={ListProduct} />
-            <Route path='/EditPtoduto/:idProduct' exact component={EntradaProduto} />
+            <CustomRoute isPrivaty path='/EntradaProduto/:id' exact component={EntradaProduto} />
+            <CustomRoute isPrivaty path='/ListaProdutos/:id' exact component={ListProduct} />
+            <CustomRoute isPrivaty path='/ProdutoEstoqueBaixo/:estoqueBaixo' exact component={ListProduct} />
+            <CustomRoute isPrivaty path='/EditPtoduto/:idProduct' exact component={EntradaProduto} />
 
             {/* Usuario */}
-            <Route path='/Listuser' component={ListUser} />
-            <Route path='/NewUser' component={NewUser} />
-            <Route path='/EditUser/:id' component={NewUser} />
+            <CustomRoute isPrivaty path='/Listuser' component={ListUser} />
+            <CustomRoute isPrivaty path='/NewUser' component={NewUser} />
+            <CustomRoute isPrivaty path='/EditUser/:id' component={NewUser} />
 
             {/* Calendario */}
-            <Route path='/Calendar' component={CalenderPage} />
+            <CustomRoute isPrivaty path='/Calendar' component={CalenderPage} />
             
             {/* Pagina de erro */}
-            <Route path='*' component={ErrorPage} />
+            <CustomRoute isPrivaty path='*' component={ErrorPage} />
           </Switch>
       </Router>
   );

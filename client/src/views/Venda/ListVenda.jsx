@@ -31,6 +31,9 @@ function ListVenda() {
   const [date, setDate] = useState(new Date());
   const [sales, setSales] = useState([]);
   const [open, setOpen] = useState(false);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
 
   const columns = [
     {
@@ -87,7 +90,7 @@ function ListVenda() {
 
   const getClient = async () => {
     try {
-      const { data } = await api.get(`${server.url}clients`);
+      const { data } = await api.get(`${server.url}clients`,config);
       if (data) {
         setClients(data);
       }
@@ -107,7 +110,7 @@ function ListVenda() {
         const { data } = await api.post(`${server.url}findAll`, {
           clienteId: clienteSelectd ? clienteSelectd.id : null,
           dateCompra: date ? date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() : null,
-        });
+        },config);
         if (data) {
           setSales(data);
         }

@@ -43,6 +43,10 @@ const useStyles = makeStyles((theme) => ({
 function NewUser() {
   const classes = useStyles();
   const [usersType, setUsersType] = useState([]);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
+
   //values input
   //Dados Pessoais
   const [name, setName] = useState("");
@@ -71,7 +75,7 @@ function NewUser() {
   //<functions>
   const getUsersType = async () => {
     try {
-      const { data } = await api.get(`${server.url}findUserType`);
+      const { data } = await api.get(`${server.url}findUserType`,config);
       if (data) setUsersType(data);
     } catch (err) {
       swal("Erro", "Erro ao selecionar os tipos de usuários", "error");
@@ -81,7 +85,7 @@ function NewUser() {
     getUsersType();
   }, []);
   const getUser = async () => {
-    await api.get(`${server.url}users/` + id).then(
+    await api.get(`${server.url}users/` + id,config).then(
       function ({ data }) {
         if (data.length > 0) {
           setName(data[0].name);
@@ -133,7 +137,7 @@ function NewUser() {
 
   const insertUser = async (newUser) => {
     try {
-      const { data } = await api.post(`${server.url}insert/`, newUser);
+      const { data } = await api.post(`${server.url}insert/`, newUser,config);
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
@@ -151,7 +155,7 @@ function NewUser() {
 
   const updateUser = async (userEdit) => {
     try {
-      const { data } = await api.put(`${server.url}users/` + id,userEdit);
+      const { data } = await api.put(`${server.url}users/` + id,userEdit,config);
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory  } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import { Link } from "react-router-dom";
@@ -19,6 +20,7 @@ function Navbar() {
 
   const [menuAlert, setMenuAlert] = React.useState(null);
   const [menuPerfil, setMenuPerfil] = React.useState(null);
+  const history = useHistory();
 
 
   const handleClickAlert = (event) => {
@@ -33,7 +35,8 @@ function Navbar() {
   };
 
   const handleClosePerfil = () => {
-    setMenuPerfil(null);
+    localStorage.setItem('token', null);
+    history.push("/")
   };
 
   return (

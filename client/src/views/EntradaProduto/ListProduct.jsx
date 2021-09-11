@@ -18,6 +18,9 @@ function ListProduct() {
   const { estoqueBaixo } = useParams();
   const [products, setProducts] = useState([]);
   const [typeProducts, setTypeProducts] = useState([]);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
   const columns = [
     {
       name: "ID",
@@ -78,7 +81,7 @@ function ListProduct() {
       str = `${server.url}entradaProduto/${id}`;
     }
     try {
-      const { data } = await api.get(`${str}`);
+      const { data } = await api.get(`${str}`,config);
       if (data) {
         setTypeProducts(data[0] ? data[0].type : "");
         data.forEach((el) => {
@@ -114,7 +117,7 @@ function ListProduct() {
     }).then((willDelete) => {
       if (willDelete) {
         api
-          .delete(`${server.url}entradaProduto/${id}`)
+          .delete(`${server.url}entradaProduto/${id}`,config)
           .then(function (response) {
             let data = response.data;
             if (data.msg) {

@@ -45,7 +45,11 @@ function CalendarComponent() {
   const [note, setNote] = useState("");
   const [enviado, setEnviado] = useState(false);
   const [updateEvent, setUpdate] = useState(false);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
   //</variable>
+
 
   //<functions>
   const handleClose = () => setShow(false);
@@ -63,7 +67,7 @@ function CalendarComponent() {
 
   const getInportanceTasks = async () => {
     try {
-      const { data } = await api.get(`${server.url}inportanceTasks`);
+      const { data } = await api.get(`${server.url}inportanceTasks`,config);
       if (data) setImportanceList(data);
     } catch (err) {
       swal("Erro", "Erro ao selecionar a inportancia das tarefas", "error");
@@ -75,7 +79,7 @@ function CalendarComponent() {
 
   const inserEvent = async (newEvent) => {
     try {
-      const { data } = await api.post(`${server.url}event/`, newEvent);
+      const { data } = await api.post(`${server.url}event/`, newEvent,config);
       if (data) {
         swal("Sucesso", "Evento inserirdo com sucesso", "success");
         getEvent();
@@ -89,7 +93,7 @@ function CalendarComponent() {
 
   const updateEventFunction = async (event) => {
     try {
-      const { data } = await api.put(`${server.url}event/${idEvent}`, event);
+      const { data } = await api.put(`${server.url}event/${idEvent}`, event,config);
       if (data) {
         swal("Sucesso", "Evento editado com sucesso", "success");
         getEvent();
@@ -110,7 +114,7 @@ function CalendarComponent() {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        api.delete(`${server.url}event/${idEvent}`).then(function (response) {
+        api.delete(`${server.url}event/${idEvent}`,config).then(function (response) {
           let data = response.data;
           if (data.msg) {
             swal("Usuário deletado com sucesso", {
@@ -138,7 +142,7 @@ function CalendarComponent() {
 
   const getEvent = async () => {
     try {
-      const { data } = await api.get(`${server.url}event`);
+      const { data } = await api.get(`${server.url}event`,config);
       if (data) {
         let allEvents = [];
         data.forEach((ev) => {
