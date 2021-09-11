@@ -101,7 +101,7 @@ function ListVenda() {
   }, []);
 
   const getVend = async () => {
-    if(clienteSelectd || date){
+    if((clienteSelectd && clienteSelectd.id) || date){
       setOpen(false);
       try {
         const { data } = await api.post(`${server.url}findAll`, {
@@ -112,10 +112,11 @@ function ListVenda() {
           setSales(data);
         }
       } catch (err) {
-        swal("Erro", "Erro as vendas", "error");
+        swal("Erro", "Erro ao buscar as as vendas", "error");
       }
     }else{
       setOpen(true);
+      setSales([])
     }
   };
 

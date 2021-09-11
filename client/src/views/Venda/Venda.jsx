@@ -61,6 +61,13 @@ function Venda() {
     setEnviado(false);
   };
 
+  const clearCampus = () =>{
+    setQuantidade("");
+    setEnviado(false);
+    setRows([]);
+    setDate(new Date());
+  }
+
   const handleDateChange = (date) => {
     setDate(date);
   };
@@ -250,9 +257,10 @@ function Venda() {
       const { data } = await api.post(`${server.url}venda`,objct);
       if (data) {
         swal("Sucesso", "Venda realizada com sucesso", "success");
+        clearCampus();
       }
     } catch (err) {
-      swal("Erro", "Erro ao resgatar produto selecionado", "error");
+      swal("Erro", "Erro ao realizar a venda", "error");
     }
   };
 
@@ -321,7 +329,7 @@ function Venda() {
                   </Collapse>
 
                   <Row>
-                    <Col xs={12} md={6}>
+                    <Col xs={12} md={6} className="pr-5">
                       <Row>
                         <Col xs={12} md={6}>
                           <Autocomplete
@@ -428,7 +436,7 @@ function Venda() {
                       </Row>
                     </Col>
 
-                    <Col xs={12} md={6}>
+                    <Col xs={12} md={6} className="pl-5">
                       <Row>
                         <Col xs={12} md={6}>
                           <Autocomplete
