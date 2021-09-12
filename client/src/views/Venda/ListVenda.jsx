@@ -157,7 +157,6 @@ function ListVenda() {
         );
         if (data) {
           setSales(data);
-          console.log(data);
           setSearch(vendasFiado.checked);
         }
       } catch (err) {
