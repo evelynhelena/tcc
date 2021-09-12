@@ -93,7 +93,7 @@ module.exports = {
     }
   },
   findAll(req, res){
-    const { dateCompra, clienteId, } = req.body;
+    const { dateCompra, clienteId, vandaFiado} = req.body;
     const connection = bdConnect();
     let str = "";
     if(dateCompra && clienteId){
@@ -103,6 +103,10 @@ module.exports = {
     }else if(!dateCompra && clienteId){
       str = `fk_cliente = ${clienteId}`;
     }
+    if(vandaFiado){
+      str+= "and fk_payment_type = 4";
+    }
+
     connection.query(
       `select * from vw_sales where ${str} and ind_cance = 0 and ind_cance_user = 0`,
       (error, results) =>{

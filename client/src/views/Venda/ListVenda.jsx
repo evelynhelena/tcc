@@ -16,6 +16,11 @@ import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
 import Collapse from "@material-ui/core/Collapse";
+import Switch from "@material-ui/core/Switch";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import CheckIcon from "@material-ui/icons/Check";
 import { ptBR } from "date-fns/locale";
 import {
   MuiPickersUtilsProvider,
@@ -31,8 +36,12 @@ function ListVenda() {
   const [date, setDate] = useState(new Date());
   const [sales, setSales] = useState([]);
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState(false);
+  const [vendasFiado, setVendasFiado] = useState({
+    checked: false,
+  });
   const config = {
-    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   };
 
   const columns = [
@@ -61,6 +70,24 @@ function ListVenda() {
       selector: "non_payme_type",
       sortable: true,
     },
+    search
+      ? {
+          name: "Status Pagamento",
+          cell: (data) => (
+            <>
+              {data.ind_baixa_payme === 0 ? (
+                <Tooltip title="Pendente">
+                  <CloseIcon color="secondary" />
+                </Tooltip>
+              ) : (
+                <Tooltip title="Pago">
+                  <CheckIcon className="color-icon-sucess" />
+                </Tooltip>
+              )}
+            </>
+          ),
+        }
+      : {},
     {
       name: "Ações",
       cell: (data) => (
@@ -83,6 +110,12 @@ function ListVenda() {
     setDate(date);
   };
 
+  const handleChange = (event) => {
+    setVendasFiado({
+      ...vendasFiado,
+      [event.target.name]: event.target.checked,
+    });
+  };
   const clientes = {
     options: clients,
     getOptionLabel: (option) => option.name,
@@ -90,7 +123,7 @@ function ListVenda() {
 
   const getClient = async () => {
     try {
-      const { data } = await api.get(`${server.url}clients`,config);
+      const { data } = await api.get(`${server.url}clients`, config);
       if (data) {
         setClients(data);
       }
@@ -104,22 +137,35 @@ function ListVenda() {
   }, []);
 
   const getVend = async () => {
-    if((clienteSelectd && clienteSelectd.id) || date){
+    if ((clienteSelectd && clienteSelectd.id) || date) {
       setOpen(false);
       try {
-        const { data } = await api.post(`${server.url}findAll`, {
-          clienteId: clienteSelectd ? clienteSelectd.id : null,
-          dateCompra: date ? date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() : null,
-        },config);
+        const { data } = await api.post(
+          `${server.url}findAll`,
+          {
+            clienteId: clienteSelectd ? clienteSelectd.id : null,
+            dateCompra: date
+              ? date.getFullYear() +
+                "-" +
+                (date.getMonth() + 1) +
+                "-" +
+                date.getDate()
+              : null,
+            vandaFiado: vendasFiado.checked,
+          },
+          config
+        );
         if (data) {
           setSales(data);
+          console.log(data);
+          setSearch(vendasFiado.checked);
         }
       } catch (err) {
         swal("Erro", "Erro ao buscar as as vendas", "error");
       }
-    }else{
+    } else {
       setOpen(true);
-      setSales([])
+      setSales([]);
     }
   };
 
@@ -141,7 +187,7 @@ function ListVenda() {
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                <Collapse in={open}>
+                  <Collapse in={open}>
                     <Alert
                       severity="warning"
                       action={
@@ -157,7 +203,8 @@ function ListVenda() {
                         </IconButton>
                       }
                     >
-                      É preciso selecionar <b>Cliente</b> ou <b>Data da Venda</b>
+                      É preciso selecionar <b>Cliente</b> ou{" "}
+                      <b>Data da Venda</b>
                     </Alert>
                   </Collapse>
                   <Row>
@@ -202,7 +249,29 @@ function ListVenda() {
                         />
                       </MuiPickersUtilsProvider>
                     </Col>
-                    <Col xs={12} md={6}>
+                    <Col xs={12} md={3}>
+                      <FormControl component="fieldset" className="mt-4 pt-3">
+                        <FormGroup aria-label="position" row>
+                          <FormControlLabel
+                            value="top"
+                            control={
+                              <Switch
+                                checked={vendasFiado.checked}
+                                onChange={handleChange}
+                                name="checked"
+                                color="primary"
+                                inputProps={{
+                                  "aria-label": "primary checkbox",
+                                }}
+                              />
+                            }
+                            label="Vendas Fiado"
+                            labelPlacement="start"
+                          />
+                        </FormGroup>
+                      </FormControl>
+                    </Col>
+                    <Col xs={12} md={3}>
                       <Button
                         variant="info"
                         className="float-right mt-4"
@@ -214,15 +283,14 @@ function ListVenda() {
                   </Row>
 
                   <Row>
-                  <DataTable
-                        columns={columns}
-                        data={sales}
-                        defaultSortFieldId={1}
-                        sortIcon={<FaIcons.FaAngleUp />}
-                        noDataComponent="Nenhum Registro Encontrado"
-                        pagination
-                      />
-        
+                    <DataTable
+                      columns={columns}
+                      data={sales}
+                      defaultSortFieldId={1}
+                      sortIcon={<FaIcons.FaAngleUp />}
+                      noDataComponent="Nenhum Registro Encontrado"
+                      pagination
+                    />
                   </Row>
                 </Card.Body>
               </Card>
