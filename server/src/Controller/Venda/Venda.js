@@ -104,7 +104,7 @@ module.exports = {
       str = `fk_cliente = ${clienteId}`;
     }
     connection.query(
-      `select * from vw_sales where ${str} and ind_cance = 0`,
+      `select * from vw_sales where ${str} and ind_cance = 0 and ind_cance_user = 0`,
       (error, results) =>{
       if (error) {
         return res.status(500).send({
