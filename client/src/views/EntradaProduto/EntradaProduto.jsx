@@ -29,6 +29,9 @@ function EntradaProduto() {
   const [date, setDate] = useState(new Date());
   const [visibleAlert, setVisibleAlert] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
 
   const { id } = useParams();
   const { idProduct } = useParams();
@@ -65,7 +68,7 @@ function EntradaProduto() {
 
   const getProductTypeByID = async () => {
     try {
-      const { data } = await api.get(`${server.url}productsType/${id}`);
+      const { data } = await api.get(`${server.url}productsType/${id}`,config);
       if (data) {
         setTypeProduct(data[0].type);
         setIdPrduto(data[0].id_product_type);
@@ -92,7 +95,7 @@ function EntradaProduto() {
 
   const getByIdProduct = async () => {
     try {
-      const { data } = await api.get(`${server.url}findById/${idProduct}`);
+      const { data } = await api.get(`${server.url}findById/${idProduct}`,config);
       if (data) {
         setTypeProduct(data[0].type);
         setIdPrduto(data[0].fk_product_type_id);
@@ -121,7 +124,7 @@ function EntradaProduto() {
 
   const insertProduct = async (product) => {
     try {
-      const { data } = await api.post(`${server.url}entradaProduto/`, product);
+      const { data } = await api.post(`${server.url}entradaProduto/`, product,config);
       if (data) {
         swal("Sucesso", "Produdo inserido com sucesso", "success").then(
           () => {
@@ -148,7 +151,7 @@ function EntradaProduto() {
     }).then((willDelete) => {
       if (willDelete) {
         api
-          .delete(`${server.url}entradaProduto/${idProduct}`)
+          .delete(`${server.url}entradaProduto/${idProduct}`,config)
           .then(function (response) {
             let data = response.data;
             if (data.msg) {
@@ -204,7 +207,8 @@ function EntradaProduto() {
     try {
       const { data } = await api.put(
         `${server.url}entradaProduto/${idProduct}`,
-        product
+        product,
+        config
       );
       if (data) {
         swal("Sucesso", "Tipo de produdo editado com sucesso", "success").then(

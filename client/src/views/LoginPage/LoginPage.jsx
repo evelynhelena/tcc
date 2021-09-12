@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import { Link } from "react-router-dom";
+import { useHistory  } from "react-router-dom";
 import {Container,Card, Row,Col } from "react-bootstrap";
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -9,6 +9,13 @@ import FaceIcon from '@material-ui/icons/Face';
 import LockIcon from '@material-ui/icons/Lock';
 import Button from '@material-ui/core/Button';
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
+import api from "../../services/Api";
+import server from "../../Config/BaseURL";
+import swal from "@sweetalert/with-react";
+import Collapse from "@material-ui/core/Collapse";
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
+import Alert from "@material-ui/lab/Alert";
 import "./LoginPage.css";
 
   
@@ -16,6 +23,8 @@ function LoginPage(){
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [enviado, setEnviado] = useState(false);
+    const [open,setOpen] = useState(false);
+    let history = useHistory();
    const validaCampos  = () =>{
     let loginObject = {
         login : login,
@@ -28,11 +37,20 @@ function LoginPage(){
       }
     return loginObject;
    }
-
-    const handleSubmit = () =>{
+    const handleSubmit = async () =>{
         setEnviado(true)
         if(validaCampos()){
-            console.log(validaCampos());
+          try {
+            const { data } = await api.post(`${server.url}login`,validaCampos());
+            if (data) {
+              if(data.token){
+                localStorage.setItem('token', data.token);
+                history.push("/Dashboard")
+              }
+            }
+          } catch (err) {
+            setOpen(true);
+          }
         }
     }
 
@@ -49,6 +67,26 @@ function LoginPage(){
                 </Card.Title>
               </Card.Header>
               <Card.Body>
+              <Collapse in={open}>
+                    <Alert
+                      severity="error"
+                      className="mb-2"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="secondary"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      <strong>Usuário</strong> ou <strong>Senha</strong> Incorretos
+                    </Alert>
+                  </Collapse>
                 <Row className="mt-2">
                     <Col md={12}>
                         <FormControl className="w-100"> 
@@ -96,9 +134,7 @@ function LoginPage(){
                 </FormControl>
                     </Col>
                 </Row>
-                <Link to={"/Dashboard"} style={{textDecoration: 'none'}}>
                   <Button  className="w-100 mt-5" color="secondary" onClick={handleSubmit}>Entrar</Button>
-                </Link>
               </Card.Body>
             </Card>
           </div>

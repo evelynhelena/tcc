@@ -19,9 +19,16 @@ import Navbar from "../../components/NavBar/Navbar";
 function Home() {
   const [countUser,setCountUser] = useState([]);
   const [productEstoqueBaixo,setProductEstoqueBaixo] = useState([]);
+
+  
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
+  
+
   const getCountUsers = async () => {
     try {
-      const { data } = await api.get(`${server.url}countAllUsers`);
+      const { data } = await api.get(`${server.url}countAllUsers`,config);
       if (data) setCountUser(data);
     } catch (err) {
       swal("Erro", "Erro ao carregar os usuários cadastrados", "error");
@@ -34,7 +41,7 @@ function Home() {
 
   const getCountProductEstoqueBaixo= async () => {
     try {
-      const { data } = await api.get(`${server.url}countProductsEstoqueBaixo`);
+      const { data } = await api.get(`${server.url}countProductsEstoqueBaixo`,config);
       if (data) setProductEstoqueBaixo(data);
     } catch (err) {
       swal("Erro", "Erro ao carregar os usuários cadastrados", "error");

@@ -1,0 +1,44 @@
+import { createConnection } from "mysql";
+import { generateToken } from "../../helpers/userFeatures";
+const bdConnect = () => {
+  return createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASS,
+    database: process.env.MYSQL_DB,
+  });
+};
+
+module.exports = {
+  getUser(req, res) {
+    const connection = bdConnect();
+    let fields = [req.body.login, req.body.password];
+    connection.query(
+      "select * from tbl_users tu where tu.user_name = ? and senha = ?",
+      fields,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao recuperar o usuário",
+            },
+            error,
+          });
+        }
+        try {
+          if (results.length > 0) {
+            const { id, user_name } = results[0];
+            const token = generateToken(id, user_name);
+            return res
+              .status(200)
+              .send({ Message: "Login efetuado com sucesso", token });
+          } else {
+            res.status(401).send({ error: "Usuário ou Senha Incorretos" });
+          }
+        } catch {
+          res.status(500).send({ error: "Internal Server Error" });
+        }
+      }
+    );
+  },
+};

@@ -13,6 +13,9 @@ import Navbar from "../../components/NavBar/Navbar";
 import Tooltip from "@material-ui/core/Tooltip";
 function User() {
   const [users, setUsers] = useState([]);
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
   const columns = [
     {
       name: "ID",
@@ -62,7 +65,7 @@ function User() {
 
   const getUsers = async () => {
     try {
-      const { data } = await api.get(`${server.url}users`);
+      const { data } = await api.get(`${server.url}users`,config);
       if (data) setUsers(data);
     } catch (err) {
       console.log(err);
@@ -82,7 +85,7 @@ function User() {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        api.delete(`${server.url}users/` + id).then(function (response) {
+        api.delete(`${server.url}users/` + id,config).then(function (response) {
           let data = response.data;
           if (data.msg) {
             swal("Usuário deletado com sucesso", {
@@ -130,6 +133,7 @@ function User() {
                       columns={columns}
                       data={users}
                       defaultSortFieldId={1}
+                      noDataComponent="Nenhum Registro Encontrado"
                       sortIcon={<FaIcons.FaAngleUp />}
                       pagination
                     />

@@ -18,12 +18,15 @@ function ModalInsertUser(props) {
   const [userName, setUserName] = useState('');
   const [celPhone, setCelPhone] = useState('');
   const [typeUser, setTypeUser] = useState('');
+  const config = {
+    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+  };
   //</variable>
 
   //<functions>
   const getUsersType = async () => {
     try {
-      const { data } = await api.get(`${server.url}findUserType`);
+      const { data } = await api.get(`${server.url}findUserType`,config);
       if (data) setUsersType(data);
     } catch (err) {
       console.log(err);
@@ -45,7 +48,7 @@ function ModalInsertUser(props) {
       }
       const insertUser = async () =>{
         try {
-          const { data } = await api.post(`${server.url}insert`,newUser);
+          const { data } = await api.post(`${server.url}insert`,newUser,config);
           if (data){
             if(undefined !== data.error && data.error.erro === 400){
               swal("Erro", "Usuário já cadastrado no sistema", "error");

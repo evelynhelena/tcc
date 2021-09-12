@@ -29,6 +29,9 @@ import FormControl from "@material-ui/core/FormControl";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
 import server from "../../Config/BaseURL";
 import Navbar from "../../components/NavBar/Navbar";
+import Alert from "@material-ui/lab/Alert";
+import CloseIcon from "@material-ui/icons/Close";
+import Collapse from "@material-ui/core/Collapse";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +46,10 @@ const useStyles = makeStyles((theme) => ({
 function NewUser() {
   const classes = useStyles();
   const [usersType, setUsersType] = useState([]);
+  const config = {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+  };
+
   //values input
   //Dados Pessoais
   const [name, setName] = useState("");
@@ -53,6 +60,8 @@ function NewUser() {
   const [cpf, setCpf] = useState("");
   const [celPhone, setCelPhone] = useState("");
   const [typeUser, setTypeUser] = useState("");
+  const [hasSpaceInUserName, setHasSpaceInUserName] = useState(false);
+  const [open, setOpen] = useState(false);
 
   //Enderoço
   const [endereco, setEndereco] = useState("");
@@ -69,9 +78,10 @@ function NewUser() {
   //</variable>
 
   //<functions>
+  const verificaEspaco = (string) => string.indexOf(" ") >= 0;
   const getUsersType = async () => {
     try {
-      const { data } = await api.get(`${server.url}findUserType`);
+      const { data } = await api.get(`${server.url}findUserType`, config);
       if (data) setUsersType(data);
     } catch (err) {
       swal("Erro", "Erro ao selecionar os tipos de usuários", "error");
@@ -81,7 +91,7 @@ function NewUser() {
     getUsersType();
   }, []);
   const getUser = async () => {
-    await api.get(`${server.url}users/` + id).then(
+    await api.get(`${server.url}users/` + id, config).then(
       function ({ data }) {
         if (data.length > 0) {
           setName(data[0].name);
@@ -107,7 +117,7 @@ function NewUser() {
     );
   };
   useEffect(() => {
-    if(id){
+    if (id) {
       getUser();
     }
   }, []);
@@ -133,7 +143,7 @@ function NewUser() {
 
   const insertUser = async (newUser) => {
     try {
-      const { data } = await api.post(`${server.url}insert/`, newUser);
+      const { data } = await api.post(`${server.url}insert/`, newUser, config);
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
@@ -151,7 +161,11 @@ function NewUser() {
 
   const updateUser = async (userEdit) => {
     try {
-      const { data } = await api.put(`${server.url}users/` + id,userEdit);
+      const { data } = await api.put(
+        `${server.url}users/` + id,
+        userEdit,
+        config
+      );
       if (data) {
         if (undefined !== data.error && data.error.erro === 400) {
           swal("Erro", "Usuário já cadastrado no sistema", "error");
@@ -202,7 +216,15 @@ function NewUser() {
         (el) => el.type_user === typeUser
       );
       user.user_type = userTypeSelected[0].id;
-      return user;
+      if (verificaEspaco(user.user_name)) {
+        setHasSpaceInUserName(true);
+        setOpen(true);
+        return false;
+      } else {
+        setHasSpaceInUserName(false);
+        setOpen(false);
+        return user;
+      }
     } else {
       return false;
     }
@@ -249,365 +271,394 @@ function NewUser() {
 
   return (
     <>
-    <Navbar/>
-    <div className="content">
-      <Container>
-        <Row>
-          <Col md={8}>
-            <Card>
-              <Card.Header>
-                <Card.Title className="mb-0">
-                  <h4 className="mb-0">
-                    {id ? "Editando " : "Novo"} Usuário {id ? " - " + id : ""}
-                  </h4>
-                </Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Subtitle title="Dados de Login"></Subtitle>
-                <Form noValidate autoComplete="off">
-                  <Row className="mt-3">
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="name"
-                        label="Nome*"
-                        value={name}
-                        error={name.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setName(target.value)}
-                      />
-                      {name.length === 0 && enviado ? (
-                        <VerifyInputs value="Nome"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="lastName"
-                        label="Sobrenome*"
-                        value={lastName}
-                        error={lastName.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setLastName(target.value)}
-                      />
-                      {lastName.length === 0 && enviado ? (
-                        <VerifyInputs value="Sobrenome"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                  </Row>
-
-                  <Row className="mt-4">
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="userName"
-                        label="Nome de Usuário*"
-                        value={userName}
-                        error={userName.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setUserName(target.value)}
-                      />
-                      {userName.length === 0 && enviado ? (
-                        <VerifyInputs value="Nome de Usuário"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="senha"
-                        type="password"
-                        label="Senha*"
-                        value={senha}
-                        error={senha.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setSenha(target.value)}
-                      />
-                      {senha.length === 0 && enviado ? (
-                        <VerifyInputs value="Senha"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                  </Row>
-
-                  <Row className="mt-4">
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="email"
-                        label="E-mail*"
-                        type="email"
-                        value={email}
-                        error={email.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setEmail(target.value)}
-                      />
-                      {email.length === 0 && enviado ? (
-                        <VerifyInputs value="E-mail"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                    <Col xs={12} md={6}>
-                      <InputMask
-                        mask="(99)99999-9999"
-                        value={celPhone}
-                        onChange={({ target }) => setCelPhone(target.value)}
-                      >
-                        {() => (
-                          <TextField
-                            id="phone"
-                            label="Celular*"
-                            value={celPhone}
-                            error={celPhone.length === 0 && enviado}
-                            className="col-md-12"
-                          />
-                        )}
-                      </InputMask>
-                      {celPhone.length === 0 && enviado ? (
-                        <VerifyInputs value="Celular"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                  </Row>
-                  <Row className="mt-4 mb-4">
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="userType"
-                        select
-                        label="Tipo de usuário*"
-                        value={typeUser}
-                        error={typeUser.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={handleChange}
-                      >
-                        {usersType.map((userType) => (
-                          <MenuItem
-                            key={userType.id}
-                            value={userType.type_user}
-                          >
-                            {userType.type_user}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                      {typeUser.length === 0 && enviado ? (
-                        <VerifyInputs value="Tipo de usuário"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                    <Col xs={12} md={6}>
-                      <InputMask
-                        mask="999.999.999-99"
-                        value={cpf}
-                        onChange={({ target }) => setCpf(target.value)}
-                      >
-                        {() => (
-                          <TextField
-                            id="cpf"
-                            label="CPF*"
-                            error={cpf.length === 0 && enviado}
-                            value={cpf}
-                            className="col-md-12"
-                          />
-                        )}
-                      </InputMask>
-                      {cpf.length === 0 && enviado ? (
-                        <VerifyInputs value="CPF"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                  </Row>
-                  <hr></hr>
-
-                  <Subtitle title="Dados de Endereço"></Subtitle>
-                  <Row className="mt-3">
-                    <Col xs={12} md={4}>
-                      <FormControl
-                        className={clsx(classes.margin, classes.textField)}
-                      >
-                        <InputLabel
-                          htmlFor="cep"
-                          error={cep.length === 0 && enviado}
+      <Navbar />
+      <div className="content">
+        <Container>
+          <Row>
+            <Col md={8}>
+              <Card>
+                <Card.Header>
+                  <Card.Title className="mb-0">
+                    <h4 className="mb-0">
+                      {id ? "Editando " : "Novo"} Usuário {id ? " - " + id : ""}
+                    </h4>
+                  </Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <Collapse in={open} className="mb-3">
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="default"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
                         >
-                          CEP*
-                        </InputLabel>
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                    >
+                      <strong>Nome de Usuário</strong> não pode conter espaços 
+                    </Alert>
+                  </Collapse>
+                  <Subtitle title="Dados de Login"></Subtitle>
+                  <Form noValidate autoComplete="off">
+                    <Row className="mt-3">
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="name"
+                          label="Nome*"
+                          value={name}
+                          error={name.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setName(target.value)}
+                        />
+                        {name.length === 0 && enviado ? (
+                          <VerifyInputs value="Nome"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="lastName"
+                          label="Sobrenome*"
+                          value={lastName}
+                          error={lastName.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setLastName(target.value)}
+                        />
+                        {lastName.length === 0 && enviado ? (
+                          <VerifyInputs value="Sobrenome"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                    </Row>
+
+                    <Row className="mt-4">
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="userName"
+                          label="Nome de Usuário*"
+                          value={userName}
+                          error={
+                            (userName.length === 0 && enviado) ||
+                            hasSpaceInUserName
+                          }
+                          className="col-md-12"
+                          onChange={({ target }) => setUserName(target.value)}
+                        />
+                        {userName.length === 0 && enviado ? (
+                          <VerifyInputs value="Nome de Usuário"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="senha"
+                          type="password"
+                          label="Senha*"
+                          value={senha}
+                          error={senha.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setSenha(target.value)}
+                        />
+                        {senha.length === 0 && enviado ? (
+                          <VerifyInputs value="Senha"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                    </Row>
+
+                    <Row className="mt-4">
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="email"
+                          label="E-mail*"
+                          type="email"
+                          value={email}
+                          error={email.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setEmail(target.value)}
+                        />
+                        {email.length === 0 && enviado ? (
+                          <VerifyInputs value="E-mail"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                      <Col xs={12} md={6}>
                         <InputMask
-                          mask="99999-999"
-                          value={cep}
-                          onChange={({ target }) => setCep(target.value)}
+                          mask="(99)99999-9999"
+                          value={celPhone}
+                          onChange={({ target }) => setCelPhone(target.value)}
                         >
                           {() => (
-                            <Input
-                              id="cep"
-                              error={cep.length === 0 && enviado}
-                              endAdornment={
-                                <InputAdornment position="end">
-                                  <IconButton onClick={() => getCep(cep)}>
-                                    <SearchIcon />
-                                  </IconButton>
-                                </InputAdornment>
-                              }
+                            <TextField
+                              id="phone"
+                              label="Celular*"
+                              value={celPhone}
+                              error={celPhone.length === 0 && enviado}
+                              className="col-md-12"
                             />
                           )}
                         </InputMask>
-                      </FormControl>
-                      {cep.length === 0 && enviado ? (
-                        <VerifyInputs value="CEP"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
+                        {celPhone.length === 0 && enviado ? (
+                          <VerifyInputs value="Celular"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                    </Row>
+                    <Row className="mt-4 mb-4">
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="userType"
+                          select
+                          label="Tipo de usuário*"
+                          value={typeUser}
+                          error={typeUser.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={handleChange}
+                        >
+                          {usersType.map((userType) => (
+                            <MenuItem
+                              key={userType.id}
+                              value={userType.type_user}
+                            >
+                              {userType.type_user}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                        {typeUser.length === 0 && enviado ? (
+                          <VerifyInputs value="Tipo de usuário"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                      <Col xs={12} md={6}>
+                        <InputMask
+                          mask="999.999.999-99"
+                          value={cpf}
+                          onChange={({ target }) => setCpf(target.value)}
+                        >
+                          {() => (
+                            <TextField
+                              id="cpf"
+                              label="CPF*"
+                              error={cpf.length === 0 && enviado}
+                              value={cpf}
+                              className="col-md-12"
+                            />
+                          )}
+                        </InputMask>
+                        {cpf.length === 0 && enviado ? (
+                          <VerifyInputs value="CPF"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                    </Row>
+                    <hr></hr>
 
-                    <Col xs={12} md={8}>
-                      <TextField
-                        id="endereco"
-                        label="Rua / Avenida*"
-                        value={endereco}
-                        error={endereco.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setEndereco(target.value)}
-                      />
-                      {endereco.length === 0 && enviado ? (
-                        <VerifyInputs value="Endereço"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                  </Row>
-                  <Row className="mt-4">
-                    <Col xs={12} md={4}>
-                      <TextField
-                        id="cidade"
-                        label="Cidade*"
-                        value={cidade}
-                        error={cidade.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setCidade(target.value)}
-                      />
-                      {cidade.length === 0 && enviado ? (
-                        <VerifyInputs value="Cidade"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                    <Col xs={12} md={4}>
-                      <TextField
-                        id="uf"
-                        label="Nº*"
-                        value={numero}
-                        error={numero.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setNumero(target.value)}
-                      />
-                      {numero.length === 0 && enviado ? (
-                        <VerifyInputs value="Nº"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                    <Col xs={12} md={4}>
-                      <TextField
-                        id="uf"
-                        label="UF*"
-                        value={uf}
-                        error={uf.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setUf(target.value)}
-                      />
-                      {uf.length === 0 && enviado ? (
-                        <VerifyInputs value="UF"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                  </Row>
+                    <Subtitle title="Dados de Endereço"></Subtitle>
+                    <Row className="mt-3">
+                      <Col xs={12} md={4}>
+                        <FormControl
+                          className={clsx(classes.margin, classes.textField)}
+                        >
+                          <InputLabel
+                            htmlFor="cep"
+                            error={cep.length === 0 && enviado}
+                          >
+                            CEP*
+                          </InputLabel>
+                          <InputMask
+                            mask="99999-999"
+                            value={cep}
+                            onChange={({ target }) => setCep(target.value)}
+                          >
+                            {() => (
+                              <Input
+                                id="cep"
+                                error={cep.length === 0 && enviado}
+                                endAdornment={
+                                  <InputAdornment position="end">
+                                    <IconButton onClick={() => getCep(cep)}>
+                                      <SearchIcon />
+                                    </IconButton>
+                                  </InputAdornment>
+                                }
+                              />
+                            )}
+                          </InputMask>
+                        </FormControl>
+                        {cep.length === 0 && enviado ? (
+                          <VerifyInputs value="CEP"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
 
-                  <Row className="mt-4">
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="bairro"
-                        label="Bairro*"
-                        value={bairro}
-                        error={bairro.length === 0 && enviado}
-                        className="col-md-12"
-                        onChange={({ target }) => setBairro(target.value)}
-                      />
-                      {bairro.length === 0 && enviado ? (
-                        <VerifyInputs value="Bairro"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </Col>
-                    <Col xs={12} md={6}>
-                      <TextField
-                        id="complemento"
-                        label="Complemento"
-                        value={complemento}
-                        className="col-md-12"
-                        onChange={({ target }) => setComplemento(target.value)}
-                      />
-                    </Col>
-                  </Row>
-                  <Row className="mt-4">
-                    <Col xs={12} md={12}>
-                      <p className="mb-0 font-footer-info">(*) Campus Obrigatórios</p>
-                    </Col>
-                  </Row>
-                </Form>
-              </Card.Body>
-              <Card.Footer>
-                <Button
-                  variant="info"
-                  className="float-right"
-                  onClick={() => (id ? update() : handleSubmit())}
-                >
-                  {id ? "Editar" : "Salvar"}
-                </Button>
-              </Card.Footer>
-            </Card>
-          </Col>
+                      <Col xs={12} md={8}>
+                        <TextField
+                          id="endereco"
+                          label="Rua / Avenida*"
+                          value={endereco}
+                          error={endereco.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setEndereco(target.value)}
+                        />
+                        {endereco.length === 0 && enviado ? (
+                          <VerifyInputs value="Endereço"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                    </Row>
+                    <Row className="mt-4">
+                      <Col xs={12} md={4}>
+                        <TextField
+                          id="cidade"
+                          label="Cidade*"
+                          value={cidade}
+                          error={cidade.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setCidade(target.value)}
+                        />
+                        {cidade.length === 0 && enviado ? (
+                          <VerifyInputs value="Cidade"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                      <Col xs={12} md={4}>
+                        <TextField
+                          id="uf"
+                          label="Nº*"
+                          value={numero}
+                          error={numero.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setNumero(target.value)}
+                        />
+                        {numero.length === 0 && enviado ? (
+                          <VerifyInputs value="Nº"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                      <Col xs={12} md={4}>
+                        <TextField
+                          id="uf"
+                          label="UF*"
+                          value={uf}
+                          error={uf.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setUf(target.value)}
+                        />
+                        {uf.length === 0 && enviado ? (
+                          <VerifyInputs value="UF"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                    </Row>
 
-          <Col md={4}>
-            <Card>
-              <Card.Body className="text-center">
-                <Image
-                  className="img_avatar"
-                  src={imgUser}
-                  roundedCircle
-                ></Image>
-                <Card.Title className="mt-3 title-card-avatar">
-                  {userName === "" ? "Usuário" : userName}
-                </Card.Title>
-                <Card.Text>{name === "" ? "Nome Completo" : name}</Card.Text>
-              </Card.Body>
-              <Card.Footer className="text-center p-2">
-                <input
-                  accept="image/*"
-                  className="input-file mb-0"
-                  id="contained-button-file"
-                  multiple
-                  type="file"
-                />
-                <label className="label-upload" htmlFor="contained-button-file">
-                  <ButtonMaterial
-                    className="btn-upload"
-                    variant="outlined"
-                    component="span"
-                    color="primary"
+                    <Row className="mt-4">
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="bairro"
+                          label="Bairro*"
+                          value={bairro}
+                          error={bairro.length === 0 && enviado}
+                          className="col-md-12"
+                          onChange={({ target }) => setBairro(target.value)}
+                        />
+                        {bairro.length === 0 && enviado ? (
+                          <VerifyInputs value="Bairro"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                      <Col xs={12} md={6}>
+                        <TextField
+                          id="complemento"
+                          label="Complemento"
+                          value={complemento}
+                          className="col-md-12"
+                          onChange={({ target }) =>
+                            setComplemento(target.value)
+                          }
+                        />
+                      </Col>
+                    </Row>
+                    <Row className="mt-4">
+                      <Col xs={12} md={12}>
+                        <p className="mb-0 font-footer-info">
+                          (*) Campus Obrigatórios
+                        </p>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card.Body>
+                <Card.Footer>
+                  <Button
+                    variant="info"
+                    className="float-right"
+                    onClick={() => (id ? update() : handleSubmit())}
                   >
-                    Upload Foto
-                  </ButtonMaterial>
-                </label>
-              </Card.Footer>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    </div>
+                    {id ? "Editar" : "Salvar"}
+                  </Button>
+                </Card.Footer>
+              </Card>
+            </Col>
+
+            <Col md={4}>
+              <Card>
+                <Card.Body className="text-center">
+                  <Image
+                    className="img_avatar"
+                    src={imgUser}
+                    roundedCircle
+                  ></Image>
+                  <Card.Title className="mt-3 title-card-avatar">
+                    {userName === "" ? "Usuário" : userName}
+                  </Card.Title>
+                  <Card.Text>{name === "" ? "Nome Completo" : name}</Card.Text>
+                </Card.Body>
+                <Card.Footer className="text-center p-2">
+                  <input
+                    accept="image/*"
+                    className="input-file mb-0"
+                    id="contained-button-file"
+                    multiple
+                    type="file"
+                  />
+                  <label
+                    className="label-upload"
+                    htmlFor="contained-button-file"
+                  >
+                    <ButtonMaterial
+                      className="btn-upload"
+                      variant="outlined"
+                      component="span"
+                      color="primary"
+                    >
+                      Upload Foto
+                    </ButtonMaterial>
+                  </label>
+                </Card.Footer>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </>
   );
 }
