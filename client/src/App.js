@@ -15,6 +15,7 @@ import EntradaProduto from "./views/EntradaProduto/EntradaProduto";
 import ListProduct from "./views/EntradaProduto/ListProduct";
 import Venda from "./views/Venda/Venda";
 import ListVenda from "./views/Venda/ListVenda";
+import DescricaoVenda from "./views/DescricaoVenda/DescricaoVenda";
 function CustomRoute({isPrivaty, ...rest}){
   if(isPrivaty && ("null" === localStorage.getItem('token') || !localStorage.getItem('token'))){
     return  <Redirect to="/"></Redirect>
@@ -37,6 +38,7 @@ function App() {
             {/*Venda*/}
             <CustomRoute isPrivaty path='/NewVend' exact component={Venda} />
             <CustomRoute isPrivaty path='/ListVenda' exact component={ListVenda} />
+            <CustomRoute isPrivaty path='/DescricaoVenda/:id' exact component={DescricaoVenda} />
 
             {/* Entrada de Prduto */}
             <CustomRoute isPrivaty path='/EntradaProduto/:id' exact component={EntradaProduto} />

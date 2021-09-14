@@ -94,7 +94,7 @@ function ListVenda() {
           <Tooltip title="Visualizar Venda">
             <Link
               as={Link}
-              to={"/EditProductType/" + data.id_sales}
+              to={"/DescricaoVenda/" + data.id_sales}
               className="btn-link-trable btn-link-trable-color-primery"
             >
               <VisibilityIcon />
