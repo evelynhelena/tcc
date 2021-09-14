@@ -140,6 +140,48 @@ module.exports = {
     });
   },
 
+  getVendById(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `select * from tbl_seles ts 
+      join tbl_users tu ON ts.fk_cliente = tu.id
+      where ts.id_sales = ${id} and ts.ind_cance = 0`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao dar baixa no pagameto",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
+  
+  getProdByIdVend(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `select * from tbl_seles_descricao tsd 
+      join tbl_product tp on tsd.fk_product_id = tp.id_product 
+      join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type 
+      where fk_sales_id = ${id}`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao dar baixa no pagameto",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
   delete(req, res) {
     const id  = req.params.id;
     const connection = bdConnect();

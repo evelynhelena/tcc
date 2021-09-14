@@ -34,6 +34,8 @@ routes.delete("/entradaProduto/:id", verifyJWT,EntradaProduto.delete);
 
 //ROTAS Venda
 routes.post("/venda",verifyJWT,Venda.insert);
+routes.get("/venda/:id",verifyJWT,Venda.getVendById);
+routes.get("/productVend/:id",verifyJWT,Venda.getProdByIdVend);
 routes.post("/findAll",verifyJWT,Venda.findAll);
 routes.get("/paymentType",verifyJWT,Venda.getPaymentType);
 routes.put("/baixaPayme/:id",verifyJWT,Venda.baixaPayme);
