@@ -286,6 +286,28 @@
   border-color: #ff980029;
 }
 
+
+.btn-normal-sucess{
+  background-color: #fff !important;
+  border: none !important;
+}
+.btn-normal-sucess:hover{
+  background-color: #ade9cd52 !important;
+  color: #198754 !important;
+}
+
+.btn-normal-sucess:active{
+  background-color: #ade9cd52 !important;
+  color: #198754 !important;
+  outline: none !important;
+  border-color: #ade9cd52;
+}
+.btn-normal-sucess:focus{
+  background-color: #ade9cd52 !important;
+  color: #198754 !important;
+  border-color: #ade9cd52;
+}
+
 .MuiInputBase-input.Mui-disabled{
   cursor: not-allowed;
 }

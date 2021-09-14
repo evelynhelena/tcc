@@ -113,7 +113,43 @@ module.exports = {
       if (error) {
         return res.status(500).send({
           error: {
-            msg: "Erro as Vendas",
+            msg: "Erro ao recupertar as Vendas",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
+  baixaPayme(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `update tbl_seles ts set ts.ind_baixa_payme = "1" where ts.id_sales = ${id}`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao dar baixa no pagameto",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
+  delete(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `update tbl_seles ts set ts.ind_cance = "1" where ts.id_sales = ${id}`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao deletar a venda",
           },
           error,
         });

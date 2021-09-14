@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import DataTable from "react-data-table-component";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import TextField from "@material-ui/core/TextField";
@@ -70,24 +71,22 @@ function ListVenda() {
       selector: "non_payme_type",
       sortable: true,
     },
-    search
-      ? {
-          name: "Status Pagamento",
-          cell: (data) => (
-            <>
-              {data.ind_baixa_payme === 0 ? (
-                <Tooltip title="Pendente">
-                  <CloseIcon color="secondary" />
-                </Tooltip>
-              ) : (
-                <Tooltip title="Pago">
-                  <CheckIcon className="color-icon-sucess" />
-                </Tooltip>
-              )}
-            </>
-          ),
-        }
-      : {},
+    {
+      name: "Status Pagamento",
+      cell: (data) => (
+        <>
+          {data.ind_baixa_payme === 0 ? (
+            <Tooltip title="Pendente">
+              <CloseIcon color="secondary" />
+            </Tooltip>
+          ) : (
+            <Tooltip title="Pago">
+              <CheckIcon className="color-icon-sucess" />
+            </Tooltip>
+          )}
+        </>
+      ),
+    },
     {
       name: "Ações",
       cell: (data) => (
@@ -101,6 +100,26 @@ function ListVenda() {
               <VisibilityIcon />
             </Link>
           </Tooltip>
+          {/*data.ind_baixa_payme === 0 ? (
+            <Tooltip title="Baixa em Pagamento">
+              <Button
+                className="btn-link-trable btn-link-trable-color-sucess btn-normal-sucess"
+                onClick={() => baixaPayme(data.id_sales)}
+              >
+                <CheckIcon />
+              </Button>
+            </Tooltip>
+          ) : (
+            ""
+          )*/}
+          <Tooltip title="Desativar">
+              <Button
+                className="btn-link-trable btn-link-trable-color-danger btn-normal-denger"
+                onClick={() => deleteVend(data.id_sales)}
+              >
+                <DeleteIcon />
+              </Button>
+            </Tooltip>
         </>
       ),
     },
@@ -171,6 +190,61 @@ function ListVenda() {
   useEffect(() => {
     getVend();
   }, []);
+
+  const baixaPayme = (idSale) => {
+    swal({
+      title: "Atenção !",
+      text: "Deseja indicar que está conts esta paga ?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willBaixaPayme) => {
+      if (willBaixaPayme) {
+        try {
+          const { data } = await api.put(
+            `${server.url}baixaPayme/` + idSale,
+            {},
+            config
+          );
+          if (data) {
+            swal("Sucesso", "Pagamento confirmado com sucesso", "success");
+            getVend();
+          }
+        } catch {
+          swal("Erro ao confirmar o pagamento", {
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
+
+  const deleteVend = (idSale) => {
+    swal({
+      title: "Atenção !",
+      text: "Deseja deletar está venda ?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        try {
+          const { data } = await api.delete(
+            `${server.url}venda/` + idSale,
+            config
+          );
+          if (data) {
+            swal("Sucesso", "Venda Deletada com sucesso", "success");
+            getVend();
+          }
+        } catch {
+          swal("Erro deletar a venda", {
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
 
   return (
     <>
