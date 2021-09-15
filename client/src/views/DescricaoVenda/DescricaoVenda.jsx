@@ -1,6 +1,14 @@
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
+import Button from "@material-ui/core/Button";
+import CheckIcon from "@material-ui/icons/Check";
+import DescriptionIcon from "@material-ui/icons/Description";
 import Navbar from "../../components/NavBar/Navbar";
+import currencyFormatter from "currency-formatter";
+import * as FaIcons from "react-icons/fa";
+import DataTable from "react-data-table-component";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import api from "../../services/Api";
 import swal from "@sweetalert/with-react";
@@ -13,13 +21,39 @@ function DescricaoVenda() {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   };
 
-  const [sale,setSale] = useState([]);
+  const [sale, setSale] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const columns = [
+    {
+      name: "Produto",
+      selector: "type",
+      sortable: true,
+    },
+    {
+      name: "Preço(R$)",
+      selector: "valueFormate",
+      sortable: true,
+    },
+    {
+      name: "Quantidade",
+      selector: "qauntidade",
+      sortable: true,
+    },
+  ];
 
   const getprodctByIdVend = async () => {
     try {
-      const { data } = await api.get(`${server.url}productVend/`+ id, config);
+      const { data } = await api.get(`${server.url}productVend/` + id, config);
       if (data) {
-        console.log(data);
+        data.forEach(
+          (el) =>
+            (el.valueFormate = currencyFormatter.format(
+              el.value * el.qauntidade,
+              { code: "pt-BR", decimal: ",", decimalDigits: 2 }
+            ))
+        );
+        setProducts(data);
       }
     } catch (err) {
       swal("Erro", "Erro ao resgatar produto selecionado", "error");
@@ -28,11 +62,15 @@ function DescricaoVenda() {
 
   const getVendById = async () => {
     try {
-      const { data } = await api.get(`${server.url}venda/`+ id, config);
+      const { data } = await api.get(`${server.url}venda/` + id, config);
       if (data) {
-        setSale(data[0])
+        data[0].valueFormate = currencyFormatter.format(data[0].value, {
+          code: "pt-BR",
+          decimal: ",",
+          decimalDigits: 2,
+        });
+        setSale(data[0]);
         getprodctByIdVend();
-        console.log(data);
       }
     } catch (err) {
       swal("Erro", "Erro ao Resgatar os dados da venda", "error");
@@ -43,6 +81,33 @@ function DescricaoVenda() {
     getVendById();
   }, []);
 
+  const baixaPayme = () => {
+    swal({
+      title: "Atenção !",
+      text: "Deseja indicar que está conts esta paga ?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willBaixaPayme) => {
+      if (willBaixaPayme) {
+        try {
+          const { data } = await api.put(
+            `${server.url}baixaPayme/` + sale.id_sales,
+            {},
+            config
+          );
+          if (data) {
+            swal("Sucesso", "Pagamento confirmado com sucesso", "success");
+            getVendById();
+          }
+        } catch {
+          swal("Erro ao confirmar o pagamento", {
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
 
   return (
     <>
@@ -52,27 +117,14 @@ function DescricaoVenda() {
           <Row>
             <Col xs={12} md={12}>
               <Card className="mb-0">
-                {/*<Card.Header>
-                  <Card.Title className="mb-0">
-                    <Row>
-                      <Col xs={10} md={10}>
-                        <h5 className="mb-0">
-                          Descrição de Venda - Evelyn Helena Soares Dos Santos
-                        </h5>
-                      </Col>
-                      <Col xs={2} md={2}>
-                        <h5 className="text-right mb-0">#Venda - 25</h5>
-                      </Col>
-                    </Row>
-                  </Card.Title>
-                </Card.Header>*/}
                 <Card.Body>
                   <Row>
                     <Col xs={12} md={12}>
                       <Row>
                         <Col xs={6} md={4}>
                           <div className="font-descricao">
-                            <strong>Nome:</strong> {sale.name + " "  + sale.last_name}
+                            <strong>Nome:</strong>{" "}
+                            {sale.name + " " + sale.last_name}
                           </div>
                         </Col>
                         <Col xs={6} md={2}>
@@ -134,10 +186,51 @@ function DescricaoVenda() {
           <Row>
             <Col xs={12} md={12}>
               <Card className="mt-2">
-                
                 <Card.Body>
-                  <Row></Row>
+                  <Row>
+                    <Col xs={12} md={12} className="text-right">
+                      <Tooltip title="Exportar Relátorio">
+                        <IconButton color="primary">
+                          <DescriptionIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={12} className="pr-5">
+                      <DataTable
+                        columns={columns}
+                        data={products}
+                        defaultSortFieldId={1}
+                        sortIcon={<FaIcons.FaAngleUp />}
+                        noDataComponent="Nenhum Registro Encontrado"
+                      />
+                      <hr></hr>
+                    </Col>
+                  </Row>
+                  <Row className="bg-secondary p-1">
+                    <Col xs={12} md={10} className="text-light">
+                      <span>Total</span>
+                    </Col>
+                    <Col xs={12} md={2} className="text-light">
+                      <span>R${sale.valueFormate}</span>
+                    </Col>
+                  </Row>
                 </Card.Body>
+                {sale.ind_baixa_payme === 0 ? (
+                  <Card.Footer className="text-right">
+                    <Button
+                      variant="contained"
+                      className="bg-success text-light"
+                      startIcon={<CheckIcon />}
+                      onClick={baixaPayme}
+                    >
+                      Baixa Pagamento
+                    </Button>
+                  </Card.Footer>
+                ) : (
+                  ""
+                )}
               </Card>
             </Col>
           </Row>
