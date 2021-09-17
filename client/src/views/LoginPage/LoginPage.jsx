@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import { Container, Card, Row, Col } from "react-bootstrap";
+import swal from "@sweetalert/with-react";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import FaceIcon from "@material-ui/icons/Face";
+import EmailIcon from "@material-ui/icons/Email";
 import LockIcon from "@material-ui/icons/Lock";
 import Button from "@material-ui/core/Button";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
@@ -20,9 +22,13 @@ import "./LoginPage.css";
 function LoginPage() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [forgotPassword, setForgotPassword] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [open, setOpen] = useState(false);
+  const [emailSend, setEmailSend] = useState(false);
   let history = useHistory();
+
   const validaCampos = () => {
     let loginObject = {
       login: login,
@@ -52,6 +58,39 @@ function LoginPage() {
     }
   };
 
+  const resetValues = () => {
+    setEnviado(false);
+    setOpen(false);
+  };
+
+  const viewForgot = () => {
+    setForgotPassword(true);
+    resetValues();
+  };
+  const forgotPasswordFunction = async () => {
+    setEnviado(true);
+    if (email.length > 0) {
+      try {
+        const { data } = await api.post(`${server.url}reset`, {
+          userEmail: email,
+        });
+        
+        if (data) {
+          setForgotPassword(false);
+          swal(
+            "Sucesso",
+            "Uma nova senha foi enviado no seu E-mail",
+            "success"
+          );
+          setEnviado(false);
+        }
+      } catch (err) {
+        swal("Erro", "E-Mail não cadastrado", "error");
+        setEnviado(false);
+      }
+    }
+  };
+
   return (
     <>
       <div
@@ -63,7 +102,9 @@ function LoginPage() {
             <Card>
               <Card.Header>
                 <Card.Title className="mb-0">
-                  <h4 className="mb-0">Login</h4>
+                  <h4 className="mb-0">
+                    {!forgotPassword ? "Login" : "Redefinir Senha"}
+                  </h4>
                 </Card.Title>
               </Card.Header>
               <Card.Body>
@@ -88,59 +129,100 @@ function LoginPage() {
                     Incorretos
                   </Alert>
                 </Collapse>
-                <Row className="mt-2">
-                  <Col md={12}>
-                    <FormControl className="w-100">
-                      <InputLabel htmlFor="login">Login</InputLabel>
-                      <Input
-                        id="login"
-                        value={login}
-                        error={login.length === 0 && enviado}
-                        onChange={({ target }) => setLogin(target.value)}
-                        startAdornment={
-                          <InputAdornment position="start">
-                            <FaceIcon />
-                          </InputAdornment>
-                        }
-                      />
-                      {login.length === 0 && enviado ? (
-                        <VerifyInputs value="Login"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </FormControl>
-                  </Col>
-                </Row>
-                <Row className="mt-5">
-                  <Col md={12}>
-                    <FormControl className="w-100">
-                      <InputLabel htmlFor="password">Senha</InputLabel>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        error={password.length === 0 && enviado}
-                        onChange={({ target }) => setPassword(target.value)}
-                        startAdornment={
-                          <InputAdornment position="start">
-                            <LockIcon />
-                          </InputAdornment>
-                        }
-                      />
-                      {password.length === 0 && enviado ? (
-                        <VerifyInputs value="Senha"></VerifyInputs>
-                      ) : (
-                        ""
-                      )}
-                    </FormControl>
-                  </Col>
-                </Row>
+                {!forgotPassword ? (
+                  <>
+                    <Row className="mt-2">
+                      <Col md={12}>
+                        <FormControl className="w-100">
+                          <InputLabel htmlFor="login">Login</InputLabel>
+                          <Input
+                            id="login"
+                            value={login}
+                            error={login.length === 0 && enviado}
+                            onChange={({ target }) => setLogin(target.value)}
+                            startAdornment={
+                              <InputAdornment position="start">
+                                <FaceIcon />
+                              </InputAdornment>
+                            }
+                          />
+                          {login.length === 0 && enviado ? (
+                            <VerifyInputs value="Login"></VerifyInputs>
+                          ) : (
+                            ""
+                          )}
+                        </FormControl>
+                      </Col>
+                    </Row>
+
+                    <Row className="mt-5">
+                      <Col md={12}>
+                        <FormControl className="w-100">
+                          <InputLabel htmlFor="password">Senha</InputLabel>
+                          <Input
+                            id="password"
+                            type="password"
+                            value={password}
+                            error={password.length === 0 && enviado}
+                            onChange={({ target }) => setPassword(target.value)}
+                            startAdornment={
+                              <InputAdornment position="start">
+                                <LockIcon />
+                              </InputAdornment>
+                            }
+                          />
+                          {password.length === 0 && enviado ? (
+                            <VerifyInputs value="Senha"></VerifyInputs>
+                          ) : (
+                            ""
+                          )}
+                        </FormControl>
+                      </Col>
+                    </Row>
+                  </>
+                ) : (
+                  <Row className="mt-2">
+                    <Col md={12}>
+                      <FormControl className="w-100">
+                        <InputLabel htmlFor="Email">Email</InputLabel>
+                        <Input
+                          id="Email"
+                          type="email"
+                          value={email}
+                          error={email.length === 0 && enviado}
+                          onChange={({ target }) => setEmail(target.value)}
+                          startAdornment={
+                            <InputAdornment position="start">
+                              <EmailIcon />
+                            </InputAdornment>
+                          }
+                        />
+                        {email.length === 0 && enviado ? (
+                          <VerifyInputs value="E-Mail"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </FormControl>
+                    </Col>
+                  </Row>
+                )}
+                {!forgotPassword ? (
+                  <div className="pt-2 text-right" style={{ fontSize: 12 }}>
+                    <Link to="" onClick={viewForgot}>
+                      Esqueci a Senha
+                    </Link>
+                  </div>
+                ) : (
+                  ""
+                )}
                 <Button
-                  className="w-100 mt-5"
+                  className="w-100 mt-3"
                   color="secondary"
-                  onClick={handleSubmit}
+                  onClick={() =>
+                    !forgotPassword ? handleSubmit() : forgotPasswordFunction()
+                  }
                 >
-                  Entrar
+                  {!forgotPassword ? "Entrar" : "Enviar"}
                 </Button>
               </Card.Body>
             </Card>

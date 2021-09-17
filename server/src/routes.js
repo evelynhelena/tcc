@@ -14,6 +14,7 @@ routes.get("/", (req, res) => {
 
 //ROTAS Login
 routes.post('/login', Login.getUser);
+routes.post('/reset', Login.resetPassword);
 
 // ROTAS Tipos Produto
 routes.post('/productsType',verifyJWT,ProdController.insert);
