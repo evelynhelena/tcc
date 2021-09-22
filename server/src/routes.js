@@ -55,6 +55,7 @@ routes.delete("/users/:id", verifyJWT,UserController.delete);
 routes.get("/countAllUsers",verifyJWT,Dashboard.countAllUsers);
 routes.get("/countProductsEstoqueBaixo", verifyJWT,Dashboard.countProductsEstoqueBaixo);
 routes.get("/getProductsEstoqueBaixo", verifyJWT,Dashboard.getProductsEstoqueBaixo);
+routes.get("/getPendentePayment", verifyJWT,Dashboard.getPendentePayment);
 
 //Rotas Calendar
 routes.get("/inportanceTasks", verifyJWT,Calendar.getInportanteTasks);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import {useParams} from "react-router-dom";
 import Navbar from "../../components/NavBar/Navbar";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -22,6 +23,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import CheckIcon from "@material-ui/icons/Check";
+import currencyFormatter from "currency-formatter";
 import { ptBR } from "date-fns/locale";
 import {
   MuiPickersUtilsProvider,
@@ -41,6 +43,7 @@ function ListVenda() {
   const [vendasFiado, setVendasFiado] = useState({
     checked: false,
   });
+
   const config = {
     headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   };
@@ -58,7 +61,7 @@ function ListVenda() {
     },
     {
       name: "Valor(R$)",
-      selector: "value",
+      selector: "valueFormt",
       sortable: true,
     },
     {
@@ -135,6 +138,7 @@ function ListVenda() {
       [event.target.name]: event.target.checked,
     });
   };
+
   const clientes = {
     options: clients,
     getOptionLabel: (option) => option.name,
@@ -175,6 +179,13 @@ function ListVenda() {
           config
         );
         if (data) {
+          data.forEach((el) => {
+            el.valueFormt = currencyFormatter.format(el.value, {
+              code: "pt-BR",
+              decimal: ",",
+              decimalDigits: 2,
+            });
+          });
           setSales(data);
           setSearch(vendasFiado.checked);
         }

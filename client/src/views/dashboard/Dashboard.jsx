@@ -11,6 +11,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import CalendarComponent from "../../components/Calendar/Calendar";
+import currencyFormatter from "currency-formatter";
 import api from "../../services/Api";
 import swal from "@sweetalert/with-react";
 import "./Dashboard.css";
@@ -19,6 +20,7 @@ import Navbar from "../../components/NavBar/Navbar";
 function Home() {
   const [countUser,setCountUser] = useState([]);
   const [productEstoqueBaixo,setProductEstoqueBaixo] = useState([]);
+  const [pagamentoPendente,setPagamentoPendente] = useState([]);
 
   
   const config = {
@@ -36,6 +38,24 @@ function Home() {
   };
   useEffect(() => {
     getCountUsers();
+  }, []);
+
+  const getCountPagamentoPendente = async () => {
+    try {
+      const { data } = await api.get(`${server.url}getPendentePayment`,config);
+      const [pagamentos] = data;
+      if (data) setPagamentoPendente(    
+        currencyFormatter.format(pagamentos.pagamentos_pendentes, {
+        code: "pt-BR",
+        decimal: ",",
+        decimalDigits: 2,
+      }));
+    } catch (err) {
+      swal("Erro", "Erro ao carregar os pagamentos pendentes", "error");
+    }
+  };
+  useEffect(() => {
+    getCountPagamentoPendente();
   }, []);
 
 
@@ -58,7 +78,7 @@ function Home() {
       <Container>
 
         <Row>
-          <Col md={3} className="mb-5">
+          <Col md={4} className="mb-5">
             <div className="position-relative">
               <CardDashboard
                 title="Usuários Cadastrados"
@@ -71,7 +91,7 @@ function Home() {
             </div>
           </Col>
 
-          <Col md={3} className="mb-5">
+          <Col md={4} className="mb-5">
             <div className="position-relative">
               <CardDashboard
                 title="Estoque Baixo"
@@ -83,7 +103,7 @@ function Home() {
               ></CardDashboard>
             </div>
           </Col>
-          <Col md={3} className="mb-5">
+          {/*<Col md={3} className="mb-5">
             <div className="position-relative">
               <CardDashboard
                 title="Faturamento (R$)"
@@ -94,14 +114,14 @@ function Home() {
                 icon={<AttachMoneyIcon className="icon-card" />}
               ></CardDashboard>
             </div>
-          </Col>
-          <Col md={3}>
+          </Col>*/}
+          <Col md={4}>
             <div className="position-relative">
               <CardDashboard
                 titleTooltip="Fiados do Dia"
-                link={`/Listuser`}
-                title="Fiados do Dia (R$)"
-                info="-200,00"
+                link={`/ListVenda`}
+                title="Fiados do Dia"
+                info={`-${pagamentoPendente}`}
                 color="card-red"
                 icon={<RemoveIcon className="icon-card" />}
               ></CardDashboard>

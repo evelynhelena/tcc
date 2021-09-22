@@ -56,6 +56,25 @@ module.exports = {
         return res.send(results.filter(el => el.quantity < el.quantity_minima));
       }
     );
+  },
+
+  getPendentePayment(req, res){
+    const connection = bdConnect();
+    const date = new Date();
+    const dateByGet = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    connection.query(
+      `select sum(ts.value) as pagamentos_pendentes from tbl_seles ts 
+      join tbl_users tu on ts.fk_cliente = tu.id
+      where ts.ind_baixa_payme = 0 and ts.ind_cance = 0 and tu.ind_cance = 0 and ts.date_compra = "${dateByGet}"`,
+      function (error, results, fields) {
+        if (error) {
+          return res.status(404).send({
+            error: { msg: "Erro ao tentar recuperar os pagamentos pendentes", erro: error },
+          });
+        }
+        return res.send(results);
+      }
+    ); 
   }
 
 };
