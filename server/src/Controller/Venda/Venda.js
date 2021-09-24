@@ -93,7 +93,7 @@ module.exports = {
     }
   },
   findAll(req, res){
-    const { dateCompra, clienteId, } = req.body;
+    const { dateCompra, clienteId, vandaFiado} = req.body;
     const connection = bdConnect();
     let str = "";
     if(dateCompra && clienteId){
@@ -103,13 +103,95 @@ module.exports = {
     }else if(!dateCompra && clienteId){
       str = `fk_cliente = ${clienteId}`;
     }
+    if(vandaFiado){
+      str+= "and fk_payment_type = 4";
+    }
+
     connection.query(
       `select * from vw_sales where ${str} and ind_cance = 0 and ind_cance_user = 0`,
       (error, results) =>{
       if (error) {
         return res.status(500).send({
           error: {
-            msg: "Erro as Vendas",
+            msg: "Erro ao recupertar as Vendas",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
+  baixaPayme(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `update tbl_seles ts set ts.ind_baixa_payme = "1" where ts.id_sales = ${id}`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao dar baixa no pagameto",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
+  getVendById(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `select * from tbl_seles ts 
+      join tbl_users tu ON ts.fk_cliente = tu.id
+      where ts.id_sales = ${id} and ts.ind_cance = 0`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao dar baixa no pagameto",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
+  
+  getProdByIdVend(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `select * from tbl_seles_descricao tsd 
+      join tbl_product tp on tsd.fk_product_id = tp.id_product 
+      join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type 
+      where fk_sales_id = ${id}`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao dar baixa no pagameto",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+  },
+
+  delete(req, res) {
+    const id  = req.params.id;
+    const connection = bdConnect();
+    connection.query(
+      `update tbl_seles ts set ts.ind_cance = "1" where ts.id_sales = ${id}`,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao deletar a venda",
           },
           error,
         });

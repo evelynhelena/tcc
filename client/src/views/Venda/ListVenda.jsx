@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import {useParams} from "react-router-dom";
 import Navbar from "../../components/NavBar/Navbar";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import DataTable from "react-data-table-component";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import TextField from "@material-ui/core/TextField";
@@ -16,6 +18,12 @@ import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
 import Collapse from "@material-ui/core/Collapse";
+import Switch from "@material-ui/core/Switch";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import CheckIcon from "@material-ui/icons/Check";
+import currencyFormatter from "currency-formatter";
 import { ptBR } from "date-fns/locale";
 import {
   MuiPickersUtilsProvider,
@@ -31,8 +39,13 @@ function ListVenda() {
   const [date, setDate] = useState(new Date());
   const [sales, setSales] = useState([]);
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState(false);
+  const [vendasFiado, setVendasFiado] = useState({
+    checked: false,
+  });
+
   const config = {
-    headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   };
 
   const columns = [
@@ -48,7 +61,7 @@ function ListVenda() {
     },
     {
       name: "Valor(R$)",
-      selector: "value",
+      selector: "valueFormt",
       sortable: true,
     },
     {
@@ -62,18 +75,54 @@ function ListVenda() {
       sortable: true,
     },
     {
+      name: "Status Pagamento",
+      cell: (data) => (
+        <>
+          {data.ind_baixa_payme === 0 ? (
+            <Tooltip title="Pendente">
+              <CloseIcon color="secondary" />
+            </Tooltip>
+          ) : (
+            <Tooltip title="Pago">
+              <CheckIcon className="color-icon-sucess" />
+            </Tooltip>
+          )}
+        </>
+      ),
+    },
+    {
       name: "Ações",
       cell: (data) => (
         <>
           <Tooltip title="Visualizar Venda">
             <Link
               as={Link}
-              to={"/EditProductType/" + data.id_sales}
+              to={"/DescricaoVenda/" + data.id_sales}
               className="btn-link-trable btn-link-trable-color-primery"
             >
               <VisibilityIcon />
             </Link>
           </Tooltip>
+          {/*data.ind_baixa_payme === 0 ? (
+            <Tooltip title="Baixa em Pagamento">
+              <Button
+                className="btn-link-trable btn-link-trable-color-sucess btn-normal-sucess"
+                onClick={() => baixaPayme(data.id_sales)}
+              >
+                <CheckIcon />
+              </Button>
+            </Tooltip>
+          ) : (
+            ""
+          )*/}
+          <Tooltip title="Desativar">
+              <Button
+                className="btn-link-trable btn-link-trable-color-danger btn-normal-denger"
+                onClick={() => deleteVend(data.id_sales)}
+              >
+                <DeleteIcon />
+              </Button>
+            </Tooltip>
         </>
       ),
     },
@@ -83,6 +132,13 @@ function ListVenda() {
     setDate(date);
   };
 
+  const handleChange = (event) => {
+    setVendasFiado({
+      ...vendasFiado,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
   const clientes = {
     options: clients,
     getOptionLabel: (option) => option.name,
@@ -90,7 +146,7 @@ function ListVenda() {
 
   const getClient = async () => {
     try {
-      const { data } = await api.get(`${server.url}clients`,config);
+      const { data } = await api.get(`${server.url}clients`, config);
       if (data) {
         setClients(data);
       }
@@ -104,28 +160,102 @@ function ListVenda() {
   }, []);
 
   const getVend = async () => {
-    if((clienteSelectd && clienteSelectd.id) || date){
+    if ((clienteSelectd && clienteSelectd.id) || date) {
       setOpen(false);
       try {
-        const { data } = await api.post(`${server.url}findAll`, {
-          clienteId: clienteSelectd ? clienteSelectd.id : null,
-          dateCompra: date ? date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() : null,
-        },config);
+        const { data } = await api.post(
+          `${server.url}findAll`,
+          {
+            clienteId: clienteSelectd ? clienteSelectd.id : null,
+            dateCompra: date
+              ? date.getFullYear() +
+                "-" +
+                (date.getMonth() + 1) +
+                "-" +
+                date.getDate()
+              : null,
+            vandaFiado: vendasFiado.checked,
+          },
+          config
+        );
         if (data) {
+          data.forEach((el) => {
+            el.valueFormt = currencyFormatter.format(el.value, {
+              code: "pt-BR",
+              decimal: ",",
+              decimalDigits: 2,
+            });
+          });
           setSales(data);
+          setSearch(vendasFiado.checked);
         }
       } catch (err) {
         swal("Erro", "Erro ao buscar as as vendas", "error");
       }
-    }else{
+    } else {
       setOpen(true);
-      setSales([])
+      setSales([]);
     }
   };
 
   useEffect(() => {
     getVend();
   }, []);
+
+  const baixaPayme = (idSale) => {
+    swal({
+      title: "Atenção !",
+      text: "Deseja indicar que está conts esta paga ?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willBaixaPayme) => {
+      if (willBaixaPayme) {
+        try {
+          const { data } = await api.put(
+            `${server.url}baixaPayme/` + idSale,
+            {},
+            config
+          );
+          if (data) {
+            swal("Sucesso", "Pagamento confirmado com sucesso", "success");
+            getVend();
+          }
+        } catch {
+          swal("Erro ao confirmar o pagamento", {
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
+
+  const deleteVend = (idSale) => {
+    swal({
+      title: "Atenção !",
+      text: "Deseja deletar está venda ?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        try {
+          const { data } = await api.delete(
+            `${server.url}venda/` + idSale,
+            config
+          );
+          if (data) {
+            swal("Sucesso", "Venda Deletada com sucesso", "success");
+            getVend();
+          }
+        } catch {
+          swal("Erro deletar a venda", {
+            icon: "error",
+          });
+        }
+      }
+    });
+  };
 
   return (
     <>
@@ -141,7 +271,7 @@ function ListVenda() {
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                <Collapse in={open}>
+                  <Collapse in={open}>
                     <Alert
                       severity="warning"
                       action={
@@ -157,7 +287,8 @@ function ListVenda() {
                         </IconButton>
                       }
                     >
-                      É preciso selecionar <b>Cliente</b> ou <b>Data da Venda</b>
+                      É preciso selecionar <b>Cliente</b> ou{" "}
+                      <b>Data da Venda</b>
                     </Alert>
                   </Collapse>
                   <Row>
@@ -202,7 +333,29 @@ function ListVenda() {
                         />
                       </MuiPickersUtilsProvider>
                     </Col>
-                    <Col xs={12} md={6}>
+                    <Col xs={12} md={3}>
+                      <FormControl component="fieldset" className="mt-4 pt-3">
+                        <FormGroup aria-label="position" row>
+                          <FormControlLabel
+                            value="top"
+                            control={
+                              <Switch
+                                checked={vendasFiado.checked}
+                                onChange={handleChange}
+                                name="checked"
+                                color="primary"
+                                inputProps={{
+                                  "aria-label": "primary checkbox",
+                                }}
+                              />
+                            }
+                            label="Vendas Fiado"
+                            labelPlacement="start"
+                          />
+                        </FormGroup>
+                      </FormControl>
+                    </Col>
+                    <Col xs={12} md={3}>
                       <Button
                         variant="info"
                         className="float-right mt-4"
@@ -214,15 +367,14 @@ function ListVenda() {
                   </Row>
 
                   <Row>
-                  <DataTable
-                        columns={columns}
-                        data={sales}
-                        defaultSortFieldId={1}
-                        sortIcon={<FaIcons.FaAngleUp />}
-                        noDataComponent="Nenhum Registro Encontrado"
-                        pagination
-                      />
-        
+                    <DataTable
+                      columns={columns}
+                      data={sales}
+                      defaultSortFieldId={1}
+                      sortIcon={<FaIcons.FaAngleUp />}
+                      noDataComponent="Nenhum Registro Encontrado"
+                      pagination
+                    />
                   </Row>
                 </Card.Body>
               </Card>

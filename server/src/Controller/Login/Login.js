@@ -1,5 +1,5 @@
 import { createConnection } from "mysql";
-import { generateToken } from "../../helpers/userFeatures";
+import { generateToken,generatePasswords,sendEmail } from "../../helpers/userFeatures";
 const bdConnect = () => {
   return createConnection({
     host: process.env.MYSQL_HOST,
@@ -41,4 +41,32 @@ module.exports = {
       }
     );
   },
+
+  resetPassword(req, res){
+    const connection = bdConnect();
+    const { userEmail } = req.body;
+    const newPassword = generatePasswords();
+    let fields = [newPassword,userEmail];
+
+    connection.query(
+      "update tbl_users tu set tu.senha = ? where tu.email = ?",
+      fields,
+      function (error, results) {
+        if (error) {
+          return res.status(500).send({
+            error: {
+              msg: "Erro ao alterar a senha",
+            },
+            error,
+          });
+        }
+        if(results.affectedRows > 0){
+          sendEmail(userEmail,newPassword);
+          return res.status(200).send({ Message: "Senha Alterada com sucesso" });
+        }else{
+          return res.status(501).send({ Message: "Email não cadastrado" });
+        }
+      }
+    );
+  }
 };

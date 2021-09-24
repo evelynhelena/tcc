@@ -14,6 +14,7 @@ routes.get("/", (req, res) => {
 
 //ROTAS Login
 routes.post('/login', Login.getUser);
+routes.post('/reset', Login.resetPassword);
 
 // ROTAS Tipos Produto
 routes.post('/productsType',verifyJWT,ProdController.insert);
@@ -34,8 +35,12 @@ routes.delete("/entradaProduto/:id", verifyJWT,EntradaProduto.delete);
 
 //ROTAS Venda
 routes.post("/venda",verifyJWT,Venda.insert);
+routes.get("/venda/:id",verifyJWT,Venda.getVendById);
+routes.get("/productVend/:id",verifyJWT,Venda.getProdByIdVend);
 routes.post("/findAll",verifyJWT,Venda.findAll);
 routes.get("/paymentType",verifyJWT,Venda.getPaymentType);
+routes.put("/baixaPayme/:id",verifyJWT,Venda.baixaPayme);
+routes.delete("/venda/:id",verifyJWT,Venda.delete);
 
 // ROTAS Usuarios
 routes.get("/users", verifyJWT,UserController.findAll);
@@ -50,6 +55,7 @@ routes.delete("/users/:id", verifyJWT,UserController.delete);
 routes.get("/countAllUsers",verifyJWT,Dashboard.countAllUsers);
 routes.get("/countProductsEstoqueBaixo", verifyJWT,Dashboard.countProductsEstoqueBaixo);
 routes.get("/getProductsEstoqueBaixo", verifyJWT,Dashboard.getProductsEstoqueBaixo);
+routes.get("/getPendentePayment", verifyJWT,Dashboard.getPendentePayment);
 
 //Rotas Calendar
 routes.get("/inportanceTasks", verifyJWT,Calendar.getInportanteTasks);
