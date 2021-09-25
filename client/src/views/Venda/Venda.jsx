@@ -55,8 +55,8 @@ function Venda() {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
 
-  function createData(idProd, produto, valor, quantidade) {
-    return { idProd, produto, valor, quantidade };
+  function createData(idProd, produto, valor, quantidade,qtdEstoque) {
+    return { idProd, produto, valor, quantidade,qtdEstoque };
   }
 
   const resetaCampus = () => {
@@ -148,8 +148,32 @@ function Venda() {
       productSelectd !== "" &&
       productSelectd
     ) {
-      if (rows.length > 0) {
-        if (!verificaListaProd()) {
+      if(productSelectd.quantity >= parseInt(quantidade)){
+        if (rows.length > 0) {
+          if (!verificaListaProd()) {
+            setRows((oldArray) => [
+              ...oldArray,
+              createData(
+                productSelectd.id_product,
+                productSelectd.type,
+                currencyFormatter.format(
+                  productSelectd.value * parseInt(quantidade),
+                  {
+                    code: "pt-BR",
+                    decimal: ",",
+                    decimalDigits: 2,
+                  }
+                ),
+                parseInt(quantidade),
+                productSelectd.quantity,
+              ),
+            ]);
+            setOpen(false);
+            resetaCampus();
+          } else {
+            setOpen(true);
+          }
+        } else {
           setRows((oldArray) => [
             ...oldArray,
             createData(
@@ -163,32 +187,14 @@ function Venda() {
                   decimalDigits: 2,
                 }
               ),
-              parseInt(quantidade)
+              parseInt(quantidade),
+              productSelectd.quantity
             ),
           ]);
-          setOpen(false);
           resetaCampus();
-        } else {
-          setOpen(true);
         }
-      } else {
-        setRows((oldArray) => [
-          ...oldArray,
-          createData(
-            productSelectd.id_product,
-            productSelectd.type,
-            currencyFormatter.format(
-              productSelectd.value * parseInt(quantidade),
-              {
-                code: "pt-BR",
-                decimal: ",",
-                decimalDigits: 2,
-              }
-            ),
-            parseInt(quantidade)
-          ),
-        ]);
-        resetaCampus();
+      }else{
+        swal("Erro", `Existem apenas ${productSelectd.quantity} produto(s) em estoque`, "error");
       }
     }
   };
@@ -415,7 +421,7 @@ function Venda() {
                               </TableHead>
                               <TableBody>
                                 {rows.map((row, index) => (
-                                  <TableRow key={row.idProd}>
+                                  <TableRow key={row.idProd} className={row.quantidade > row.qtdEstoque ?  'bg-danger' : ''}>
                                     <TableCell component="th" scope="row">
                                       {row.produto}
                                     </TableCell>
