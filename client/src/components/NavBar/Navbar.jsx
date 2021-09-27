@@ -14,6 +14,7 @@ import Button from "@material-ui/core/Button";
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
+  const id = localStorage.getItem("idUser");
 
   const showSidebar = () => setSidebar(!sidebar);
   const [date, setDate] = useState(new Date());
@@ -36,9 +37,9 @@ function Navbar() {
 
   const handleClosePerfil = () => {
     localStorage.setItem('token', null);
+    localStorage.setItem('idUser', null);
     history.push("/")
   };
-
   return (
     <>
       <div className="Warrper-nav">
@@ -64,7 +65,6 @@ function Navbar() {
               anchorEl={menuAlert}
               keepMounted
               open={Boolean(menuAlert)}
-              onClose={handleCloseAlert}
             >
               <MenuItem onClick={handleCloseAlert}><span>Produto Proximos do vencimento</span></MenuItem>
               <MenuItem onClick={handleCloseAlert}>Produto Proximos do vencimento</MenuItem>
@@ -84,10 +84,11 @@ function Navbar() {
               anchorEl={menuPerfil}
               keepMounted
               open={Boolean(menuPerfil)}
-              onClose={handleClosePerfil}
+              onClose={() => setMenuPerfil(false)}
             >
-              <MenuItem onClick={handleClosePerfil}>Perfil</MenuItem>
-              <MenuItem onClick={handleClosePerfil}>Configurações</MenuItem>
+            <Link to={`/EditUser/${id}`} style={{textDecoration: 'none', color: '#444'}}>
+              <MenuItem>Perfil</MenuItem>
+            </Link>
               <MenuItem onClick={handleClosePerfil}>Sair</MenuItem>
             </Menu>
           </div>

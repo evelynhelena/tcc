@@ -26,7 +26,6 @@ function LoginPage() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [open, setOpen] = useState(false);
-  const [emailSend, setEmailSend] = useState(false);
   let history = useHistory();
 
   const validaCampos = () => {
@@ -49,6 +48,7 @@ function LoginPage() {
         if (data) {
           if (data.token) {
             localStorage.setItem("token", data.token);
+            localStorage.setItem("idUser", data.idUser);
             history.push("/Dashboard");
           }
         }
