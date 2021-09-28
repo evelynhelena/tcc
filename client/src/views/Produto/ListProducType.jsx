@@ -184,7 +184,7 @@ function ListProducType() {
     }).then((willDelete) => {
       if (willDelete) {
         api
-          .put(`${server.url}productsTypeReability/` + id,config)
+          .put(`${server.url}productsTypeReability/` + id,{},config)
           .then(function (response) {
             let data = response.data;
             if (data.msg) {
