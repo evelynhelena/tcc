@@ -31,7 +31,7 @@ module.exports = {
             const token = generateToken(id, user_name);
             return res
               .status(200)
-              .send({ Message: "Login efetuado com sucesso", token });
+              .send({ Message: "Login efetuado com sucesso", token, idUser: id });
           } else {
             res.status(401).send({ error: "Usuário ou Senha Incorretos" });
           }
