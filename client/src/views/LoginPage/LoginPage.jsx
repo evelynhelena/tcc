@@ -16,6 +16,8 @@ import server from "../../Config/BaseURL";
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
+import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
 import Alert from "@material-ui/lab/Alert";
 import "./LoginPage.css";
 
@@ -26,12 +28,19 @@ function LoginPage() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [open, setOpen] = useState(false);
+  const [typeUser, setTypeUser] = useState("");
+  const usersType = [
+    { id: 1, type_user: "Funcionário" },
+    { id: 2, type_user: "Cliente" },
+  ];
   let history = useHistory();
 
   const validaCampos = () => {
+    console.log(typeUser);
     let loginObject = {
       login: login,
       password: password,
+      typeUser: typeUser,
     };
     for (var [key, value] of Object.entries(loginObject)) {
       if (null === value || value.length === 0 || undefined === value) {
@@ -67,6 +76,9 @@ function LoginPage() {
     setForgotPassword(true);
     resetValues();
   };
+  const handleChange = (event) => {
+    setTypeUser(event.target.value);
+  };
   const forgotPasswordFunction = async () => {
     setEnviado(true);
     if (email.length > 0) {
@@ -74,7 +86,7 @@ function LoginPage() {
         const { data } = await api.post(`${server.url}reset`, {
           userEmail: email,
         });
-        
+
         if (data) {
           setForgotPassword(false);
           swal(
@@ -132,9 +144,34 @@ function LoginPage() {
                 {!forgotPassword ? (
                   <>
                     <Row className="mt-2">
+                      <Col xs={12} md={12}>
+                        <TextField
+                          id="userType"
+                          select
+                          label="Tipo de usuário*"
+                          error={typeUser.length === 0 && enviado}
+                          value={typeUser}
+                          onChange={handleChange}
+                          variant="standard"
+                          className="col-md-12"
+                        >
+                          {usersType.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                              {option.type_user}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                        {typeUser.length === 0 && enviado ? (
+                          <VerifyInputs value="Tipo de usuário"></VerifyInputs>
+                        ) : (
+                          ""
+                        )}
+                      </Col>
+                    </Row>
+                    <Row className="mt-4">
                       <Col md={12}>
                         <FormControl className="w-100">
-                          <InputLabel htmlFor="login">Login</InputLabel>
+                          <InputLabel htmlFor="login">Login*</InputLabel>
                           <Input
                             id="login"
                             value={login}
@@ -155,10 +192,10 @@ function LoginPage() {
                       </Col>
                     </Row>
 
-                    <Row className="mt-5">
+                    <Row className="mt-4">
                       <Col md={12}>
                         <FormControl className="w-100">
-                          <InputLabel htmlFor="password">Senha</InputLabel>
+                          <InputLabel htmlFor="password">Senha*</InputLabel>
                           <Input
                             id="password"
                             type="password"

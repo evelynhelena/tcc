@@ -12,9 +12,9 @@ const bdConnect = () => {
 module.exports = {
   getUser(req, res) {
     const connection = bdConnect();
-    let fields = [req.body.login, req.body.password];
+    let fields = [req.body.login, req.body.password, req.body.typeUser];
     connection.query(
-      "select * from tbl_users tu where tu.user_name = ? and senha = ?",
+      "select * from tbl_users tu where tu.user_name = ? and tu.senha = ? and tu.fk_user_name = ?",
       fields,
       function (error, results) {
         if (error) {
@@ -40,6 +40,7 @@ module.exports = {
         }
       }
     );
+    connection.end();
   },
 
   resetPassword(req, res){
@@ -68,5 +69,6 @@ module.exports = {
         }
       }
     );
+    connection.end();
   }
 };

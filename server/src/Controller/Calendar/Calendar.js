@@ -32,6 +32,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
   getEventsCalendar(req, res) {
     const connection = bdConnect();
@@ -47,6 +48,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
   insertEvent(req, res) {
     const connection = bdConnect();
@@ -82,6 +84,7 @@ module.exports = {
           return res.send(results);
         }
       );
+      connection.end();
     }
   },
   updateEvent(req, res) {
@@ -118,6 +121,7 @@ module.exports = {
           return res.send(results);
         }
       );
+      connection.end();
     }
   },
 
@@ -142,5 +146,6 @@ module.exports = {
         });
       }
     );
+    connection.end();
   },
 };
