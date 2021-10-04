@@ -17,6 +17,7 @@ function Produto() {
   const [type, setType] = useState("");
   const [preco, setPreco] = useState("");
   const [quantidade, setQuantidade] = useState("");
+  const [productsType, setProductsType] = useState([]);
   const [indeIsentoDataVality, setIndeIsentoDataVality] = useState({
     checked: true,
   });
@@ -55,8 +56,23 @@ function Produto() {
     setEnviado(false);
   }
 
-  const insertProductType = async (productType) => {
+  const getProductType = async () => {
     try {
+      const { data } = await api.get(`${server.url}productsType`,config);
+      if (data) {
+        setProductsType(data);
+      }
+    } catch (err) {
+      swal("Erro", "Erro ao listar tipo de produto", "error");
+    }
+  };
+
+  useEffect(() => {
+    getProductType();
+  }, []);
+
+  const insertProductType = async (productType) => {
+   try {
       const { data } = await api.post(
         `${server.url}productsType/`,
         productType,
@@ -68,6 +84,25 @@ function Produto() {
       }
     } catch (err) {
       swal("Erro", "Erro ao inserir o tipo de produto", "error");
+    }
+  };
+
+  const sameProduct = async (productType) => {
+    let igualName = productsType.find(el => el.type.toUpperCase() === productType.type.toUpperCase());
+    if(igualName){
+      swal({
+        title: "Atenção!",
+        text: "Já existe um produco com o mesmo nome cadastrado, deseja prosseguir ?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willInsert) => {
+        if (willInsert) {
+          insertProductType(productType);
+        }
+      });
+    }else{
+      insertProductType(productType);
     }
   };
 
@@ -106,7 +141,7 @@ function Produto() {
       swal("Atenção!", "O Preço deve ser númerico", "warning");
     } else {
       if (insert) {
-        insertProductType(insert);
+        sameProduct(insert);
       }
     }
   };
