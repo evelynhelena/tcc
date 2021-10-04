@@ -50,6 +50,7 @@ module.exports = {
           return res.send(results);
         }
       );
+      connection.end();
     }else{
       return res.status(501).send({
         error: {
@@ -90,6 +91,7 @@ module.exports = {
           return res.send(results);
         }
       );
+      connection.end();
     }else{
       return res.status(501).send({
         error: {
@@ -116,6 +118,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
   
   findAll(req, res){
@@ -136,6 +139,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   findById(req, res){
@@ -155,6 +159,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   }, 
 
   delete(req, res) {
@@ -178,6 +183,7 @@ module.exports = {
         });
       }
     );
+    connection.end();
   },
 
 }

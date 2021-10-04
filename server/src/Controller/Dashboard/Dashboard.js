@@ -23,6 +23,7 @@ module.exports = {
         return res.send({ totalUser: results[0].TotalUser });
       }
     );
+    connection.end();
   },
 
   countProductsEstoqueBaixo(req, res){
@@ -41,6 +42,7 @@ module.exports = {
         return res.send({ totalProduct: countProducts.length});
       }
     );
+    connection.end();
   },
 
   getProductsEstoqueBaixo(req, res){
@@ -56,6 +58,7 @@ module.exports = {
         return res.send(results.filter(el => el.quantity < el.quantity_minima));
       }
     );
+    connection.end();
   },
 
   getPendentePayment(req, res){
@@ -75,6 +78,7 @@ module.exports = {
         return res.send(results);
       }
     ); 
+    connection.end();
   }
 
 };

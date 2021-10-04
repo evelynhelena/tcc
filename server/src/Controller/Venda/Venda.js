@@ -27,6 +27,7 @@ module.exports = {
       }
       return res.send(results);
     });
+    connection.end();
   },
   async insert(req, res) {
     const { paymentType, cliente, products } = req.body;
@@ -87,6 +88,7 @@ module.exports = {
                 return res.send(results);
               }
             );
+            connection.end();
           }
         }
       );
@@ -120,6 +122,7 @@ module.exports = {
       }
       return res.send(results);
     });
+    connection.end();
   },
 
   baixaPayme(req, res) {
@@ -138,6 +141,7 @@ module.exports = {
       }
       return res.send(results);
     });
+    connection.end();
   },
 
   getVendById(req, res) {
@@ -158,6 +162,7 @@ module.exports = {
       }
       return res.send(results);
     });
+    connection.end();
   },
 
   
@@ -180,6 +185,7 @@ module.exports = {
       }
       return res.send(results);
     });
+    connection.end();
   },
 
   delete(req, res) {
@@ -198,6 +204,7 @@ module.exports = {
       }
       return res.send(results);
     });
+    connection.end();
   }
 };
 

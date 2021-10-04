@@ -32,6 +32,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   findAllClient(req, res) {
@@ -47,6 +48,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   findUserType(req, res) {
@@ -64,6 +66,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   findById(req, res) {
@@ -87,6 +90,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   findOne(req, res) {},
@@ -159,6 +163,7 @@ module.exports = {
                 });
               }
             );
+            connection.end();
           }
         } else {
           return res.send({
@@ -248,6 +253,7 @@ module.exports = {
                 });
               }
             );
+            connection.end();
           }
         } else {
           return res.status(400).send({
@@ -280,5 +286,6 @@ module.exports = {
         });
       }
     );
+    connection.end();
   },
 };

@@ -44,6 +44,7 @@ module.exports = {
           return res.send(results);
         }
       );
+      connection.end();
     }else{
       return res.status(500).send({
         error: {
@@ -69,6 +70,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   validaProdCadastrado(req, res){
@@ -90,6 +92,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   findById(req, res){
@@ -109,6 +112,7 @@ module.exports = {
         return res.send(results);
       }
     );
+    connection.end();
   },
 
   update(req, res) {
@@ -141,6 +145,7 @@ module.exports = {
           });
         }
       );
+      connection.end();
     }else{
       return res.status(500).send({
         error: {
@@ -172,6 +177,7 @@ module.exports = {
         });
       }
     );
+    connection.end();
   },
   
   reability(req, res) {
@@ -196,6 +202,7 @@ module.exports = {
         });
       }
     );
+    connection.end();
   },
 
 
