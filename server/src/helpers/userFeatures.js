@@ -16,11 +16,12 @@ function generatePasswords(){
     return newPassword;
 }
 
-function generateToken(idLogin,user){
+function generateToken(idLogin,user,typeUser){
     const secret = process.env.SECRET;
     return jwt.sign({infoUser: {
         idUser: idLogin,
-        userName: user
+        userName: user,
+        typeUser: typeUser
     }},secret);
 }
 

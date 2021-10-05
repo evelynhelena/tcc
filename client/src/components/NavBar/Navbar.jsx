@@ -4,6 +4,7 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { SidebarData } from "./SidebarData";
+import { SidebarDataClient } from "./SideBarDataClient";
 import "./Navbar.css";
 import { IconContext } from "react-icons";
 import { Dropdown } from "react-bootstrap";
@@ -15,6 +16,7 @@ import Button from "@material-ui/core/Button";
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
   const id = localStorage.getItem("idUser");
+  const typeUser = localStorage.getItem("typeUser");
 
   const showSidebar = () => setSidebar(!sidebar);
   const [date, setDate] = useState(new Date());
@@ -38,6 +40,7 @@ function Navbar() {
   const handleClosePerfil = () => {
     localStorage.setItem('token', null);
     localStorage.setItem('idUser', null);
+    localStorage.setItem('typeUser', null);
     history.push("/")
   };
   return (
@@ -101,7 +104,17 @@ function Navbar() {
               </Link>
             </li>
             <IconContext.Provider value={{ color: "fff" }}>
-              {SidebarData.map((item, index) => {
+              { parseInt(typeUser) === 1 ? SidebarData.map((item, index) => {
+                return (
+                  <li key={index} className={item.cName}>
+                    <Link to={item.path}>
+                      {item.icon}
+                      <span className="item-nav">{item.title}</span>
+                    </Link>
+                  </li>
+                );
+                
+              }) : SidebarDataClient.map((item, index) => {
                 return (
                   <li key={index} className={item.cName}>
                     <Link to={item.path}>

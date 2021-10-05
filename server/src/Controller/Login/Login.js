@@ -27,8 +27,8 @@ module.exports = {
         }
         try {
           if (results.length > 0) {
-            const { id, user_name } = results[0];
-            const token = generateToken(id, user_name);
+            const { id, user_name, fk_user_name } = results[0];
+            const token = generateToken(id, user_name, fk_user_name);
             return res
               .status(200)
               .send({ Message: "Login efetuado com sucesso", token, idUser: id });

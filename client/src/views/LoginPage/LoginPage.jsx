@@ -19,6 +19,7 @@ import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import Alert from "@material-ui/lab/Alert";
+import jwt_decode from "jwt-decode";
 import "./LoginPage.css";
 
 function LoginPage() {
@@ -36,7 +37,6 @@ function LoginPage() {
   let history = useHistory();
 
   const validaCampos = () => {
-    console.log(typeUser);
     let loginObject = {
       login: login,
       password: password,
@@ -56,9 +56,15 @@ function LoginPage() {
         const { data } = await api.post(`${server.url}login`, validaCampos());
         if (data) {
           if (data.token) {
+            let decodeToken = jwt_decode(data.token);
             localStorage.setItem("token", data.token);
-            localStorage.setItem("idUser", data.idUser);
-            history.push("/Dashboard");
+            localStorage.setItem("idUser", decodeToken.infoUser.idUser);           
+            localStorage.setItem("typeUser", decodeToken.infoUser.typeUser);  
+            if(parseInt(decodeToken.infoUser.typeUser)  !== 1){
+              history.push("/PainelControle");
+            }else{
+              history.push("/Dashboard");
+            }     
           }
         }
       } catch (err) {
