@@ -8,6 +8,7 @@ import EntradaProduto from './Controller/EntradaProduto/EntradaProduto';
 import Login from './Controller/Login/Login';
 import Venda from "./Controller/Venda/Venda";
 import {verifyJWT} from "./middlewares/jwt";
+import DashClient from "./Controller/DashClient/DashClient";
 routes.get("/", (req, res) => {
   res.send("Teste");
 });
@@ -63,5 +64,8 @@ routes.get("/event", verifyJWT,Calendar.getEventsCalendar);
 routes.post("/event", verifyJWT,Calendar.insertEvent);
 routes.put("/event/:id", verifyJWT,Calendar.updateEvent);
 routes.delete("/event/:id", verifyJWT,Calendar.delete);
+
+//Rotas Dashboard Cliente
+routes.get("/countPayme/:id",verifyJWT,DashClient.countPayme);
 
 module.exports = routes;
