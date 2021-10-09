@@ -13,10 +13,12 @@ module.exports = {
     countPayme(req, res) {
     const connection = bdConnect();
     const date = new Date();
-    const dateOne = (new Date(DateUtil.countDateLess(date, 1)).getMonth() + 1).toString();
-    const dateTow = (new Date(DateUtil.countDateLess(date, 0)).getMonth() + 1).toString();
+    const dateOne = (new Date(DateUtil.countDateLess(date, 0)).getMonth() + 1).toString();
+    const dateTow = (date.getMonth() + 1).toString();
     const year = date.getFullYear().toString();
     const id = req.params.id;
+    let totalPagos = 0;
+    let totalAbertos = 0;
     const filds = [
         id,
         year,
@@ -32,7 +34,12 @@ module.exports = {
             error: { msg: "Erro ao tentar recuperar os usuários", erro: error },
           });
         }
-        return res.send(results[0]);
+
+        const arrayMesPago = results[0].filter(el => el.statusCompra === "Pago");
+        const arrayMesAberto = results[0].filter(el => el.statusCompra === "Em Aberto");
+        arrayMesPago.forEach((el) => totalPagos += el.total);
+        arrayMesAberto.forEach((el)=> totalAbertos += el.total);
+        return res.send({pagos: totalPagos, emAberto: totalAbertos});
       }
     );
     connection.end();
