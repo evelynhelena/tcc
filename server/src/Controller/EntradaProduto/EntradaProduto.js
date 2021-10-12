@@ -126,7 +126,7 @@ module.exports = {
     connection.query(
       `select * from tbl_product tp
       join tbl_products_type tpt on tp.fk_product_type_id = tpt.id_product_type
-      where tp.ind_cance = 0`,
+      where tp.ind_cance = 0 and tpt.ind_cance = 0`,
       function (error, results) {
         if (error) {
           return res.status(500).send({
