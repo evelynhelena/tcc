@@ -16,6 +16,7 @@ import ListVenda from "./views/Venda/ListVenda";
 import DescricaoVenda from "./views/DescricaoVenda/DescricaoVenda";
 import jwt_decode from "jwt-decode";
 import DashClient from "./views/DashClient/DashClient";
+import DescricaoVendaClient from "./views/DescricaoVendaClient/DescricaoVendaClient";
 function CustomRoute({isPrivaty,isAdmin, ...rest}){
   if(isPrivaty && ("null" === localStorage.getItem('token') || !localStorage.getItem('token'))){
     return  <Redirect to="/"></Redirect>
@@ -62,6 +63,8 @@ function App() {
         {/* Calendario */}
         <CustomRoute isPrivaty path='/Calendar' component={CalenderPage} />
         
+        {/*Cliente */}
+        <CustomRoute isPrivaty path='/DescricaoCompra/:id' component={DescricaoVendaClient} />
         {/* Pagina de erro */}
         <CustomRoute isPrivaty path='*' component={ErrorPage} />
       </Switch>

@@ -106,7 +106,7 @@ module.exports = {
       str = `fk_cliente = ${clienteId} `;
     }
     if(vandaFiado){
-      str+= "and fk_payment_type = 4";
+      str+= " and fk_payment_type = 4";
     }
 
     connection.query(

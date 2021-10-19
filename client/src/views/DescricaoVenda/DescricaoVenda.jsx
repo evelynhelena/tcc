@@ -188,13 +188,13 @@ function DescricaoVenda() {
               <Card className="mt-2">
                 <Card.Body>
                   <Row>
-                    <Col xs={12} md={12} className="text-right">
+                    {/*<Col xs={12} md={12} className="text-right">
                       <Tooltip title="Exportar Relátorio">
                         <IconButton color="primary">
                           <DescriptionIcon />
                         </IconButton>
                       </Tooltip>
-                    </Col>
+                    </Col>*/}
                   </Row>
                   <Row>
                     <Col xs={12} md={12} className="pr-5">

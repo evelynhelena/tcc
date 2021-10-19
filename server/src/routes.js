@@ -67,5 +67,6 @@ routes.delete("/event/:id", verifyJWT,Calendar.delete);
 
 //Rotas Dashboard Cliente
 routes.get("/countPayme/:id",verifyJWT,DashClient.countPayme);
+routes.post("/findAllSales",verifyJWT,DashClient.findAllSales);
 
 module.exports = routes;

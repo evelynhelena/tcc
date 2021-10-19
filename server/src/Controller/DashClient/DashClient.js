@@ -45,4 +45,28 @@ module.exports = {
     connection.end();
   },
 
+  findAllSales(req, res){
+    const {id , paymeOpen} = req.body;
+    const fields = [
+      id,
+      paymeOpen ? 0 : 1,
+    ];
+    const connection = bdConnect();
+    connection.query(
+      'select * from tbl_seles ts where ts.fk_cliente = ? and ts.ind_cance = 0 and ts.ind_baixa_payme = ?',
+      fields,
+      (error, results) =>{
+      if (error) {
+        return res.status(500).send({
+          error: {
+            msg: "Erro ao recupertar as Vendas",
+          },
+          error,
+        });
+      }
+      return res.send(results);
+    });
+    connection.end();
+  }
+
 }
