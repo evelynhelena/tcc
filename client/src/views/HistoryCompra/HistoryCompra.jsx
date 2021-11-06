@@ -217,7 +217,7 @@ function HistoryCompra() {
                                 }}
                               />
                             }
-                            label="Vendas Fiado"
+                            label="Compras Fiado"
                             labelPlacement="start"
                           />
                         </FormGroup>
