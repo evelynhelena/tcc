@@ -10,9 +10,9 @@ export const SidebarDataClient = [
     cName: 'nav-text'
   },
   {
-    title: 'Calendário',
-    path: '/Calendar',
-    icon: <FaIcons.FaCalendarAlt />,
+    title: 'Compras',
+    path: '/HistoryCompra',
+    icon: <FaIcons.FaShoppingBasket />,
     cName: 'nav-text'
   }
 ];
