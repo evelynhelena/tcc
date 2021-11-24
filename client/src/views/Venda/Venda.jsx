@@ -150,7 +150,7 @@ function Venda() {
     ) {
       if(productSelectd.quantity >= parseInt(quantidade)){
         if (rows.length > 0) {
-          if (!verificaListaProd()) {
+          //if (!verificaListaProd()) {
             setRows((oldArray) => [
               ...oldArray,
               createData(
@@ -170,9 +170,9 @@ function Venda() {
             ]);
             setOpen(false);
             resetaCampus();
-          } else {
+         /* } else {
             setOpen(true);
-          }
+          }*/
         } else {
           setRows((oldArray) => [
             ...oldArray,
