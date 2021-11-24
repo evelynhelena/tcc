@@ -140,6 +140,7 @@ function Venda() {
     return insert;
   };
 
+  
   const addProduct = async () => {
     setEnviado(true);
     if (
