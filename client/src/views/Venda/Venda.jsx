@@ -347,6 +347,7 @@ function Venda() {
                             clearOnBlur={true}
                             debug
                             clearText="Limpar"
+                            noOptionsText="Nenhum Registro"
                             onChange={(event, newValue) => {
                               setProductSelectd(newValue);
                             }}

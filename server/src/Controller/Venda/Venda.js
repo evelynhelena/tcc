@@ -101,12 +101,12 @@ module.exports = {
     if(dateCompra && clienteId){
       str = `date_compra = '${dateCompra}' and fk_cliente = ${clienteId}`;
     }else if(dateCompra && !clienteId){
-      str = `date_compra = '${dateCompra}'`;
+      str = `date_compra = ' ${dateCompra} '`;
     }else if(!dateCompra && clienteId){
-      str = `fk_cliente = ${clienteId}`;
+      str = `fk_cliente = ${clienteId} `;
     }
     if(vandaFiado){
-      str+= "and fk_payment_type = 4";
+      str+= " and fk_payment_type = 4";
     }
 
     connection.query(

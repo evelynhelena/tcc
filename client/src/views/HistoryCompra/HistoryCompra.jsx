@@ -28,17 +28,17 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
-import "./Venda.css";
+import "./HistoryCompra.css";
 import VerifyInputs from "../../components/VerifyInputs/VerifyInputs";
-
-function ListVenda() {
+function HistoryCompra() {
   const [clients, setClients] = useState([]);
-  const [clienteSelectd, setClienteSelectd] = useState({});
+  const [clientName, setClientName] = useState("");
   const [enviado, setEnviado] = useState("");
   const [date, setDate] = useState(new Date());
   const [sales, setSales] = useState([]);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState(false);
+  const id = localStorage.getItem("idUser");
   const [vendasFiado, setVendasFiado] = useState({
     checked: false,
   });
@@ -51,11 +51,6 @@ function ListVenda() {
     {
       name: "ID",
       selector: "id_sales",
-      sortable: true,
-    },
-    {
-      name: "Cliente",
-      selector: "name",
       sortable: true,
     },
     {
@@ -89,42 +84,6 @@ function ListVenda() {
         </>
       ),
     },
-    {
-      name: "Ações",
-      cell: (data) => (
-        <>
-          <Tooltip title="Visualizar Venda">
-            <Link
-              as={Link}
-              to={"/DescricaoVenda/" + data.id_sales}
-              className="btn-link-trable btn-link-trable-color-primery"
-            >
-              <VisibilityIcon />
-            </Link>
-          </Tooltip>
-          {/*data.ind_baixa_payme === 0 ? (
-            <Tooltip title="Baixa em Pagamento">
-              <Button
-                className="btn-link-trable btn-link-trable-color-sucess btn-normal-sucess"
-                onClick={() => baixaPayme(data.id_sales)}
-              >
-                <CheckIcon />
-              </Button>
-            </Tooltip>
-          ) : (
-            ""
-          )*/}
-          <Tooltip title="Desativar">
-              <Button
-                className="btn-link-trable btn-link-trable-color-danger btn-normal-denger"
-                onClick={() => deleteVend(data.id_sales)}
-              >
-                <DeleteIcon />
-              </Button>
-            </Tooltip>
-        </>
-      ),
-    },
   ];
 
   const handleDateChange = (date) => {
@@ -138,16 +97,12 @@ function ListVenda() {
     });
   };
 
-  const clientes = {
-    options: clients,
-    getOptionLabel: (option) => option.name,
-  };
-
   const getClient = async () => {
     try {
-      const { data } = await api.get(`${server.url}clients`, config);
+      const { data } = await api.get(`${server.url}users/${id}`, config);
       if (data) {
         setClients(data);
+        setClientName(data[0].name)
       }
     } catch (err) {
       swal("Erro", "Erro ao resgatar produto selecionado", "error");
@@ -159,13 +114,12 @@ function ListVenda() {
   }, []);
 
   const getVend = async () => {
-    if ((clienteSelectd && clienteSelectd.id) || date) {
       setOpen(false);
       try {
         const { data } = await api.post(
           `${server.url}findAll`,
           {
-            clienteId: clienteSelectd ? clienteSelectd.id : null,
+            clienteId: parseInt(id) ,
             dateCompra: date
               ? date.getFullYear() +
                 "-" +
@@ -191,70 +145,12 @@ function ListVenda() {
       } catch (err) {
         swal("Erro", "Erro ao buscar as as vendas", "error");
       }
-    } else {
-      setOpen(true);
-      setSales([]);
-    }
+   
   };
 
   useEffect(() => {
     getVend();
   }, []);
-
-  const baixaPayme = (idSale) => {
-    swal({
-      title: "Atenção !",
-      text: "Deseja indicar que está conts esta paga ?",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then(async (willBaixaPayme) => {
-      if (willBaixaPayme) {
-        try {
-          const { data } = await api.put(
-            `${server.url}baixaPayme/` + idSale,
-            {},
-            config
-          );
-          if (data) {
-            swal("Sucesso", "Pagamento confirmado com sucesso", "success");
-            getVend();
-          }
-        } catch {
-          swal("Erro ao confirmar o pagamento", {
-            icon: "error",
-          });
-        }
-      }
-    });
-  };
-
-  const deleteVend = (idSale) => {
-    swal({
-      title: "Atenção !",
-      text: "Deseja deletar está venda ?",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then(async (willDelete) => {
-      if (willDelete) {
-        try {
-          const { data } = await api.delete(
-            `${server.url}venda/` + idSale,
-            config
-          );
-          if (data) {
-            swal("Sucesso", "Venda Deletada com sucesso", "success");
-            getVend();
-          }
-        } catch {
-          swal("Erro deletar a venda", {
-            icon: "error",
-          });
-        }
-      }
-    });
-  };
 
   return (
     <>
@@ -266,47 +162,20 @@ function ListVenda() {
               <Card>
                 <Card.Header>
                   <Card.Title className="mb-0">
-                    <h4 className="mb-0">Vendas</h4>
+                    <h4 className="mb-0">Compras</h4>
                   </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Collapse in={open}>
-                    <Alert
-                      severity="warning"
-                      action={
-                        <IconButton
-                          aria-label="close"
-                          color="default"
-                          size="small"
-                          onClick={() => {
-                            setOpen(false);
-                          }}
-                        >
-                          <CloseIcon fontSize="inherit" />
-                        </IconButton>
-                      }
-                    >
-                      É preciso selecionar <b>Cliente</b> ou{" "}
-                      <b>Data da Venda</b>
-                    </Alert>
-                  </Collapse>
                   <Row>
                     <Col xs={12} md={3}>
-                      <Autocomplete
-                        {...clientes}
-                        id="cliente"
-                        debug
-                        onChange={(event, newValue) => {
-                          setClienteSelectd(newValue);
-                        }}
-                        noOptionsText="Nenhum Registro"
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Cliente"
-                            margin="normal"
-                          />
-                        )}
+                      <TextField
+                        disabled
+                        id="standard-disabled"
+                        label="Nome"
+                        variant="standard"
+                        className="w-100 mt-3"
+                        value={clientName}
+                        onChange={({ target }) => setClientName(target.value)}
                       />
                     </Col>
                     <Col xs={12} md={3}>
@@ -348,7 +217,7 @@ function ListVenda() {
                                 }}
                               />
                             }
-                            label="Vendas Fiado"
+                            label="Compras Fiado"
                             labelPlacement="start"
                           />
                         </FormGroup>
@@ -380,14 +249,9 @@ function ListVenda() {
             </Col>
           </Row>
         </Container>
-        <Link to={"/NewVend"}>
-          <Button variant="primary" className="btn-plus edit">
-            <FaIcons.FaPlus />
-          </Button>
-        </Link>
       </div>
     </>
   );
 }
 
-export default ListVenda;
+export default HistoryCompra;

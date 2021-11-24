@@ -274,8 +274,8 @@ function NewUser() {
       <Navbar />
       <div className="content">
         <Container>
-          <Row>
-            <Col md={8}>
+          <Row className="justify-content-center">
+            <Col md={10}>
               <Card>
                 <Card.Header>
                   <Card.Title className="mb-0">
@@ -619,7 +619,7 @@ function NewUser() {
               </Card>
             </Col>
 
-            <Col md={4}>
+            {/*<Col md={4}>
               <Card>
                 <Card.Body className="text-center">
                   <Image
@@ -655,7 +655,7 @@ function NewUser() {
                   </label>
                 </Card.Footer>
               </Card>
-            </Col>
+            </Col>*/}
           </Row>
         </Container>
       </div>

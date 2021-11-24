@@ -28,6 +28,11 @@ function User() {
       sortable: true,
     },
     {
+      name: "Nome de usuário",
+      selector: "user_name",
+      sortable: true,
+    },
+    {
       name: "Telefone",
       selector: "phone",
       sortable: true,
