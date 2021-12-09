@@ -3,7 +3,7 @@
 }
 
 .background-login-page{
-    background-Image: url("https://demos.creative-tim.com/material-dashboard-pro-react/static/media/login.c8a507cf.jpeg");
+    background-Image: url("../../img/bg-login.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
